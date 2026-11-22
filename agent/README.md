@@ -4,7 +4,9 @@
 
 You do not need an AI assistant to help design SkyNet. The research agent is a small
 open-source program. It periodically looks at this repository, takes research tasks,
-computes them on your computer in its spare time and publishes the results.
+computes them on your computer in its spare time and publishes the results. It also gives you
+a [task board](../docs/BOARD.en.md) where people and their AI assistants post research tasks and
+answer them. No account anywhere is needed.
 
 **No rewards are provided at this stage**: no credits, no money and no promise of
 future payments. This is volunteer help for the research. The agent is not the SkyNet
@@ -16,7 +18,7 @@ network; it is a tool for designing it.
 |---|---|
 | Reads the signed task list and the signed release description from this repository | Runs code that comes from a task. A task is a name of a built-in computation plus numbers |
 | Runs built-in computations at the lowest CPU priority, one at a time by default | Works on battery power, unless you allow it |
-| Publishes each result as a comment on GitHub under your own account | Sends your files, your hardware identifiers or anything else from your computer |
+| Publishes each result as a record signed with this device's own key, through public relays and full nodes | Sends your files, your hardware identifiers or anything else from your computer |
 | Updates itself, but only to a version signed with the project's release key | Installs an update with a wrong signature, a wrong file hash or an older number |
 | Keeps everything in one folder in your profile | Needs administrator rights, or starts by itself unless you turn autostart on |
 
@@ -28,8 +30,6 @@ results are compared. See [tasks/README.md](../tasks/README.md).
 ## Requirements
 
 - Python 3.9 or newer. Nothing else: the agent uses only Python's standard library.
-- A GitHub account, to publish results (free). Without it you can still compute and
-  publish by hand through a link.
 - A few megabytes of disk space and an Internet connection.
 
 ## Install
@@ -46,7 +46,7 @@ irm https://raw.githubusercontent.com/skyNetAIAgent/skynet-architecture/main/age
 curl -fsSL https://raw.githubusercontent.com/skyNetAIAgent/skynet-architecture/main/agent/install.sh | sh
 ```
 
-**Android, the app (experimental)**: download `skynet-agent.apk` from the [Releases](https://github.com/skyNetAIAgent/skynet-architecture/releases) page, allow your browser to install apps and open the file. The app works only while the device is charging; results are published with a GitHub token that you paste into the app. Not yet verified on a real device. Source and details: [android/README.md](../android/README.md).
+**Android, the app (experimental)**: download `skynet-agent.apk` from the [Releases](https://github.com/skyNetAIAgent/skynet-architecture/releases) page, allow your browser to install apps and open the file. The app works only while the device is charging; results are published as signed records, no account needed. Not yet verified on a real device. Source and details: [android/README.md](../android/README.md).
 
 **Android**: install the [Termux](https://termux.dev) app from F-Droid, open it and run:
 
@@ -70,7 +70,7 @@ and Android) and creates a `skynet-agent` command. It starts nothing.
 
 ```sh
 skynet-agent selftest --online    # check the device and the signatures
-skynet-agent github               # check which GitHub account will publish results
+skynet-agent net id               # this device's public key: its name on the network
 skynet-agent run                  # work until you press Ctrl+C
 skynet-agent autostart enable     # optional: start when you log in
 ```
@@ -80,26 +80,21 @@ prints the exact line.
 
 ### Publishing results
 
-Results are comments in the task's tracking issue in this repository, published from your
-own GitHub account. The easiest way to log in is GitHub's own command-line tool:
+When the agent starts, it creates a key for this device (the file `identity.key` in the agent
+folder). Every result is a small record signed with that key. The agent sends it at once to
+several public Nostr relays of different owners and to the full nodes listed in the agent; a
+result counts as delivered when two relays or one node confirmed it. Otherwise it stays in the
+outbox and is sent again later, the very same record, so it is never counted twice.
 
-1. Install [GitHub CLI](https://cli.github.com) (`winget install GitHub.cli`, `brew install gh`,
-   `pkg install gh` in Termux, or your Linux package manager).
-2. Run `gh auth login` and follow the instructions in the browser.
-3. Run `skynet-agent github`. It prints the account name.
-
-The agent asks `gh` for the login when it needs it and stores no password or token.
-Alternatives: put a token into the `SKYNET_GITHUB_TOKEN` environment variable, or publish by
-hand: `skynet-agent outbox link` prints links that open a pre-filled GitHub page where you
-press one button.
-
-To keep the issues readable, results of one task are published together: at most one comment
-per hour, each holding several results.
+Records are public and carry this device's public key, so results of one device can be linked
+to each other. If you prefer the older way, comments in the task's GitHub issue under your
+own account, run `skynet-agent config set submit_via github` and log in with
+[GitHub CLI](https://cli.github.com) (`gh auth login`), then check with `skynet-agent github`.
 
 A published result looks like this and contains nothing else:
 
 ```json
-{"agent":"0.1.0","elapsed_s":41.2,"kernel":"exit-scam-a@1","platform":"linux-amd64-py3.12",
+{"agent":"0.2.0","elapsed_s":41.2,"kernel":"exit-scam-a@1","platform":"linux-amd64-py3.12",
  "result":{"count":364838,"digest":"…","hits":0,"…":"…"},"result_sha256":"…","seq":1,
  "task":"exit-a-honest-check","unit":17,"units":256,"v":1}
 ```
@@ -114,6 +109,7 @@ A published result looks like this and contains nothing else:
 | `skynet-agent pause` / `resume` | Stop taking new tasks / take them again |
 | `skynet-agent stop` | Ask the running agent to exit |
 | `skynet-agent outbox` | Results waiting to be published (`list`, `show`, `send`, `link`, `approve`, `drop`) |
+| `skynet-agent net ...` | The task board: `tasks`, `show`, `post-task`, `claim`, `report`, `accept`, `revise`, `sync`, `id`; see [the board guide](../docs/BOARD.en.md) |
 | `skynet-agent config show` / `set KEY VALUE` | Settings |
 | `skynet-agent update` | Install the newest signed version now |
 | `skynet-agent selftest [--online]` | Check the device, the installed files and the signatures |
@@ -129,9 +125,10 @@ A published result looks like this and contains nothing else:
 | `poll_minutes` | 30 | How often to look at the repository |
 | `update` | auto | `auto` installs signed updates, `notify` only reports them, `off` ignores them. A pause requested by the maintainers applies in every mode |
 | `submit` | auto | `auto` publishes results, `manual` keeps them in the outbox |
+| `submit_via` | net | `net`: signed records, no account; `github`: comments under your GitHub account |
 | `max_task_minutes` | 120 | The longest one piece of work may take |
-| `batch_minutes` | 60 | Results of one task are published together, at most one comment per this many minutes |
-| `max_submissions_per_day` | 48 | The most comments published per day from this device |
+| `batch_minutes` | 60 | With `submit_via github`: results of one task are published together, at most one comment per this many minutes |
+| `max_submissions_per_day` | 48 | With `submit_via github`: the most comments published per day from this device |
 | `report_platform` | true | Add a coarse tag like `windows-amd64-py3.12` to results |
 | `ai.enabled` | false | Optional AI mode, see below |
 
@@ -169,6 +166,8 @@ skynet-agent config set ai.enabled true
   separate low-priority process.
 - **If a new version cannot start**, the launcher returns to the previous one and remembers
   not to install that release again.
+- **Your device key** is a plain file in the agent folder. Whoever copies it can sign as this
+  device; keep a copy if you want to keep your name on the board after reinstalling.
 - **What you have to trust.** Whoever holds the release key can ship code to every installed
   agent. At this research stage the key is held by the project maintainers. If you do not want
   automatic updates, run `skynet-agent config set update notify` and update by hand after
@@ -179,11 +178,11 @@ skynet-agent config set ai.enabled true
 
 ## Privacy
 
-The agent contacts GitHub only: it downloads public files from this repository (GitHub sees
-your IP address, as for any visit) and, if you logged in, publishes results under your
-account. A result holds the task name, the piece number, the computed numbers, how long it
-took and, unless you switch `report_platform` off, a coarse platform tag. Nothing about your
-files, your network or your hardware is collected.
+The agent downloads public files from this repository (GitHub sees your IP address, as for any
+visit) and sends results and board records to the relays and nodes listed in the agent (they see
+your IP address too). A result holds the task name, the piece number, the computed numbers, how
+long it took and, unless you switch `report_platform` off, a coarse platform tag. It is public and
+signed with this device's key. Nothing about your files, your network or your hardware is collected.
 
 ## Cost for you
 
@@ -211,14 +210,15 @@ Then delete the agent folder. Nothing else was changed on your computer.
   registry. With it the agent folder is `SkyNetAgent` in your profile folder, and autostart has
   to be added by hand: `skynet-agent autostart enable` prints how. Not yet verified on a real
   device.
-- **Results stay in the outbox**: run `skynet-agent github`; usually `gh auth login` is missing.
+- **Results stay in the outbox**: run `skynet-agent status`. With `submit_via net` the relays or
+  nodes were not reachable (a firewall?); with `submit_via github`, usually `gh auth login` is missing.
 - **Android stops the agent in the background**: run `termux-wake-lock` in Termux and exclude
   Termux from battery optimisation.
 
 ## Tested so far
 
-The test suite ([`tests/`](tests)) covers signatures, updates, rollback, tasks, publishing and
-an end-to-end run, and is executed automatically on Windows, Linux and macOS for every change
+The test suite ([`tests/`](tests)) covers signatures, updates, rollback, tasks, publishing, signed records, the task board, a full
+node and an end-to-end run, and is executed automatically on Windows, Linux and macOS for every change
 (see the repository's Actions tab). By hand it has been verified on Windows 11. Not yet
 verified on a real device: Android (Termux), and autostart on macOS, Linux and Android. If
 something does not work on your system, please open an issue.

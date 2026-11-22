@@ -12,7 +12,7 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 
 from . import MIN_PYTHON, RELEASE_SEQ, __version__
-from . import autostart, config, net, power, runner, signed, submit, tasks, trust, updater
+from . import autostart, board, config, net, power, runner, signed, submit, tasks, trust, updater
 from .kernels import REGISTRY
 
 EXIT_RESTART = 75          # tells the launcher: start the newly installed version
@@ -260,8 +260,8 @@ def _run_loop(args):
                 note = "paused (run: skynet-agent resume)"
             elif submit.outbox_count() >= submit.MAX_OUTBOX:
                 # Computing more makes no sense while nothing can be published.
-                note = ("%d results are waiting to be published; check the GitHub login "
-                        "(skynet-agent github)" % submit.MAX_OUTBOX)
+                note = ("%d results are waiting to be published; see what is wrong with "
+                        "skynet-agent status" % submit.MAX_OUTBOX)
             elif not cfg["run_on_battery"] and battery.get() is True:
                 note = "on battery, waiting for mains power"
             elif not cfg["run_on_battery"] and battery.get() is None and power.is_android():
@@ -361,9 +361,17 @@ def cmd_status(args):
             state["last_poll"], datetime.timezone.utc).strftime("%Y-%m-%d %H:%M"))
     if state.get("last_error"):
         say("Last problem:     %s" % state["last_error"])
-    token, source = submit.find_token()
-    say("GitHub login:     %s" % (("found in " + source) if token else source))
+    if config.submit_via(cfg) == "github":
+        token, source = submit.find_token()
+        say("GitHub login:     %s" % (("found in " + source) if token else source))
+    else:
+        say("Results go out:   as signed records, no account needed (skynet-agent net id)")
     return 0
+
+
+def cmd_net(args):
+    setup_logging(False, to_file=False)
+    return board.cmd_net(args, say)
 
 
 def cmd_config(args):
@@ -672,6 +680,26 @@ def build_parser():
 
     p = sub.add_parser("github", help="check which GitHub account will publish results")
     p.set_defaults(func=cmd_github)
+
+    p = sub.add_parser("net", help="the task board: research tasks for people and AI assistants")
+    p.add_argument("action", nargs="?", choices=["tasks", "show", "sync", "id", "post-task", "claim",
+                                                 "report", "accept", "revise"])
+    p.add_argument("ref", nargs="?", help="the first characters of a task or report id")
+    p.add_argument("--title")
+    p.add_argument("--file", help="a UTF-8 text file with the task or the report ('-' reads standard input)")
+    p.add_argument("--accept", help="post-task: what a report must contain to be accepted")
+    p.add_argument("--summary", help="report: one or two sentences with the conclusion")
+    p.add_argument("--note", help="accept / revise: a remark for the author of the report")
+    p.add_argument("--hours", type=int, default=24, help="claim: how long you expect to work (default 24)")
+    p.add_argument("--deputy", action="append", help="post-task: a public key that may judge reports if you are away")
+    p.add_argument("--handover-days", dest="handover_days", type=int, default=14)
+    p.add_argument("--parent", help="post-task: the task this one belongs to")
+    p.add_argument("--base", help="post-task: the version of the documents the task refers to")
+    p.add_argument("--revises", help="report: the earlier report this one replaces")
+    p.add_argument("--json", action="store_true", help="tasks / show: machine-readable output")
+    p.add_argument("--offline", action="store_true",
+                   help="use only the local copy (a new record is still sent out)")
+    p.set_defaults(func=cmd_net)
 
     p = sub.add_parser("ai", help="check the optional local AI model")
     p.set_defaults(func=cmd_ai)

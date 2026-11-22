@@ -1,0 +1,31 @@
+# systemd unit for a full node of the SkyNet research network.
+# Install (as root):  cp skynet-node.service /etc/systemd/system/ && systemctl enable --now skynet-node
+# Edit User=, WorkingDirectory= and the paths first. The node needs no secret from anyone.
+[Unit]
+Description=SkyNet research network: full node (record receiver and relay bridge)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=skynet
+WorkingDirectory=/opt/skynet-node/app
+ExecStart=/usr/bin/python3 -I node/receiver.py --data /opt/skynet-node/data --port 8790 --max-mb 4096
+Restart=always
+RestartSec=10
+# The node only reads its code and writes its data folder.
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/opt/skynet-node/data
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+MemoryMax=1G
+TasksMax=256
+
+[Install]
+WantedBy=multi-user.target

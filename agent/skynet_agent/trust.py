@@ -17,6 +17,26 @@ RAW_BASE = "https://raw.githubusercontent.com/%s/%s/%s" % (REPO_OWNER, REPO_NAME
 API_BASE = "https://api.github.com"
 WEB_BASE = "https://github.com/%s/%s" % (REPO_OWNER, REPO_NAME)
 
+# Channels for signed records (records.py). None of them is trusted: a record is believed
+# only because of its own signature, and every channel can be replaced by a new release.
+# NET_ID separates this network's records from any other use of the same format.
+NET_ID = "skynet-architecture/core-v1"
+NOSTR_KIND = 9467
+NOSTR_TOPIC = "skynet-architecture-v1"
+# Public Nostr relays of different owners that accepted a brand-new key on 22 November 2026.
+RELAYS = [
+    "wss://nos.lol",
+    "wss://relay.primal.net",
+    "wss://relay.snort.social",
+    "wss://offchain.pub",
+    "wss://nostr.mom",
+    "wss://relay.nostr.net",
+    "wss://nostr.bitcoiner.social",
+]
+# Receivers: full nodes run by participants (node/receiver.py). The first one is announced here;
+# more can be added by later releases.
+RECEIVERS = ["http://62.213.14.254:8790"]
+
 # Ed25519 public keys (hex, 32 bytes) allowed to sign releases and task lists.
 # Written by tools/make_release.py from the maintainers' key. An empty list
 # means "trust nobody": the agent then refuses every update and every task.

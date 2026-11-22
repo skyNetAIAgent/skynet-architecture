@@ -17,6 +17,12 @@ if AGENT_DIR not in sys.path:
 
 from skynet_agent import ed25519  # noqa: E402
 
+# Tests never talk to public relays or receivers; a test that needs a channel starts its own.
+# The older tests exercise publishing through the GitHub stand-in.
+os.environ["SKYNET_AGENT_RELAYS"] = "none"
+os.environ["SKYNET_AGENT_RECEIVERS"] = "none"
+os.environ.setdefault("SKYNET_AGENT_SUBMIT_VIA", "github")
+
 # A throw-away seed used only by the tests. It protects nothing.
 TEST_SEED_HEX = "11" * 32
 TEST_PUBLIC_HEX = ed25519.public_key(bytes.fromhex(TEST_SEED_HEX)).hex()

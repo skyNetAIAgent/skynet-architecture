@@ -1,18 +1,18 @@
-<!-- translation of docs/RESEARCH_AGENT.md, source sha256: be3193497fd35b1568b634f7647119965e68e6e665fea52b5a8ecb8aa477aa9e -->
+<!-- translation of docs/RESEARCH_AGENT.md, source sha256: 5b9c405c6752d25fab4db09f92c07df1d7daa6bf9dfd8b40de30d40adb0236a4 -->
 
 # Programme-agent : comment aider le projet sans assistant d'IA
 
 [English](../../docs/RESEARCH_AGENT.en.md) · [中文](../zh/RESEARCH_AGENT.md) · [Español](../es/RESEARCH_AGENT.md) · **Français** · [Deutsch](../de/RESEARCH_AGENT.md) · [Italiano](../it/RESEARCH_AGENT.md) · [Русский](../../docs/RESEARCH_AGENT.md) · [Português](../pt/RESEARCH_AGENT.md) · [العربية](../ar/RESEARCH_AGENT.md)
 
-État au 22 novembre 2026. Version de l'agent 0.1.0. Instructions pour le participant :
+État au 22 novembre 2026. Version de l'agent 0.2.0 (en préparation de sortie). Instructions pour le participant :
 [agent/README.md](../../agent/README.md) ([en russe](../ru/AGENT.md)).
 
 ## Pourquoi
 
 Le dépôt est conçu pour les personnes qui disposent d'un assistant d'IA : il lit les documents
 et aide à concevoir. La plupart des gens n'ont pas un tel assistant, mais ont un ordinateur ou
-un téléphone. L'agent leur donne un moyen de participer : il consulte régulièrement ce dépôt,
-prend des tâches, les exécute sur l'appareil du participant et publie les résultats.
+un téléphone. Le programme-agent leur donne un moyen de participer : il consulte régulièrement
+ce dépôt, prend des tâches, les exécute sur l'appareil du participant et publie les résultats.
 
 À ce stade, **il n'y a aucune récompense** : ni crédits, ni argent, ni promesse de paiements
 futurs. Le but est d'attirer vers la conception de l'architecture le plus possible de ressources
@@ -30,7 +30,7 @@ obligatoires du réseau. Cela est dit explicitement à chaque endroit ci-dessous
 | Agent | `agent/skynet_agent/`, uniquement la bibliothèque standard Python 3.9+ | Vérifie les signatures, choisit une portion, calcule, publie, se met à jour |
 | Description de la version | `agent/release.json` et la signature | Énumère les fichiers de l'agent avec leur taille et leur SHA-256 |
 | Lanceur | `agent/launcher.py` | Lance la version actuelle, passe à la nouvelle, revient en arrière depuis une version cassée |
-| Résultats | Commentaires dans le ticket GitHub au nom du participant | Enregistrement lisible par machine avec l'empreinte du résultat |
+| Résultats | Enregistrements signés par la clé de l'appareil, via des relais Nostr publics et des nœuds complets ([tableau des tâches](BOARD.md)) ; en option, des commentaires dans le ticket GitHub | Enregistrement lisible par machine avec l'empreinte du résultat |
 | Synthèse | `results/`, construite par `tools/collect_results.py` | Compare les résultats de différentes personnes et revérifie les trouvailles |
 
 Un cycle de travail de l'agent :
@@ -43,18 +43,22 @@ Un cycle de travail de l'agent :
    son empreinte, l'installe à côté de la version actuelle et redémarre.
 4. Il choisit une portion aléatoire d'une tâche qu'il n'a pas encore calculée.
 5. Il la calcule dans un processus séparé, avec la priorité la plus basse et une limite de temps.
-6. Il met le résultat dans la « boîte d'envoi » et le publie comme commentaire dans le ticket
-   GitHub. Les résultats d'une même tâche sont publiés en lot, au plus un commentaire par heure,
-   pour ne pas submerger le ticket et ses abonnés de notifications. Après une tentative échouée,
-   la suivante est reportée : d'une minute, puis deux fois plus, mais jamais plus d'une heure.
-   S'il est impossible de publier (pas de connexion à GitHub), l'agent, après trois cents
-   résultats non publiés, cesse de prendre du travail et le signale.
+6. Il met le résultat dans la « boîte d'envoi » et l'envoie comme un enregistrement signé par la
+   clé de cet appareil, à la fois à plusieurs relais Nostr publics et nœuds complets. Aucun compte
+   n'est nécessaire. L'enregistrement est considéré comme livré quand deux relais ou un nœud l'ont
+   confirmé ; sinon il reste dans la « boîte d'envoi », et la tentative est répétée : après une
+   minute, puis deux fois plus longtemps, mais jamais plus d'une heure. La répétition envoie le
+   même enregistrement, donc le résultat n'est pas compté deux fois. L'ancienne méthode, des
+   commentaires dans le ticket GitHub au nom du participant, s'active par le réglage
+   `submit_via github`. Après trois cents résultats non envoyés, l'agent cesse de prendre du
+   travail et le signale.
 
 Il n'y a pas d'ordonnanceur : chaque agent choisit sa portion lui-même. Le chevauchement des
 portions entre différents participants est voulu : toutes les tâches de calcul sont entières, de
-sorte que n'importe quel appareil obtient les mêmes chiffres, et une portion est considérée
-comme confirmée quand la même empreinte a été publiée par autant de comptes différents que la
-tâche l'exige.
+sorte que n'importe quel appareil obtient les mêmes chiffres. La coïncidence des empreintes
+entre différents comptes GitHub est considérée comme une confirmation ; la coïncidence entre
+différentes clés ne l'est pas, parce qu'une clé ne coûte rien et qu'une personne peut créer
+autant de clés qu'elle veut. De telles portions sont confirmées par un recalcul.
 
 ## Une tâche est une donnée, pas un programme
 
@@ -121,7 +125,9 @@ Différences par rapport à l'agent sur ordinateur :
 - L'application elle-même (écran, service, chien de garde) ne change qu'avec un nouvel APK.
   L'APK est signé avec une clé distincte des mainteneurs du projet : c'est un second point de
   confiance unique, qui ne doit pas exister dans le réseau.
-- Les résultats sont publiés avec un jeton GitHub que le participant colle dans l'application.
+- Les résultats partent sous forme d'enregistrements signés, comme chez l'agent sur ordinateur.
+  Le jeton GitHub n'est nécessaire que si le participant a choisi l'ancienne méthode de
+  publication.
 - Elle ne travaille que pendant la charge, sauf si le participant l'a autorisé autrement. Pas de
   mode IA.
 
@@ -139,7 +145,7 @@ via Google Play : ses règles interdisent les applications qui téléchargent du
 | Quoi | Confiance |
 |---|---|
 | Signature Ed25519 par la clé de publication | Oui. Sans elle, ni la version ni la liste des tâches ne sont acceptées |
-| Canal (HTTPS, miroir, GitHub lui-même) | Non pour l'intégrité : la substitution d'un fichier casse la signature ou l'empreinte |
+| Canal (HTTPS, miroir, GitHub lui-même, relais Nostr, nœuds complets) | Non pour l'intégrité : la substitution d'un fichier casse la signature ou l'empreinte, la substitution d'un enregistrement casse sa signature |
 | Contenu de la tâche | Non : les paramètres sont vérifiés, le volume de travail est limité, il n'y a pas de code dans la tâche |
 | Réponse du modèle local | Non : c'est du texte, il est publié comme non vérifié |
 | Première installation | Oui, au canal HTTPS vers GitHub. On peut vérifier l'installation avec la commande `selftest --online` |
@@ -164,9 +170,10 @@ participants dans le journal commun, et une signature par la clé de quelqu'un n
 | Version cassée | Le lanceur revient à la version précédente après trois plantages rapides ou si les fichiers de la nouvelle version ont disparu, et mémorise le numéro inutilisable. Les demandes répétées de redémarrage sont exécutées avec une pause croissante | Couvert pour les plantages au démarrage. Une erreur silencieuse dans le calcul est attrapée par la comparaison des résultats |
 | Vol de la clé de publication | La clé se trouve hors du dépôt ; sous Windows, elle est chiffrée pour le compte du propriétaire | **Ouvert.** Le voleur peut publier une version nuisible. Le remplacement de la clé se fait par une nouvelle version signée avec l'ancienne clé, et le voleur y a également accès |
 | Perte de la clé de publication | Copie de secours chez le propriétaire | Sans la clé, les agents installés ne peuvent pas être mis à jour : les participants devront réinstaller l'agent |
-| Falsification d'un résultat | Le calcul entier est comparé entre différents comptes ; les trouvailles sont recalculées lors de la collecte | Limité : une personne avec deux comptes se « confirmera » elle-même. Comme il n'y a pas de récompenses, il n'y a aucun avantage, mais un saboteur est possible. Les mainteneurs recalculent de façon sélective |
-| Flux de commentaires indésirables venant de comptes étrangers | Le collecteur n'accepte que les enregistrements avec une empreinte correcte et une tâche connue | Limité par les moyens de GitHub |
-| Fuite du jeton GitHub | L'agent ne stocke pas le jeton, le prend chez `gh` ou dans une variable et ne l'envoie nulle part ailleurs qu'à GitHub par HTTPS, sans redirections | Un jeton avec droit d'écriture dans les dépôts publics reste la responsabilité du participant |
+| Falsification d'un résultat | Le calcul entier est comparé entre différents comptes GitHub ; le collecteur compte toutes les clés réunies comme une seule voix ; les trouvailles sont recalculées lors de la collecte | Limité : une personne avec deux comptes se « confirmera » elle-même. Comme il n'y a pas de récompenses, il n'y a aucun avantage, mais un saboteur est possible. Les mainteneurs recalculent de façon sélective |
+| Flux d'ordures venant de comptes étrangers et de clés gratuites | Le collecteur n'accepte que les enregistrements avec une signature correcte, une empreinte correcte et une tâche connue ; le nœud limite la taille, la fréquence et le volume total | **Ouvert pour les clés** : une clé ne coûte rien, donc on peut envoyer des ordures sans fin. Cela fait partie de la principale question ouverte du projet |
+| Fuite de la clé de l'appareil | La clé se trouve dans le dossier de l'agent et n'est envoyée nulle part | Quiconque copie le fichier `identity.key` pourra signer au nom de l'appareil. La signature en Python pur n'est pas protégée contre la mesure du temps |
+| Fuite du jeton GitHub (ancienne méthode) | L'agent ne stocke pas le jeton, le prend chez `gh` ou dans une variable et ne l'envoie nulle part ailleurs qu'à GitHub par HTTPS, sans redirections | Un jeton avec droit d'écriture dans les dépôts publics reste la responsabilité du participant |
 | Code étranger à côté de l'agent (module glissé dans le dossier courant) | Mode isolé de Python (`-I`) | Couvert. Il n'y a pas de protection contre un programme ayant les droits du même utilisateur sur le même ordinateur |
 | Consommation des ressources du participant | Un processus par défaut, priorité la plus basse, pause sur batterie, limite de temps, commandes `pause` et `stop` | L'électricité, le participant la dépense lui-même et gratuitement |
 | Arrêt de tous les agents par les mainteneurs | Marque signée `halt` dans la description de version ; elle agit même avec les mises à jour désactivées | C'est un levier intentionnel : uniquement l'arrêt, sans lancer quoi que ce soit |
@@ -175,8 +182,12 @@ participants dans le journal commun, et une signature par la clé de quelqu'un n
 
 Uniquement le contenu de l'enregistrement publié : le nom de la tâche, le numéro de portion,
 les nombres du résultat, le temps de calcul et, s'il n'est pas désactivé, une étiquette
-approximative de plateforme du type `linux-amd64-py3.12`. Les requêtes ne vont que vers GitHub.
-Rien n'est collecté sur les fichiers, le réseau ou le matériel du participant.
+approximative de plateforme du type `linux-amd64-py3.12`. Les requêtes vont vers GitHub
+(tâches et versions) et vers les relais et les nœuds de `trust.py` (enregistrements).
+Les enregistrements sont publics et signés par la clé permanente de l'appareil, donc les
+résultats d'un même appareil peuvent être reliés entre eux, et le destinataire voit l'adresse
+réseau de l'expéditeur. Rien n'est collecté sur les fichiers, le réseau ou le matériel du
+participant.
 
 ## Procédure pour les mainteneurs
 
@@ -202,7 +213,9 @@ puis chargement des fichiers modifiés `agent/` dans le dépôt. Nouvelle liste 
 python tools/sign_tasks.py
 ```
 
-puis chargement de `tasks/index.json` et de `tasks/index.json.sig`. Collecte des résultats :
+puis chargement de `tasks/index.json` et de `tasks/index.json.sig`. Collecte des résultats
+depuis les deux sources (enregistrements signés et commentaires GitHub ; `--net-only` ou
+`--github-only` n'en laissent qu'une) :
 
 ```
 python tools/collect_results.py
@@ -214,12 +227,11 @@ description de version avec `--halt-through <numéro>` et la raison.
 ## Ce qui manque ici et pourquoi il est honnête de le dire
 
 - **Ce n'est pas un réseau distribué.** Les tâches et les versions sont distribuées par un seul
-  dépôt, signées par une seule clé, et les résultats sont reçus par une seule plateforme. Les
-  exigences R1–R4 des [exigences obligatoires](../ru/REQUIREMENTS.md) ne s'appliquent pas à
-  l'agent et ne sont pas satisfaites par lui.
-- **Un compte GitHub est nécessaire.** Sans lui, les résultats ne sont publiés qu'à la main, par
-  un lien.
-- **Pas de protection contre de multiples comptes.** Pour une étape bénévole, c'est acceptable.
+  dépôt et signées par une seule clé. Les résultats et les tâches du tableau passent déjà par
+  plusieurs plateformes indépendantes. Les exigences R1–R4 des [exigences obligatoires](../ru/REQUIREMENTS.md)
+  ne s'appliquent pas à l'agent et ne sont pas satisfaites par lui.
+- **Pas de protection contre de multiples clés et comptes.** Pour une étape sans récompense,
+  c'est acceptable ; les résultats importants sont confirmés par un recalcul.
 - **Android n'est pas vérifié sur un appareil réel** ; le démarrage automatique sur macOS, Linux
   et Android n'est vérifié qu'au niveau des fichiers créés. Deux cas sont pris en compte d'après
   la documentation et ne sont pas non plus vérifiés sur de vrais appareils : Python du Microsoft
@@ -238,8 +250,7 @@ description de version avec `--halt-through <numéro>` et la raison.
 1. Des tâches de mesure sur différents appareils : la principale inconnue du projet est la
    coïncidence du résultat au bit près sur différentes cartes graphiques. Ce sont des
    expériences ; elles attendent la décision du propriétaire.
-2. Abandon du compte GitHub : réception des résultats via plusieurs plateformes publiques
-   indépendantes, comme dans le projet cible du réseau.
+2. Fait dans la version 0.2.0 : les résultats et le [tableau des tâches](BOARD.md) sans compte.
 3. Abandon de la clé unique : plusieurs signatures indépendantes, puis acceptation des versions
    selon les règles du réseau lui-même.
 4. Gestion du modèle local : téléchargement d'un modèle ouvert avec vérification de l'empreinte,

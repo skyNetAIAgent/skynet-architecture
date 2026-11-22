@@ -1,10 +1,10 @@
-<!-- translation of docs/RESEARCH_AGENT.md, source sha256: be3193497fd35b1568b634f7647119965e68e6e665fea52b5a8ecb8aa477aa9e -->
+<!-- translation of docs/RESEARCH_AGENT.md, source sha256: 5b9c405c6752d25fab4db09f92c07df1d7daa6bf9dfd8b40de30d40adb0236a4 -->
 
 # Programa-agente: como ajudar o projeto sem um assistente de IA
 
 [English](../../docs/RESEARCH_AGENT.en.md) · [中文](../zh/RESEARCH_AGENT.md) · [Español](../es/RESEARCH_AGENT.md) · [Français](../fr/RESEARCH_AGENT.md) · [Deutsch](../de/RESEARCH_AGENT.md) · [Italiano](../it/RESEARCH_AGENT.md) · [Русский](../../docs/RESEARCH_AGENT.md) · **Português** · [العربية](../ar/RESEARCH_AGENT.md)
 
-Estado em 22 de novembro de 2026. Versão do agente 0.1.0. Instruções para o participante:
+Estado em 22 de novembro de 2026. Versão do agente 0.2.0 (em preparação para o lançamento). Instruções para o participante:
 [agent/README.md](../../agent/README.md) ([em russo](../ru/AGENT.md)).
 
 ## Por quê
@@ -14,7 +14,7 @@ a projetar. A maioria das pessoas não tem esse assistente, mas tem um computado
 O programa-agente dá a elas uma forma de participar: ele consulta periodicamente este repositório,
 pega tarefas, executa-as no dispositivo do participante e publica os resultados.
 
-Nesta etapa **não há recompensas**: nem créditos, nem dinheiro, nem promessas de pagamentos futuros.
+Nesta etapa **não há recompensas**: nem créditos, nem dinheiro, nem promessas de acúmulos futuros.
 O objetivo é atrair para o projeto da arquitetura o máximo possível de recursos de computação
 e de verificadores independentes.
 
@@ -30,7 +30,7 @@ diretamente em cada ponto.
 | Agente | `agent/skynet_agent/`, apenas a biblioteca padrão do Python 3.9+ | Verifica assinaturas, escolhe uma porção, calcula, publica, atualiza-se |
 | Descrição da versão | `agent/release.json` e a assinatura | Lista os arquivos do agente com tamanho e SHA-256 |
 | Lançador | `agent/launcher.py` | Inicia a versão atual, passa para a nova, volta atrás quando ela está quebrada |
-| Resultados | Comentários na tarefa do GitHub em nome do participante | Registro legível por máquina com o hash do resultado |
+| Resultados | Registros assinados com a chave do dispositivo, via relays públicos do Nostr e nós completos ([quadro de tarefas](BOARD.md)); opcionalmente — comentários na tarefa do GitHub | Registro legível por máquina com o hash do resultado |
 | Resumo | `results/`, criado por `tools/collect_results.py` | Compara os resultados de pessoas diferentes, confere novamente os achados |
 
 Um ciclo de trabalho do agente:
@@ -41,16 +41,20 @@ Um ciclo de trabalho do agente:
    coloca ao lado da atual e reinicia.
 4. Escolhe uma porção aleatória da tarefa que ainda não calculou.
 5. Calcula-a em um processo separado com a menor prioridade e limite de tempo.
-6. Coloca o resultado na «caixa de saída» e publica-o como comentário na tarefa do GitHub. Os resultados de uma
-   tarefa são publicados em lote, no máximo um comentário por hora, para não inundar a tarefa
-   e os seguidores com notificações. Depois de uma tentativa malsucedida, a próxima é adiada: por um minuto,
-   depois pelo dobro, mas nunca mais de uma hora. Se não for possível publicar (não há acesso ao GitHub), o agente,
-   após trezentos resultados não publicados, deixa de pegar trabalho e informa sobre isso.
+6. Coloca o resultado na «caixa de saída» e o envia como um registro assinado com a chave deste dispositivo,
+   de uma vez para vários relays públicos do Nostr e nós completos. Não é preciso ter conta.
+   O registro é considerado entregue quando dois relays ou um nó o confirmam; caso contrário,
+   ele permanece na «caixa de saída», e a tentativa se repete: depois de um minuto, depois pelo dobro,
+   mas nunca mais de uma hora. A repetição envia o mesmo registro, por isso o resultado não é contado
+   duas vezes. O modo antigo, comentários na tarefa do GitHub em nome do participante, é ativado
+   pela configuração `submit_via github`. Após trezentos resultados não enviados, o agente
+   deixa de pegar trabalho e informa sobre isso.
 
 Não há planejador: cada agente escolhe a porção sozinho. A coincidência de porções entre participantes diferentes
 é intencional: todas as tarefas de cálculo são de números inteiros, portanto em qualquer dispositivo se obtêm
-os mesmos dígitos, e uma porção é considerada confirmada quando o mesmo hash
-foi publicado por tantas contas diferentes quanto a tarefa exige.
+os mesmos dígitos. A coincidência de hashes entre contas diferentes do GitHub é considerada confirmação;
+a coincidência entre chaves diferentes — não, porque a chave não custa nada e uma pessoa pode criar
+quantas chaves quiser. Essas porções são confirmadas pelo recálculo.
 
 ## A tarefa são dados, não programa
 
@@ -109,7 +113,8 @@ pacote `skynet_agent` e o Python (via Chaquopy). Diferenças em relação ao age
   volta à embutida.
 - O próprio aplicativo (tela, serviço, vigia) só muda com um novo APK. O APK é assinado com uma
   chave separada dos mantenedores do projeto: é o segundo ponto único de confiança, que não deve existir na rede.
-- Os resultados são publicados com o token do GitHub que o participante cola no aplicativo.
+- Os resultados saem como registros assinados, como no agente do computador. O token do GitHub
+  só é necessário se o participante escolheu o modo antigo de publicação.
 - Só trabalha enquanto o dispositivo está carregando, a menos que o participante permita o contrário. Não há modo de IA.
 
 Estado em 22 de novembro de 2026: o aplicativo compila, e sua parte em Python passa nos testes no
@@ -125,7 +130,7 @@ que baixam código executável.
 | O quê | Confiança |
 |---|---|
 | Assinatura Ed25519 com a chave de lançamento | Sim. Sem ela não se aceita nem a versão, nem a lista de tarefas |
-| Canal (HTTPS, espelho, o próprio GitHub) | Não para a integridade: a substituição de um arquivo quebra a assinatura ou o hash |
+| Canal (HTTPS, espelho, o próprio GitHub, relays do Nostr, nós completos) | Não para a integridade: a substituição de um arquivo quebra a assinatura ou o hash, a substituição de um registro — a assinatura dele |
 | Conteúdo da tarefa | Não: os parâmetros são verificados, o volume de trabalho é limitado, não há código na tarefa |
 | Resposta do modelo local | Não: é texto, e é publicado como não verificado |
 | Primeira instalação | Sim, ao canal HTTPS até o GitHub. Você pode verificar o instalado com o comando `selftest --online` |
@@ -149,9 +154,10 @@ define `update` como `notify` e atualiza manualmente, depois de ler as mudanças
 | Versão quebrada | O lançador volta à versão anterior após três quedas rápidas ou se os arquivos da nova versão sumiram, e memoriza o número inválido. Pedidos repetidos de reinício ele executa com pausa crescente | Coberto para quedas na inicialização. Um erro silencioso no cálculo é pego pela comparação de resultados |
 | Roubo da chave de lançamento | A chave fica fora do repositório; no Windows é criptografada para a conta do dono | **Aberto.** O ladrão pode lançar uma versão maliciosa. A troca de chave é feita com uma nova versão assinada pela chave antiga, e o ladrão também tem acesso a ela |
 | Perda da chave de lançamento | Cópia de segurança com o dono | Sem a chave não se pode atualizar os agentes instalados: os participantes terão de instalar o agente de novo |
-| Falsificação de resultado | O cálculo de números inteiros é comparado entre contas diferentes; os achados são recalculados na coleta | Limitado: uma pessoa com duas contas «confirmará» a si mesma. Não há recompensas, então não há ganho nisso, mas um sabotador é possível. Os mantenedores recalculam seletivamente |
-| Fluxo de comentários-lixo de contas alheias | O coletor aceita apenas registros com o hash correto e tarefa conhecida | Limitado pelos meios do GitHub |
-| Vazamento do token do GitHub | O agente não guarda o token, pega-o do `gh` ou de uma variável e não o envia a lugar nenhum além do GitHub por HTTPS, sem redirecionamentos | O token com permissão de escrita em repositórios públicos continua sendo responsabilidade do participante |
+| Falsificação de resultado | O cálculo de números inteiros é comparado entre contas diferentes do GitHub; todas as chaves juntas o coletor conta como um único voto; os achados são recalculados na coleta | Limitado: uma pessoa com duas contas «confirmará» a si mesma. Não há recompensas, então não há ganho nisso, mas um sabotador é possível. Os mantenedores recalculam seletivamente |
+| Fluxo de lixo de contas alheias e de chaves gratuitas | O coletor aceita apenas registros com assinatura correta, hash correto e tarefa conhecida; o nó limita o tamanho, a frequência e o volume total | **Aberto para chaves**: a chave não custa nada, por isso o lixo pode ser enviado sem fim. Isso é parte da principal questão em aberto do projeto |
+| Vazamento da chave do dispositivo | A chave fica na pasta do agente e não é enviada a lugar nenhum | Quem copiar o arquivo `identity.key` poderá assinar em nome do dispositivo. A assinatura em Python puro não é protegida contra medição de tempo |
+| Vazamento do token do GitHub (modo antigo) | O agente não guarda o token, pega-o do `gh` ou de uma variável e não o envia a lugar nenhum além do GitHub por HTTPS, sem redirecionamentos | O token com permissão de escrita em repositórios públicos continua sendo responsabilidade do participante |
 | Código alheio perto do agente (módulo plantado na pasta atual) | Modo isolado do Python (`-I`) | Coberto. Não há proteção contra um programa com os direitos do mesmo usuário no mesmo computador |
 | Consumo de recursos do participante | Um processo por padrão, menor prioridade, pausa na bateria, limite de tempo, comandos `pause` e `stop` | A eletricidade o participante gasta por conta própria e sem recompensa |
 | Parada de todos os agentes pelos mantenedores | Marcação assinada `halt` na descrição da versão; vale também com as atualizações desligadas | É uma alavanca intencional: apenas parada, sem iniciar nada |
@@ -160,7 +166,10 @@ define `update` como `notify` e atualiza manualmente, depois de ler as mudanças
 
 Apenas o conteúdo do registro publicado: o nome da tarefa, o número da porção, os números do resultado,
 o tempo de cálculo e, se não estiver desativado, uma etiqueta aproximada da plataforma como `linux-amd64-py3.12`.
-As requisições vão apenas ao GitHub. Não são coletadas informações sobre arquivos, rede e hardware do participante.
+As requisições vão ao GitHub (tarefas e versões) e aos relays e nós de `trust.py` (registros).
+Os registros são públicos e assinados com a chave permanente do dispositivo, por isso os resultados de um
+mesmo dispositivo podem ser ligados entre si, e o destinatário vê o endereço de rede do remetente.
+Não são coletadas informações sobre arquivos, rede e hardware do participante.
 
 ## Procedimento para os mantenedores
 
@@ -185,7 +194,8 @@ em seguida, o envio dos arquivos alterados de `agent/` para o repositório. Nova
 python tools/sign_tasks.py
 ```
 
-em seguida, o envio de `tasks/index.json` e `tasks/index.json.sig`. Coleta dos resultados:
+em seguida, o envio de `tasks/index.json` e `tasks/index.json.sig`. Coleta dos resultados de ambas as fontes
+(registros assinados e comentários do GitHub; `--net-only` ou `--github-only` deixam apenas uma):
 
 ```
 python tools/collect_results.py
@@ -196,11 +206,11 @@ Para parar o trabalho de todos os agentes até corrigir um erro: lançar uma des
 
 ## O que não há aqui e por que é honesto dizer
 
-- **Isso não é uma rede distribuída.** As tarefas e as versões são distribuídas por um único repositório, assinadas por uma única
-  chave, e os resultados são recebidos por uma única plataforma. Os requisitos R1–R4 dos
+- **Isso não é uma rede distribuída.** As tarefas e as versões são distribuídas por um único repositório e assinadas por uma única
+  chave. Os resultados e as tarefas do quadro já passam por várias plataformas independentes. Os requisitos R1–R4 dos
   [requisitos obrigatórios](../ru/REQUIREMENTS.md) não se aplicam ao agente e não são cumpridos por ele.
-- **É preciso uma conta no GitHub.** Sem ela, os resultados só são publicados à mão por um link.
-- **Não há proteção contra múltiplas contas.** Para a etapa sem recompensas isso é aceitável.
+- **Não há proteção contra múltiplas chaves e contas.** Para a etapa sem recompensas isso é aceitável;
+  os resultados importantes são confirmados pelo recálculo.
 - **O Android não foi verificado em um dispositivo real**; a inicialização automática no macOS, Linux e Android
   foi verificada apenas no nível dos arquivos criados. Dois casos são tratados pela documentação e também
   não foram verificados em dispositivos reais: o Python da Microsoft Store no Windows (ele vê
@@ -216,8 +226,7 @@ Para parar o trabalho de todos os agentes até corrigir um erro: lançar uma des
 
 1. Tarefas de medição em dispositivos diferentes: a principal incógnita do projeto é a coincidência
    do resultado bit a bit em placas de vídeo diferentes. Isso são experimentos, e eles aguardam a decisão do dono.
-2. Abandono da conta do GitHub: recepção dos resultados por várias plataformas públicas
-   independentes, como no projeto-alvo da rede.
+2. Feito na versão 0.2.0: resultados e [quadro de tarefas](BOARD.md) sem conta.
 3. Abandono da chave única: várias assinaturas independentes, depois a aceitação das versões pelas regras
    da própria rede.
 4. Gestão do modelo local: download de um modelo aberto com verificação do hash, para que

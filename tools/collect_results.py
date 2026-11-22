@@ -93,13 +93,42 @@ def fetch_live(index, token):
     return found
 
 
+def fetch_net(store_dir):
+    """Return results published as signed records, in the same shape as fetch_live.
+
+    A key costs nothing, so several keys agreeing is NOT independent confirmation the
+    way several accounts were meant to be; a result that matters is recomputed (see
+    verify_hit).
+    """
+    from skynet_agent import transport
+    store = transport.Store(store_dir)
+    transport.sync(store)
+    found = []
+    for env in store.all():
+        body = env["body"]
+        if body["type"] != "result":
+            continue
+        try:
+            text = submit.format_comment(body["payload"]["record"], body["payload"].get("text"))
+        except ValueError:
+            continue
+        # All keys together count as ONE voice: otherwise one person with N free keys would
+        # "confirm" a unit alone. A unit confirmed only by records needs a recomputation.
+        found.append({"author": "net", "body": text, "url": "record:" + env["id"]})
+    return found
+
+
 def collect(index, comments):
     """Group valid results. Returns {task id: {unit: {hash: {"authors": set, "record": r, "texts": []}}}}."""
     known = dict((t["id"], t) for t in index["tasks"])
     grouped = {}
     rejected = 0
     for c in comments:
-        items = submit.parse_all(c.get("body", ""))
+        try:
+            items = submit.parse_all(c.get("body", ""))
+        except (ValueError, TypeError, KeyError, RecursionError):
+            rejected += 1
+            continue
         if not items:
             if submit.MARKER in str(c.get("body", "")):
                 rejected += 1
@@ -122,12 +151,16 @@ def collect(index, comments):
 
 
 def verify_hit(task, q, hit):
-    """Recompute one reported hit exactly. True if it really beats honest leaving."""
+    """Recompute one reported hit exactly. Returns its expected payout in parts per
+    billion of H0 if it really beats honest leaving, else None. The number reported by
+    the agent is never used: only the recomputed one."""
     try:
         num, den = exit_scam_a.evaluate_path(task["params"], [tuple(s) for s in hit["path"]], q=q)
-    except (ValueError, TypeError, KeyError):
-        return False
-    return num > task["params"]["H0"] * den
+    except (ValueError, TypeError, KeyError, ZeroDivisionError):
+        return None
+    if num > task["params"]["H0"] * den:
+        return num * 10 ** 9 // (task["params"]["H0"] * den)
+    return None
 
 
 def summarise(index, grouped):
@@ -166,9 +199,9 @@ def summarise(index, grouped):
                             best[key] = {"q": q, "ev_ppb": b["ev_ppb"], "path": b.get("path"), "unit": unit}
                     reported = share.get("top_hits")
                     for hit in (reported if isinstance(reported, list) else [])[:exit_scam_a.TOP_HITS]:
-                        if isinstance(hit, dict) and verify_hit(task, q, hit):
-                            hits.append({"unit": unit, "q": q, "ev_ppb": hit.get("ev_ppb"),
-                                         "path": hit.get("path")})
+                        ev = verify_hit(task, q, hit) if isinstance(hit, dict) else None
+                        if ev is not None:
+                            hits.append({"unit": unit, "q": q, "ev_ppb": ev, "path": hit.get("path")})
             if task["kernel"] == "lottery-b":
                 reported = result.get("rows")
                 for row in (reported if isinstance(reported, list) else [])[:lottery_b.MAX_CELLS_PER_UNIT]:
@@ -253,6 +286,10 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--root", default=os.path.join(HERE, ".."))
     parser.add_argument("--from", dest="source", help="JSON file with [{author, body, url}, ...]")
+    parser.add_argument("--github-only", action="store_true", help="read only GitHub comments (the older way)")
+    parser.add_argument("--net-only", action="store_true", help="read only signed records, not GitHub")
+    parser.add_argument("--net-store", help="folder for the local copy of the records "
+                                            "(default: the agent's own folder)")
     args = parser.parse_args(argv)
     root = os.path.abspath(args.root)
     with open(os.path.join(root, "tasks", "index.json"), "rb") as f:
@@ -262,11 +299,15 @@ def main(argv=None):
         with open(args.source, "r", encoding="utf-8") as f:
             comments = json.load(f)
     else:
-        try:
-            comments = fetch_live(index, find_token())
-        except (urllib.error.URLError, OSError, ValueError) as e:
-            print("Cannot read GitHub: %s" % e)
-            return 1
+        # Both sources by default: the agent publishes signed records unless told otherwise.
+        comments = []
+        if not args.net_only:
+            try:
+                comments = fetch_live(index, find_token())
+            except (urllib.error.URLError, OSError, ValueError) as e:
+                print("Cannot read GitHub (continuing with the records): %s" % e)
+        if not args.github_only:
+            comments += fetch_net(args.net_store)
     grouped, rejected = collect(index, comments)
     coverage, summary = summarise(index, grouped)
     write_outputs(root, index, coverage, summary, rejected)

@@ -1,10 +1,10 @@
-<!-- translation of docs/RESEARCH_AGENT.md, source sha256: be3193497fd35b1568b634f7647119965e68e6e665fea52b5a8ecb8aa477aa9e -->
+<!-- translation of docs/RESEARCH_AGENT.md, source sha256: 5b9c405c6752d25fab4db09f92c07df1d7daa6bf9dfd8b40de30d40adb0236a4 -->
 
 # Programm-Agent: Wie man dem Projekt ohne KI-Assistenten hilft
 
 [English](../../docs/RESEARCH_AGENT.en.md) · [中文](../zh/RESEARCH_AGENT.md) · [Español](../es/RESEARCH_AGENT.md) · [Français](../fr/RESEARCH_AGENT.md) · **Deutsch** · [Italiano](../it/RESEARCH_AGENT.md) · [Русский](../../docs/RESEARCH_AGENT.md) · [Português](../pt/RESEARCH_AGENT.md) · [العربية](../ar/RESEARCH_AGENT.md)
 
-Stand: 22. November 2026. Version des Agenten 0.1.0. Anleitung für den Teilnehmer:
+Stand: 22. November 2026. Version des Agenten 0.2.0 (in Vorbereitung zur Veröffentlichung). Anleitung für den Teilnehmer:
 [agent/README.md](../../agent/README.md) ([auf Russisch](../ru/AGENT.md)).
 
 ## Wozu
@@ -30,7 +30,7 @@ Weiter unten wird das an jeder Stelle offen gesagt.
 | Agent | `agent/skynet_agent/`, nur die Standardbibliothek von Python 3.9+ | Prüft Signaturen, wählt ein Stück, rechnet, veröffentlicht, aktualisiert sich |
 | Versionsbeschreibung | `agent/release.json` und die Signatur | Listet die Dateien des Agenten mit Größe und SHA-256 auf |
 | Starter | `agent/launcher.py` | Startet die aktuelle Version, wechselt auf eine neue, kehrt von einer kaputten zurück |
-| Ergebnisse | Kommentare im GitHub-Issue der Aufgabe im Namen des Teilnehmers | Maschinenlesbarer Eintrag mit dem Fingerabdruck des Ergebnisses |
+| Ergebnisse | Einträge, mit dem Schlüssel des Geräts signiert, über öffentliche Nostr-Relays und Vollknoten ([Aufgaben-Board](BOARD.md)); auf Wunsch — Kommentare im GitHub-Issue der Aufgabe | Maschinenlesbarer Eintrag mit dem Fingerabdruck des Ergebnisses |
 | Zusammenfassung | `results/`, erstellt von `tools/collect_results.py` | Gleicht die Ergebnisse verschiedener Menschen ab und prüft Funde erneut |
 
 Ein Arbeitszyklus des Agenten:
@@ -41,17 +41,20 @@ Ein Arbeitszyklus des Agenten:
    legt sie neben die aktuelle und startet sich neu.
 4. Er wählt ein zufälliges Stück einer Aufgabe, das er noch nicht gerechnet hat.
 5. Er rechnet es in einem eigenen Prozess mit niedrigster Priorität und Zeitlimit.
-6. Er legt das Ergebnis in den «Postausgang» und veröffentlicht es als Kommentar im GitHub-Issue. Die Ergebnisse einer
-   Aufgabe werden gemeinsam veröffentlicht, höchstens ein Kommentar pro Stunde, um das Issue
-   und seine Abonnenten nicht mit Benachrichtigungen zu überfluten. Nach einem fehlgeschlagenen Versuch wird der nächste
-   aufgeschoben: um eine Minute, dann doppelt so lange, aber höchstens eine Stunde. Kann nicht veröffentlicht werden
-   (keine GitHub-Anmeldung), hört der Agent nach dreihundert unveröffentlichten Ergebnissen auf, Arbeit anzunehmen,
-   und meldet das.
+6. Er legt das Ergebnis in den «Postausgang» und sendet es als Eintrag, der mit dem Schlüssel dieses Geräts
+   signiert ist, sofort an mehrere öffentliche Nostr-Relays und Vollknoten. Ein Konto ist nicht nötig.
+   Ein Eintrag gilt als zugestellt, wenn ihn zwei Relays oder ein Knoten bestätigt haben; sonst
+   bleibt er in den «Postausgang», und der Versuch wird wiederholt: nach einer Minute, dann doppelt so lange,
+   aber höchstens eine Stunde. Die Wiederholung sendet denselben Eintrag, daher wird das Ergebnis nicht
+   doppelt gezählt. Die frühere Art, Kommentare im GitHub-Issue der Aufgabe im Namen des Teilnehmers,
+   wird mit der Einstellung `submit_via github` eingeschaltet. Nach dreihundert nicht gesendeten Ergebnissen
+   hört der Agent auf, Arbeit anzunehmen, und meldet das.
 
 Es gibt keinen Planer: Jeder Agent wählt sein Stück selbst. Dass sich Stücke bei verschiedenen Teilnehmern
 überschneiden, ist beabsichtigt: Alle Rechenaufgaben sind ganzzahlig, daher ergeben sich auf jedem Gerät
-dieselben Ziffern, und ein Stück gilt als bestätigt, wenn denselben Fingerabdruck
-so viele verschiedene Konten veröffentlicht haben, wie die Aufgabe verlangt.
+dieselben Ziffern. Die Übereinstimmung der Fingerabdrücke bei verschiedenen GitHub-Konten gilt als
+Bestätigung; die Übereinstimmung bei verschiedenen Schlüsseln — nicht, weil ein Schlüssel nichts kostet
+und ein Mensch beliebig viele Schlüssel erzeugen kann. Solche Stücke bestätigt das Nachrechnen.
 
 ## Eine Aufgabe sind Daten, kein Programm
 
@@ -111,7 +114,8 @@ Paket `skynet_agent` und Python (über Chaquopy) eingebaut. Unterschiede zum Age
   die App zur eingebauten zurück.
 - Die App selbst (Bildschirm, Dienst, Wächter) ändert sich nur durch eine neue APK. Die APK ist mit einem eigenen
   Schlüssel der Betreuer des Projekts signiert: Das ist ein zweiter einzelner Vertrauenspunkt, den es im Netz nicht geben darf.
-- Ergebnisse werden mit einem GitHub-Token veröffentlicht, den der Teilnehmer in die App einfügt.
+- Ergebnisse gehen als signierte Einträge hinaus, wie beim Agenten auf dem Computer. Ein GitHub-Token ist nötig,
+  nur wenn der Teilnehmer die frühere Art der Veröffentlichung gewählt hat.
 - Die App arbeitet nur am Ladegerät, sofern der Teilnehmer nichts anderes erlaubt hat. Einen KI-Modus gibt es nicht.
 
 Stand: 22. November 2026: Die App lässt sich bauen, ihr Python-Teil besteht die Tests auf dem
@@ -127,7 +131,7 @@ wird sie nicht vertrieben: Dessen Regeln verbieten Apps, die ausführbaren Code 
 | Was | Vertrauen |
 |---|---|
 | Signatur mit dem Ed25519-Release-Schlüssel | Ja. Ohne sie wird weder eine Version noch eine Aufgabenliste angenommen |
-| Kanal (HTTPS, Spiegel, GitHub selbst) | Nein für die Integrität: Eine vertauschte Datei bricht die Signatur oder den Fingerabdruck |
+| Kanal (HTTPS, Spiegel, GitHub selbst, Nostr-Relays, Vollknoten) | Nein für die Integrität: Eine vertauschte Datei bricht die Signatur oder den Fingerabdruck, ein vertauschter Eintrag — dessen Signatur |
 | Inhalt der Aufgabe | Nein: Parameter werden geprüft, der Arbeitsumfang ist begrenzt, in der Aufgabe ist kein Code |
 | Antwort des lokalen Modells | Nein: Das ist Text, er wird als ungeprüft veröffentlicht |
 | Erste Installation | Ja, dem HTTPS-Kanal zu GitHub. Das Installierte lässt sich mit dem Befehl `selftest --online` prüfen |
@@ -152,9 +156,10 @@ der dem Schlüssel nicht vertrauen möchte, setzt `update` auf `notify` und aktu
 | Kaputte Version | Der Starter kehrt nach drei schnellen Abstürzen zur vorherigen Version zurück oder wenn die Dateien der neuen Version fehlen, und merkt sich die unbrauchbare Nummer. Wiederholte Neustartanforderungen führt er mit wachsender Pause aus | Abgedeckt für Abstürze beim Start. Einen stillen Rechenfehler fängt der Abgleich der Ergebnisse |
 | Diebstahl des Release-Schlüssels | Der Schlüssel liegt außerhalb des Repositorys, unter Windows verschlüsselt für das Konto des Eigentümers | **Offen.** Ein Dieb kann eine schädliche Version herausgeben. Der Schlüsselwechsel erfolgt durch eine mit dem alten Schlüssel signierte neue Version, und auch sie ist dem Dieb zugänglich |
 | Verlust des Release-Schlüssels | Eine Sicherungskopie liegt beim Eigentümer | Ohne Schlüssel lassen sich installierte Agenten nicht aktualisieren: Die Teilnehmer müssen den Agenten neu installieren |
-| Gefälschtes Ergebnis | Die ganzzahlige Berechnung wird zwischen verschiedenen Konten abgeglichen; Funde werden beim Einsammeln nachgerechnet | Begrenzt: Eine Person mit zwei Konten „bestätigt“ sich selbst. Es gibt keine Belohnungen, daher bringt es keinen Nutzen, aber ein Schädling ist möglich. Die Betreuer rechnen stichprobenartig nach |
-| Strom von Müllkommentaren fremder Konten | Der Sammler nimmt nur Einträge mit korrektem Fingerabdruck und bekannter Aufgabe an | Begrenzt durch die Mittel von GitHub |
-| Leck eines GitHub-Tokens | Der Agent speichert das Token nicht, holt es von `gh` oder aus einer Variable und sendet es nirgendwohin außer zu GitHub über HTTPS, ohne Weiterleitungen | Ein Token mit Schreibrecht auf öffentliche Repositories bleibt in der Verantwortung des Teilnehmers |
+| Gefälschtes Ergebnis | Die ganzzahlige Berechnung wird zwischen verschiedenen GitHub-Konten abgeglichen; alle Schlüssel zusammen zählt der Sammler als eine Stimme; Funde werden beim Einsammeln nachgerechnet | Begrenzt: Eine Person mit zwei Konten „bestätigt“ sich selbst. Es gibt keine Belohnungen, daher bringt es keinen Nutzen, aber ein Schädling ist möglich. Die Betreuer rechnen stichprobenartig nach |
+| Strom von Müll fremder Konten und kostenloser Schlüssel | Der Sammler nimmt nur Einträge mit richtiger Signatur, richtigem Fingerabdruck und bekannter Aufgabe an; der Knoten begrenzt Größe, Häufigkeit und Gesamtumfang | **Offen für Schlüssel**: ein Schlüssel kostet nichts, daher kann man Müll endlos senden. Das ist ein Teil der wichtigsten offenen Frage des Projekts |
+| Leck des Geräteschlüssels | Der Schlüssel liegt im Ordner des Agenten und wird nirgendwohin gesendet | Wer die Datei `identity.key` kopiert, kann im Namen des Geräts signieren. Die Signatur in reinem Python ist nicht gegen Zeitmessung geschützt |
+| Leck eines GitHub-Tokens (frühere Art) | Der Agent speichert das Token nicht, holt es von `gh` oder aus einer Variable und sendet es nirgendwohin außer zu GitHub über HTTPS, ohne Weiterleitungen | Ein Token mit Schreibrecht auf öffentliche Repositories bleibt in der Verantwortung des Teilnehmers |
 | Fremder Code neben dem Agenten (untergeschobenes Modul im aktuellen Ordner) | Isolierter Modus von Python (`-I`) | Abgedeckt. Gegen ein Programm mit den Rechten desselben Benutzers auf demselben Computer gibt es keinen Schutz |
 | Ressourcenverbrauch des Teilnehmers | Standardmäßig ein Prozess, niedrigste Priorität, Pause im Akkubetrieb, Zeitlimit, die Befehle `pause` und `stop` | Die Teilnehmenden tragen die Stromkosten selbst |
 | Stopp aller Agenten durch die Betreuer | Eine signierte Markierung `halt` in der Versionsbeschreibung; sie wirkt auch bei ausgeschalteten Updates | Das ist ein bewusster Hebel: nur ein Stopp, ohne etwas zu starten |
@@ -163,7 +168,10 @@ der dem Schlüssel nicht vertrauen möchte, setzt `update` auf `notify` und aktu
 
 Nur der Inhalt des veröffentlichten Eintrags: der Name der Aufgabe, die Nummer des Stücks, die Zahlen des Ergebnisses,
 die Rechenzeit und, sofern nicht abgeschaltet, eine grobe Plattformkennung der Form `linux-amd64-py3.12`.
-Anfragen gehen nur an GitHub. Angaben über die Dateien, das Netz und die Geräte des Teilnehmers werden nicht erfasst.
+Anfragen gehen an GitHub (Aufgaben und Versionen) und an die Relays und Knoten aus `trust.py` (Einträge).
+Die Einträge sind öffentlich und mit dem dauerhaften Schlüssel des Geräts signiert, daher lassen sich die
+Ergebnisse eines Geräts miteinander verknüpfen, und der Empfänger sieht die Netzadresse des Absenders.
+Angaben über die Dateien, das Netz und die Geräte des Teilnehmers werden nicht erfasst.
 
 ## Vorgehen für die Betreuer
 
@@ -189,7 +197,8 @@ dann das Hochladen der geänderten Dateien `agent/` ins Repository. Neue Aufgabe
 python tools/sign_tasks.py
 ```
 
-dann das Hochladen von `tasks/index.json` und `tasks/index.json.sig`. Einsammeln der Ergebnisse:
+dann das Hochladen von `tasks/index.json` und `tasks/index.json.sig`. Einsammeln der Ergebnisse aus beiden
+Quellen (signierte Einträge und GitHub-Kommentare; `--net-only` oder `--github-only` lassen eine übrig):
 
 ```
 python tools/collect_results.py
@@ -200,12 +209,12 @@ Die Arbeit aller Agenten bis zur Fehlerbehebung stoppen: eine Versionsbeschreibu
 
 ## Was hier fehlt und warum es ehrlich ist, das zu sagen
 
-- **Das ist kein verteiltes Netz.** Aufgaben und Versionen verteilt ein einziges Repository, signiert ein einziger
-  Schlüssel, Ergebnisse nimmt eine einzige Plattform an. Die Anforderungen R1–R4 aus
-  den [verbindlichen Anforderungen](../ru/REQUIREMENTS.md) werden auf den Agenten nicht angewandt
-  und von ihm nicht erfüllt.
-- **Ein GitHub-Konto ist nötig.** Ohne es werden Ergebnisse nur von Hand über einen Link veröffentlicht.
-- **Es gibt keinen Schutz vor vielen Konten.** Für die unentgeltliche Phase ist das annehmbar.
+- **Das ist kein verteiltes Netz.** Aufgaben und Versionen verteilt ein einziges Repository und signiert ein
+  einziger Schlüssel. Ergebnisse und Aufgaben des Boards gehen bereits über mehrere unabhängige Plattformen.
+  Die Anforderungen R1–R4 aus den [verbindlichen Anforderungen](../ru/REQUIREMENTS.md) werden auf den Agenten
+  nicht angewandt und von ihm nicht erfüllt.
+- **Es gibt keinen Schutz vor vielen Schlüsseln und Konten.** Für die unentgeltliche Phase ist das annehmbar;
+  wichtige Ergebnisse bestätigt das Nachrechnen.
 - **Android ist auf einem echten Gerät nicht geprüft**; der Autostart unter macOS, Linux und Android
   ist nur auf der Ebene der erzeugten Dateien geprüft. Zwei Fälle sind nach der Dokumentation berücksichtigt
   und ebenfalls nicht auf echten Geräten geprüft: Python aus dem Microsoft Store unter Windows (es sieht
@@ -222,8 +231,7 @@ Die Arbeit aller Agenten bis zur Fehlerbehebung stoppen: eine Versionsbeschreibu
 1. Messaufgaben auf verschiedenen Geräten: die größte Unbekannte des Projekts ist die bitgenaue
    Übereinstimmung des Ergebnisses auf verschiedenen Grafikkarten. Das sind Experimente, sie warten
    auf die Entscheidung des Eigentümers.
-2. Verzicht auf das GitHub-Konto: Annahme der Ergebnisse über mehrere unabhängige öffentliche
-   Plattformen, wie im Zielprojekt des Netzes.
+2. Erledigt in Version 0.2.0: Ergebnisse und das [Aufgaben-Board](BOARD.md) ohne Konto.
 3. Verzicht auf den einzelnen Schlüssel: mehrere unabhängige Signaturen, dann die Annahme von Versionen
    nach den Regeln des Netzes selbst.
 4. Verwaltung des lokalen Modells: Herunterladen eines offenen Modells mit Prüfung des Fingerabdrucks,

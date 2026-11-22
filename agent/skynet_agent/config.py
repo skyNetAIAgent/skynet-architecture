@@ -15,6 +15,9 @@ DEFAULT_CONFIG = {
     "update": "auto",
     # "auto": publish results with your GitHub login; "manual": keep them in the outbox.
     "submit": "auto",
+    # "net": signed records over public relays and receivers, no account needed;
+    # "github": comments in the task's issue under your GitHub login (the older way).
+    "submit_via": "net",
     # Do not start new tasks while the device runs on battery.
     "run_on_battery": False,
     # True stops the agent from taking new tasks until you resume it.
@@ -45,6 +48,7 @@ SETTABLE = {
     "poll_minutes": int,
     "update": str,
     "submit": str,
+    "submit_via": str,
     "run_on_battery": bool,
     "paused": bool,
     "max_task_minutes": int,
@@ -62,6 +66,7 @@ SETTABLE = {
 CHOICES = {
     "update": ("auto", "notify", "off"),
     "submit": ("auto", "manual"),
+    "submit_via": ("net", "github"),
 }
 
 LIMITS = {
@@ -102,7 +107,7 @@ def path(*parts):
 
 
 def ensure_dirs():
-    for sub in ("", "outbox", "sent", "logs", "versions"):
+    for sub in ("", "outbox", "sent", "logs", "versions", "net"):
         os.makedirs(path(sub) if sub else home(), exist_ok=True)
 
 
@@ -157,6 +162,16 @@ def _merge(defaults, loaded):
             else:
                 out[key] = cand
     return out
+
+
+def submit_via(cfg):
+    """How results leave this device. SKYNET_AGENT_SUBMIT_VIA overrides the setting
+    (tests use it; a participant may use it to try a channel out)."""
+    forced = os.environ.get("SKYNET_AGENT_SUBMIT_VIA")
+    if forced in CHOICES["submit_via"]:
+        return forced
+    value = cfg.get("submit_via", DEFAULT_CONFIG["submit_via"])
+    return value if value in CHOICES["submit_via"] else DEFAULT_CONFIG["submit_via"]
 
 
 def load_config():

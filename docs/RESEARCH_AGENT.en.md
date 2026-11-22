@@ -1,10 +1,10 @@
-<!-- translation of docs/RESEARCH_AGENT.md, source sha256: be3193497fd35b1568b634f7647119965e68e6e665fea52b5a8ecb8aa477aa9e -->
+<!-- translation of docs/RESEARCH_AGENT.md, source sha256: 5b9c405c6752d25fab4db09f92c07df1d7daa6bf9dfd8b40de30d40adb0236a4 -->
 
 # The research agent: how to help the project without an AI assistant
 
 **English** · [中文](../i18n/zh/RESEARCH_AGENT.md) · [Español](../i18n/es/RESEARCH_AGENT.md) · [Français](../i18n/fr/RESEARCH_AGENT.md) · [Deutsch](../i18n/de/RESEARCH_AGENT.md) · [Italiano](../i18n/it/RESEARCH_AGENT.md) · [Русский](RESEARCH_AGENT.md) · [Português](../i18n/pt/RESEARCH_AGENT.md) · [العربية](../i18n/ar/RESEARCH_AGENT.md)
 
-Status as of 22 November 2026. Agent version 0.1.0. Instructions for the participant:
+Status as of 22 November 2026. Agent version 0.2.0 (being prepared for release). Instructions for the participant:
 [agent/README.md](../agent/README.md) ([in Russian](../i18n/ru/AGENT.md)).
 
 ## Why
@@ -30,7 +30,7 @@ requirements. This is stated plainly below in each place.
 | Agent | `agent/skynet_agent/`, only the Python 3.9+ standard library | Checks signatures, picks a unit, computes, publishes, updates itself |
 | Release description | `agent/release.json` and the signature | Lists the agent's files with size and SHA-256 |
 | Launcher | `agent/launcher.py` | Runs the current version, switches to a new one, rolls back from a broken one |
-| Results | Comments in a GitHub issue under the participant's name | A machine-readable record with the result hash |
+| Results | Records signed with the device key, via public Nostr relays and full nodes ([task board](BOARD.en.md)); optionally, comments in a GitHub issue | A machine-readable record with the result hash |
 | Summary | `results/`, built by `tools/collect_results.py` | Compares results from different people, re-checks the findings |
 
 One cycle of the agent's work:
@@ -41,17 +41,20 @@ One cycle of the agent's work:
    its hash, places it next to the current one and restarts.
 4. It picks a random unit of a task that it has not yet computed.
 5. It computes it in a separate lowest-priority process with a time limit.
-6. It puts the result in the outbox and publishes it as a comment in the GitHub issue.
-   Results of one task are published together, at most one comment per hour, so as not to
-   bury the issue and its subscribers under notifications. After a failed attempt the next
-   one is postponed: by a minute, then twice as long, but no more than an hour. If
-   publishing is impossible (no GitHub login), after 300 unpublished results the agent stops
-   taking work and reports this.
+6. It puts the result in the outbox and sends it as a record signed with this device's key,
+   at once to several public Nostr relays and full nodes. No account is needed. A record
+   counts as delivered when two relays or one node have confirmed it; otherwise it stays in
+   the outbox, and the attempt is repeated: after a minute, then twice as long, but no more
+   than an hour. A retry sends the same record, so a result is not counted twice. The
+   previous way, comments in a GitHub issue under the participant's name, is enabled by the
+   `submit_via github` setting. After 300 unsent results the agent stops taking work and
+   reports this.
 
 There is no scheduler: each agent picks a unit itself. Overlap of units between different
 participants is intentional: all computational tasks are integer, so on any device the same
-digits come out, and a unit counts as confirmed when the same hash has been published by as
-many different accounts as the task requires.
+digits come out. A matching hash across different GitHub accounts counts as confirmation; a
+match across different keys does not, because a key costs nothing and one person can create
+any number of keys. Such units are confirmed by recomputation.
 
 ## A task is data, not a program
 
@@ -116,7 +119,8 @@ agent on a computer:
 - The app itself (screen, service, watchdog) changes only with a new APK. The APK is signed
   with a separate key of the project maintainers: this is a second single point of trust, which
   the network must not have.
-- Results are published with a GitHub token that the participant pastes into the app.
+- Results go out as signed records, as with the agent on a computer. A GitHub token is
+  needed only if the participant chose the previous way of publishing.
 - It works only while charging, unless the participant has allowed otherwise. There is no AI
   mode.
 
@@ -134,7 +138,7 @@ rules forbid apps that load executable code.
 | What | Trust |
 |---|---|
 | Ed25519 signature with the release key | Yes. Without it neither a version nor a task list is accepted |
-| The channel (HTTPS, a mirror, GitHub itself) | No, for integrity: replacing a file breaks the signature or the hash |
+| The channel (HTTPS, a mirror, GitHub itself, Nostr relays, full nodes) | No, for integrity: replacing a file breaks the signature or the hash, replacing a record breaks its signature |
 | Task content | No: parameters are checked, the amount of work is limited, there is no code in a task |
 | The local model's answer | No: it is text, and it is published as unverified |
 | First installation | Yes, to the HTTPS channel to GitHub. You can check what is installed with `selftest --online` |
@@ -159,9 +163,10 @@ hand, after reading the changes.
 | A broken version | The launcher returns to the previous version after three quick crashes or if the new version's files are gone, and remembers the unusable number. It honours repeated restart requests with a growing pause | Closed for crashes at startup. A silent error in a calculation is caught by result comparison |
 | Release key theft | The key lies outside the repository; on Windows it is encrypted for the owner's account | **Open.** A thief can release a harmful version. Changing the key is done by a new version signed with the old key, and that too is available to the thief |
 | Release key loss | A backup copy with the owner | Without the key the installed agents cannot be updated: participants will have to install the agent again |
-| A faked result | The integer calculation is compared across different accounts; findings are recomputed during collection | Limited: one person with two accounts will "confirm" themselves. There are no rewards, so there is no profit in it, but a saboteur is possible. The maintainers recompute selectively |
-| A stream of junk comments from other people's accounts | The collector accepts only records with a correct hash and a known task | Limited by GitHub's means |
-| GitHub token leak | The agent stores no token, takes it from `gh` or from a variable, and sends it nowhere except GitHub over HTTPS, without redirects | A token with write access to public repositories remains the participant's responsibility |
+| A faked result | The integer calculation is compared across different GitHub accounts; the collector counts all keys together as one vote; findings are recomputed during collection | Limited: one person with two accounts will "confirm" themselves. There are no rewards, so there is no profit in it, but a saboteur is possible. The maintainers recompute selectively |
+| A stream of junk from other people's accounts and free keys | The collector accepts only records with a valid signature, a correct hash and a known task; a node limits the size, frequency and total volume | **Open for keys**: a key costs nothing, so junk can be sent without end. This is part of the project's main open question |
+| Device key leak | The key lies in the agent folder and is sent nowhere | Whoever copies the file `identity.key` can sign on behalf of the device. A signature in pure Python is not protected against timing attacks |
+| GitHub token leak (the previous way) | The agent stores no token, takes it from `gh` or from a variable, and sends it nowhere except GitHub over HTTPS, without redirects | A token with write access to public repositories remains the participant's responsibility |
 | Foreign code next to the agent (a planted module in the current folder) | Python's isolated mode (`-I`) | Closed. There is no protection against a program with the same user's rights on the same computer |
 | The participant's resource consumption | One process by default, the lowest priority, a pause on battery, a time limit, the `pause` and `stop` commands | The participant spends the electricity themselves and without reward |
 | Stopping all agents by the maintainers | A signed `halt` mark in the release description; it applies even when updates are disabled | This is an intentional lever: stopping only, without starting anything |
@@ -170,8 +175,11 @@ hand, after reading the changes.
 
 Only the contents of the published record: the task name, the unit number, the result
 numbers, the calculation time and, unless disabled, a coarse platform tag like
-`linux-amd64-py3.12`. Requests go only to GitHub. Information about the participant's files,
-network and hardware is not collected.
+`linux-amd64-py3.12`. Requests go to GitHub (tasks and versions) and to the relays and nodes
+from `trust.py` (records). Records are public and signed with the device's permanent key, so
+the results of one device can be linked to each other, and the recipient sees the sender's
+network address. Information about the participant's files, network and hardware is not
+collected.
 
 ## Procedure for maintainers
 
@@ -197,7 +205,8 @@ then upload the changed `agent/` files to the repository. A new task list:
 python tools/sign_tasks.py
 ```
 
-then upload `tasks/index.json` and `tasks/index.json.sig`. Collecting results:
+then upload `tasks/index.json` and `tasks/index.json.sig`. Collecting results from both
+sources (signed records and GitHub comments; `--net-only` or `--github-only` keeps one):
 
 ```
 python tools/collect_results.py
@@ -208,14 +217,12 @@ To stop all agents until a bug is fixed: publish a release description with
 
 ## What is missing here, and why it is honest to say so
 
-- **This is not a distributed network.** One repository hands out the tasks and versions, one
-  key signs them, and one venue accepts the results. The R1–R4 requirements from the
-  [mandatory requirements](../i18n/ru/REQUIREMENTS.md) do not apply to the agent and are not
-  met by it.
-- **A GitHub account is required.** Without it results are published only by hand through a
-  link.
-- **There is no protection against multiple accounts.** For the no-reward stage this is
-  acceptable.
+- **This is not a distributed network.** One repository hands out the tasks and versions and
+  one key signs them. The results and the board tasks already go through several independent
+  venues. The R1–R4 requirements from the [mandatory requirements](../i18n/ru/REQUIREMENTS.md)
+  do not apply to the agent and are not met by it.
+- **There is no protection against multiple keys and accounts.** For the no-reward stage
+  this is acceptable; important results are confirmed by recomputation.
 - **Android is not verified on a real device**; autostart on macOS, Linux and Android is
   verified only at the level of the files it creates. Two cases are accounted for from the
   documentation and are likewise not verified on real devices: Python from the Microsoft
@@ -233,8 +240,7 @@ To stop all agents until a bug is fixed: publish a release description with
 1. Measurement tasks on different devices: the project's main unknown is whether the result
    matches to the bit on different GPUs. These are experiments, and they await the owner's
    decision.
-2. Doing away with the GitHub account: accepting results through several independent public
-   venues, as in the target network project.
+2. Done in version 0.2.0: results and the [task board](BOARD.en.md) without an account.
 3. Doing away with the single key: several independent signatures, then accepting versions by
    the rules of the network itself.
 4. Managing the local model: downloading an open model with a hash check, so that AI mode can

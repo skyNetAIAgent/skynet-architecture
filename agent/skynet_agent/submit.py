@@ -401,6 +401,63 @@ def _publish_failed(state, now):
     state["publish_after"] = now + min(3600, 60 * 2 ** (fails - 1))
 
 
+MAX_NET_PER_FLUSH = 50    # records sent in one go; the rest waits for the next check
+
+
+def _flush_net(entries, cfg, state, log):
+    """Publish results as signed records over relays and receivers. No account is needed.
+
+    The record is built once and kept in the outbox entry, so that a retry sends the very
+    same bytes (the same id) and never creates a second copy of a result.
+    """
+    from . import records, transport     # late: records imports this module
+    review = cfg.get("ai", {}).get("review_before_submit", True)
+    try:
+        seed = records.load_seed()
+    except records.RecordError as e:
+        state["last_error"] = str(e)
+        _publish_failed(state, int(time.time()))
+        return 0
+    ready = [(name, entry) for name, entry in entries
+             if not ((entry.get("kind") == "ai" or entry.get("text") is not None) and review and not entry.get("approved"))]
+    store = transport.Store()
+    published = 0
+    for name, entry in ready[:MAX_NET_PER_FLUSH]:
+        envelope = entry.get("net_record")
+        try:
+            if envelope is None:
+                payload = {"record": entry["record"]}
+                if entry.get("text") is not None:
+                    payload["text"] = entry["text"]
+                envelope = records.make(seed, "result", payload)
+                entry["net_record"] = envelope
+                config.write_json_atomic(config.path("outbox", name), entry)
+            else:
+                records.verify(envelope)
+        except records.RecordFromFuture:
+            continue                      # the clock of this device went back: try later, do not drop
+        except records.RecordError as e:
+            log.error("dropping %s: %s", name, e)
+            _move_to_sent(name, entry, "dropped: %s" % e)
+            continue
+        store.add(envelope)               # this device's own copy of what it said
+        delivered, summary = transport.send(envelope, seed, log=log)
+        if not delivered:
+            reason = "no channel took the result (%s)" % summary
+            log.warning("could not publish: %s", reason)
+            state["last_error"] = reason
+            _publish_failed(state, int(time.time()))
+            break
+        _move_to_sent(name, entry, "record:" + envelope["id"])
+        state["publish_fails"] = 0
+        state["publish_after"] = 0
+        state["counters"]["published"] = state["counters"].get("published", 0) + 1
+        published += 1
+        log.info("published %s unit %d as record %s (%s)", entry["record"].get("task"),
+                 entry["record"].get("unit", -1), envelope["id"][:12], summary)
+    return published
+
+
 def flush_outbox(cfg, state, log, min_gap=2.0, issues=None, force=False):
     """Publish what may be published. Returns the number of results published now.
 
@@ -416,6 +473,8 @@ def flush_outbox(cfg, state, log, min_gap=2.0, issues=None, force=False):
         return 0
     if not force and time.time() < state.get("publish_after", 0):
         return 0
+    if config.submit_via(cfg) == "net":
+        return _flush_net(entries, cfg, state, log)
     token = None
     published = 0
     for issue, pack, body in plan_comments(entries, cfg, state, log, issues=issues, force=force):

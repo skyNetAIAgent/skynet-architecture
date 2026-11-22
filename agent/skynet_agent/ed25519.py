@@ -125,6 +125,20 @@ def sign(secret, msg):
     return Rs + int.to_bytes(s, 32, "little")
 
 
+def is_strong_public(public):
+    """True if public is a canonical encoding of a point that is not of small order.
+
+    The identity and the other points of order 1, 2, 4 or 8 make the verification
+    equation say nothing about who signed, so they must never serve as an identity.
+    """
+    if not isinstance(public, (bytes, bytearray)) or len(public) != 32:
+        return False
+    A = _decompress(bytes(public))
+    if A is None or _compress(A) != bytes(public):
+        return False
+    return not _equal(_mul(8, A), (0, 1, 1, 0))
+
+
 def verify(public, msg, signature):
     """Return True only if signature is a valid Ed25519 signature of msg."""
     if not isinstance(public, (bytes, bytearray)) or len(public) != 32:
