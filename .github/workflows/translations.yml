@@ -1,0 +1,35 @@
+name: Translations
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Missing or outdated translations (listed, not an error)
+        run: python -I tools/check_translations.py
+      - name: Every page has the line with links to its other languages
+        run: python -I tools/language_links.py --check
+      - name: Every Android screen text exists in all nine languages
+        shell: python
+        run: |
+          import sys, xml.etree.ElementTree as ET
+          base = "android/app/src/main/res/values%s/strings.xml"
+          names = lambda path: {e.get("name") for e in ET.parse(path).getroot().iter("string")}
+          want = names(base % "")
+          bad = 0
+          for lang in ["ru", "zh", "es", "fr", "de", "it", "pt", "ar"]:
+              missing = want - names(base % ("-" + lang))
+              if missing:
+                  bad = 1
+                  print(lang, "lacks", sorted(missing))
+          sys.exit(bad)

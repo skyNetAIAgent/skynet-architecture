@@ -1,0 +1,59 @@
+plugins {
+    id 'com.android.application'
+    id 'com.chaquo.python'
+}
+
+android {
+    namespace 'org.skynet.agent'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'org.skynet.agent'
+        minSdk 24
+        targetSdk 34
+        versionCode 1
+        versionName '0.1.0'
+        ndk {
+            // 64-bit phones and tablets, and 64-bit emulators
+            abiFilters 'arm64-v8a', 'x86_64'
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+}
+
+// A release APK whose agent trusts no release key would accept no task and no update.
+// Stop such a build unless it is asked for on purpose (-PallowNoReleaseKey, for test builds).
+tasks.configureEach { t ->
+    if (t.name == 'preReleaseBuild') {
+        t.doFirst {
+            def trust = file('../../agent/skynet_agent/trust.py').text
+            if (trust =~ /(?m)^RELEASE_KEYS = \[\]\s*$/ && !project.hasProperty('allowNoReleaseKey')) {
+                throw new GradleException('agent/skynet_agent/trust.py lists no release key: ' +
+                        'run tools/make_release.py --set-trust first (or pass -PallowNoReleaseKey for a test build)')
+            }
+        }
+    }
+}
+
+chaquopy {
+    defaultConfig {
+        version '3.12'
+    }
+    sourceSets {
+        main {
+            // The same agent code as on a computer; nothing but the package itself.
+            srcDir '../../agent'
+            exclude 'tests/**', 'install.*', 'launcher.py', 'README.md', 'LICENSE', 'release.json*'
+        }
+    }
+}

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Englisch: die Standardsprache. Übersetzungen: values-ru, values-zh, values-es, values-fr, values-de,
+     values-it, values-pt, values-ar. Jede Zeichenkette hier muss in allen vorhanden sein. -->
+<resources>
+    <string name="app_name">SkyNet Agent</string>
+    <string name="title">SkyNet-Forschungsagent</string>
+    <string name="intro">Führt Forschungsberechnungen für die Architektur von SkyNet aus und veröffentlicht die Ergebnisse. In dieser Phase gibt es keine Belohnungen. Standardmäßig arbeitet er nur, während das Gerät geladen wird.</string>
+    <string name="start">Start</string>
+    <string name="stop">Stopp</string>
+    <string name="run_on_battery">Auch im Akkubetrieb arbeiten</string>
+    <string name="token_help">Ergebnisse werden als Kommentare auf GitHub unter Ihrem Konto veröffentlicht. Erstellen Sie in GitHub einen Token (Einstellungen → Entwicklereinstellungen → Persönliche Zugriffstokens), der Issues öffentlicher Repositories schreiben darf, und fügen Sie ihn hier ein. Er wird nur innerhalb dieser App gespeichert. Ohne Token warten die Ergebnisse auf dem Gerät.</string>
+    <string name="token_hint">GitHub-Token</string>
+    <string name="save_token">Token speichern</string>
+    <string name="token_saved">Token gespeichert</string>
+    <string name="token_removed">Token entfernt</string>
+    <string name="token_not_saved">Der Token konnte nicht gespeichert werden</string>
+    <string name="setting_not_saved">Die Einstellung konnte nicht gespeichert werden</string>
+    <string name="about">Was ist das? (öffnet die Projektseite)</string>
+    <string name="about_url">https://github.com/skyNetAIAgent/skynet-architecture/blob/main/i18n/de/ANDROID.md</string>
+    <string name="notification_text">Forschungsberechnungen laufen, während das Gerät geladen wird</string>
+
+    <string name="stopped">Gestoppt.</string>
+    <string name="starting">Startet …</string>
+    <string name="not_started">Noch nicht gestartet.</string>
+    <string name="label_state">Zustand: %1$s</string>
+    <string name="label_now">Jetzt: %1$s</string>
+    <string name="label_version">Agent-Version: %1$s (Release %2$d)</string>
+    <string name="label_units">Recheneinheiten erledigt: %1$d, fehlgeschlagen: %2$d</string>
+    <string name="label_published">Veröffentlicht: %1$d, wartend: %2$d</string>
+    <string name="label_token_set">GitHub-Token: gesetzt</string>
+    <string name="label_token_missing">GitHub-Token: nicht gesetzt</string>
+    <string name="label_problem">Letztes Problem: %1$s</string>
+
+    <!-- Vom Agenten gemeldete Zustände (das Feld „code“ von status.json). -->
+    <string name="state_no_tasks">noch keine Aufgabenliste</string>
+    <string name="state_expired">die Aufgabenliste ist abgelaufen; warte auf eine neue</string>
+    <string name="state_halted">von den Betreuern angehalten</string>
+    <string name="state_paused">pausiert</string>
+    <string name="state_outbox_full">zu viele Ergebnisse warten auf die Veröffentlichung; GitHub-Token hinzufügen</string>
+    <string name="state_not_charging">wird nicht geladen, warte auf das Ladegerät</string>
+    <string name="state_all_done">alle verfügbaren Aufgaben sind auf diesem Gerät erledigt</string>
+    <string name="state_working">arbeitet</string>
+    <string name="state_stopped">gestoppt</string>
+    <string name="state_error">Fehler</string>
+    <string name="problem_no_token">noch kein GitHub-Token: fügen Sie unten einen ein, um die Ergebnisse zu veröffentlichen</string>
+</resources>

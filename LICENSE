@@ -1,0 +1,29 @@
+SkyNet project licences
+Copyright (c) 2026 SkyNet project contributors
+
+1. Foundation texts: Creative Commons Attribution-NoDerivatives 4.0 International (CC BY-ND 4.0)
+
+   Applies to README.md, MANIFESTO.md, REQUIREMENTS.md and their translations
+   i18n/*/README.md, i18n/*/MANIFESTO.md, i18n/*/REQUIREMENTS.md (see CORE.md).
+
+   You may copy and redistribute this material in any medium or format for any
+   purpose, even commercially, provided you give appropriate credit and provide
+   a link to the licence. If you remix, transform, or build upon the material,
+   you may not distribute the modified material.
+
+   Full legal code: https://creativecommons.org/licenses/by-nd/4.0/legalcode
+
+2. Software: MIT License
+
+   Applies to the research agent and the maintainers' tools: everything under
+   agent/, android/ and tools/, and the workflow files under .github/. The full text is
+   in agent/LICENSE.
+
+3. All other texts and data: Creative Commons Attribution 4.0 International (CC BY 4.0)
+
+   Applies to the working documents, the task lists and the published results.
+   You may share and adapt this material for any purpose, even commercially,
+   provided you give appropriate credit, provide a link to the licence, and
+   indicate if changes were made.
+
+   Full legal code: https://creativecommons.org/licenses/by/4.0/legalcode

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 英文：默认语言。译文：values-ru、values-zh、values-es、values-fr、values-de、values-it、values-pt、values-ar。这里的每个字符串都必须存在于所有这些目录中。 -->
+<resources>
+    <string name="app_name">SkyNet Agent</string>
+    <string name="title">SkyNet 研究代理程序</string>
+    <string name="intro">为 SkyNet 架构运行研究计算并发布结果。现阶段没有任何奖励。默认只在设备充电时工作。</string>
+    <string name="start">开始</string>
+    <string name="stop">停止</string>
+    <string name="run_on_battery">也在电池供电时工作</string>
+    <string name="token_help">结果以评论的形式发布到 GitHub，发布在你的账号下。请在 GitHub 中创建一个可以写入公开仓库 issue 的令牌（Settings → Developer settings → Personal access tokens），并粘贴到这里。它只保存在本应用内部。没有令牌时，结果会在设备上等待。</string>
+    <string name="token_hint">GitHub 令牌</string>
+    <string name="save_token">保存令牌</string>
+    <string name="token_saved">令牌已保存</string>
+    <string name="token_removed">令牌已移除</string>
+    <string name="token_not_saved">无法保存令牌</string>
+    <string name="setting_not_saved">无法保存设置</string>
+    <string name="about">这是什么？（打开项目页面）</string>
+    <string name="about_url">https://github.com/skyNetAIAgent/skynet-architecture/blob/main/i18n/zh/ANDROID.md</string>
+    <string name="notification_text">研究计算在设备充电时运行</string>
+
+    <string name="stopped">已停止。</string>
+    <string name="starting">正在启动…</string>
+    <string name="not_started">尚未启动。</string>
+    <string name="label_state">状态：%1$s</string>
+    <string name="label_now">当前：%1$s</string>
+    <string name="label_version">代理程序版本：%1$s（发布编号 %2$d）</string>
+    <string name="label_units">已完成分片：%1$d，失败：%2$d</string>
+    <string name="label_published">已发布：%1$d，等待中：%2$d</string>
+    <string name="label_token_set">GitHub 令牌：已设置</string>
+    <string name="label_token_missing">GitHub 令牌：未设置</string>
+    <string name="label_problem">最近的问题：%1$s</string>
+
+    <!-- 代理程序报告的状态（status.json 的 code 字段）。 -->
+    <string name="state_no_tasks">还没有任务列表</string>
+    <string name="state_expired">任务列表已过期；正在等待新的任务列表</string>
+    <string name="state_halted">已被维护者暂停</string>
+    <string name="state_paused">已暂停</string>
+    <string name="state_outbox_full">太多结果等待发布；请添加 GitHub 令牌</string>
+    <string name="state_not_charging">未充电，正在等待充电器</string>
+    <string name="state_all_done">此设备上所有可用任务均已完成</string>
+    <string name="state_working">工作中</string>
+    <string name="state_stopped">已停止</string>
+    <string name="state_error">错误</string>
+    <string name="problem_no_token">还没有 GitHub 令牌：请在下方粘贴一个以发布结果</string>
+</resources>

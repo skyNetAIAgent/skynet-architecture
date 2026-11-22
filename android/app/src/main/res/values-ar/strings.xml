@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- الإنجليزية: النسخة الافتراضية. الترجمات: values-ru وvalues-zh وvalues-es وvalues-fr وvalues-de
+     وvalues-it وvalues-pt وvalues-ar. يجب أن توجد كل سلسلة هنا في كل منها. -->
+<resources>
+    <string name="app_name">SkyNet Agent</string>
+    <string name="title">وكيل SkyNet البحثي</string>
+    <string name="intro">يُجري حسابات بحثية لبنية SkyNet وينشر النتائج. لا توجد مكافآت في هذه المرحلة. افتراضيًا يعمل فقط أثناء شحن الجهاز.</string>
+    <string name="start">ابدأ</string>
+    <string name="stop">إيقاف</string>
+    <string name="run_on_battery">العمل على طاقة البطارية أيضًا</string>
+    <string name="token_help">تُنشر النتائج تعليقاتٍ على GitHub تحت حسابك. أنشئ رمزًا في GitHub (الإعدادات → إعدادات المطوِّرين → رموز الوصول الشخصية) له صلاحية الكتابة في قسم Issues بالمستودعات العامة وألصقه هنا. يُحفظ داخل هذا التطبيق فقط. دون رمز تنتظر النتائج على الجهاز.</string>
+    <string name="token_hint">رمز GitHub</string>
+    <string name="save_token">حفظ الرمز</string>
+    <string name="token_saved">حُفظ الرمز</string>
+    <string name="token_removed">أُزيل الرمز</string>
+    <string name="token_not_saved">تعذّر حفظ الرمز</string>
+    <string name="setting_not_saved">تعذّر حفظ الإعداد</string>
+    <string name="about">ما هذا؟ (يفتح صفحة المشروع)</string>
+    <string name="about_url">https://github.com/skyNetAIAgent/skynet-architecture/blob/main/i18n/ar/ANDROID.md</string>
+    <string name="notification_text">تعمل الحسابات البحثية أثناء شحن الجهاز</string>
+
+    <string name="stopped">متوقف.</string>
+    <string name="starting">جارٍ البدء…</string>
+    <string name="not_started">لم يبدأ بعد.</string>
+    <string name="label_state">الحالة: %1$s</string>
+    <string name="label_now">الآن: %1$s</string>
+    <string name="label_version">إصدار الوكيل: %1$s (رقم النشر %2$d)</string>
+    <string name="label_units">الأجزاء المنجزة: %1$d، الفاشلة: %2$d</string>
+    <string name="label_published">المنشور: %1$d، المنتظر: %2$d</string>
+    <string name="label_token_set">رمز GitHub: مضبوط</string>
+    <string name="label_token_missing">رمز GitHub: غير مضبوط</string>
+    <string name="label_problem">آخر مشكلة: %1$s</string>
+
+    <!-- الحالات التي يبلغ عنها الوكيل (حقل code في status.json). -->
+    <string name="state_no_tasks">لا قائمة مهام بعد</string>
+    <string name="state_expired">انتهت صلاحية قائمة المهام؛ في انتظار قائمة جديدة</string>
+    <string name="state_halted">موقوف مؤقتًا من المشرفين</string>
+    <string name="state_paused">موقوف مؤقتًا</string>
+    <string name="state_outbox_full">نتائج كثيرة جدًا تنتظر النشر؛ أضف رمز GitHub</string>
+    <string name="state_not_charging">لا يشحن، في انتظار الشاحن</string>
+    <string name="state_all_done">أُنجزت كل المهام المتاحة على هذا الجهاز</string>
+    <string name="state_working">يعمل</string>
+    <string name="state_stopped">متوقف</string>
+    <string name="state_error">خطأ</string>
+    <string name="problem_no_token">لا رمز GitHub بعد: ألصق واحدًا أدناه لنشر النتائج</string>
+</resources>

@@ -1,0 +1,63 @@
+name: Agent tests
+
+on:
+  push:
+    paths:
+      - "agent/**"
+      - "android/**"
+      - "tasks/**"
+      - "tools/**"
+      - ".github/workflows/agent-tests.yml"
+  pull_request:
+    paths:
+      - "agent/**"
+      - "android/**"
+      - "tasks/**"
+      - "tools/**"
+      - ".github/workflows/agent-tests.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python: ["3.10", "3.x"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Unit and end-to-end tests (isolated mode, standard library only)
+        run: python -I -m unittest discover -s agent/tests -t agent/tests -v
+      - name: The published task list is acceptable to this agent version
+        run: python -I tools/sign_tasks.py --check
+      - name: The published release matches the files and its signature
+        shell: python
+        run: |
+          import os, sys
+          sys.path.insert(0, "agent")
+          from skynet_agent import updater, trust
+          if not os.path.exists("agent/release.json"):
+              print("no release published yet")
+              sys.exit(0)
+          problems = updater.verify_installed("agent")
+          for p in problems:
+              print("PROBLEM:", p)
+          print("release keys:", trust.RELEASE_KEYS)
+          sys.exit(1 if problems else 0)
+
+  macos-system-python:
+    # The Python that comes with macOS (3.9) is what many participants will have,
+    # and it is the oldest version the agent supports.
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Unit and end-to-end tests with the system Python
+        run: |
+          /usr/bin/python3 --version
+          /usr/bin/python3 -I -m unittest discover -s agent/tests -t agent/tests -v
