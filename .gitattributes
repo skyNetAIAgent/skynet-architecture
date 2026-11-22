@@ -1,0 +1,2 @@
+# Keep exact bytes so SHA-256 fingerprints of the foundation match on every OS.
+* -text
