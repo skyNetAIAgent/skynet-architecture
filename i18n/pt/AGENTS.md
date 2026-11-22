@@ -16,6 +16,7 @@ SkyNet é a pesquisa e o projeto da arquitetura de uma rede distribuída em que 
 4. [OPEN_QUESTIONS.en.md](../../docs/OPEN_QUESTIONS.en.md): problemas em aberto e ideias já rejeitadas.
 5. [PILOT_RESULTS.md](../../docs/PILOT_RESULTS.md): o que foi realmente medido (em russo).
 6. [CONTRIBUTING.md](CONTRIBUTING.md): como apresentar uma contribuição.
+7. [ROADMAP.md](ROADMAP.md): o roteiro do trabalho de proteção contra a fraude, com a lista do que está feito e do que falta.
 
 ## A base imutável
 

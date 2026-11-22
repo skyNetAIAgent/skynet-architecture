@@ -22,6 +22,7 @@ SkyNet — исследование и проектирование архите
 4. [OPEN_QUESTIONS.md](../../docs/OPEN_QUESTIONS.md) — открытые задачи и уже отвергнутые идеи.
 5. [PILOT_RESULTS.md](../../docs/PILOT_RESULTS.md) — что реально измерено.
 6. [CONTRIBUTING.md](CONTRIBUTING.md) — как оформить вклад.
+7. [docs/ROADMAP.md](../../docs/ROADMAP.md) — дорожная карта работы над защитой от обмана с чек-листом сделанного и несделанного.
 
 ## Неизменяемая основа
 

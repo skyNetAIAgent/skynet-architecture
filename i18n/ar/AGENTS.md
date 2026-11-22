@@ -18,6 +18,7 @@ SkyNet بحث وتصميم لبنية شبكة موزّعة تعمل فيها ن
 4. [OPEN_QUESTIONS.en.md](../../docs/OPEN_QUESTIONS.en.md): المسائل المفتوحة والأفكار المرفوضة سابقًا.
 5. [PILOT_RESULTS.md](../../docs/PILOT_RESULTS.md): ما تم قياسه فعلًا (بالروسية).
 6. [CONTRIBUTING.md](CONTRIBUTING.md): كيف تُقدَّم المساهمة.
+7. [ROADMAP.md](ROADMAP.md): خارطة طريق العمل على الحماية من الغش، مع قائمة بما أُنجز وما لم يُنجز.
 
 ## الأساس الثابت
 

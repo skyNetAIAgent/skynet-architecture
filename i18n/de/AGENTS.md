@@ -16,6 +16,7 @@ SkyNet ist Forschung und Entwurf der Architektur eines verteilten Netzes, in dem
 4. [OPEN_QUESTIONS.en.md](../../docs/OPEN_QUESTIONS.en.md): offene Probleme und bereits verworfene Ideen.
 5. [PILOT_RESULTS.md](../../docs/PILOT_RESULTS.md): was tatsächlich gemessen wurde (auf Russisch).
 6. [CONTRIBUTING.md](CONTRIBUTING.md): wie ein Beitrag einzureichen ist.
+7. [ROADMAP.md](ROADMAP.md): der Fahrplan für die Arbeit am Schutz vor Betrug, mit einer Checkliste des Erledigten und des Offenen.
 
 ## Die unveränderliche Grundlage
 

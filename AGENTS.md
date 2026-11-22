@@ -21,6 +21,7 @@ finished software: the repository is a place for joint work on the architecture.
 4. [docs/OPEN_QUESTIONS.en.md](docs/OPEN_QUESTIONS.en.md): open problems and ideas already rejected.
 5. [docs/PILOT_RESULTS.md](docs/PILOT_RESULTS.md): what was actually measured (Russian).
 6. [CONTRIBUTING.md](CONTRIBUTING.md): how to format a contribution.
+7. [docs/ROADMAP.en.md](docs/ROADMAP.en.md): the roadmap for the work on protection against cheating, with a checklist of what is done and what is not.
 
 The working documents in `docs/` are in Russian because they change often. The Russian texts in
 `i18n/ru/` are the canonical edition of the foundation.

@@ -16,6 +16,7 @@ SkyNet 是对一个分布式网络架构的研究和设计：人工智能模型�
 4. [OPEN_QUESTIONS.en.md](../../docs/OPEN_QUESTIONS.en.md)：开放问题和已被否定的想法。
 5. [PILOT_RESULTS.md](../../docs/PILOT_RESULTS.md)：实际测量过的内容（俄文）。
 6. [CONTRIBUTING.md](CONTRIBUTING.md)：如何提交贡献。
+7. [ROADMAP.md](ROADMAP.md)：防作弊工作的路线图，附已完成和未完成事项的清单。
 
 ## 不可更改的基础
 
