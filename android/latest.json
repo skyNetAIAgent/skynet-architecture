@@ -1,0 +1,10 @@
+{
+  "format": 1,
+  "version_code": 2,
+  "version_name": "0.2.0",
+  "min_sdk": 24,
+  "notes": "Results without a GitHub token, signed app updates, optional start after reboot.",
+  "url": "https://github.com/skyNetAIAgent/skynet-architecture/releases/download/v0.2.2/skynet-agent.apk",
+  "size": 40889677,
+  "sha256": "204188b564e9892b5f69e8973f03ad9b35fe6f830ff9cf5cc8927d0d2f3f26da"
+}
