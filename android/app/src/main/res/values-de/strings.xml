@@ -43,4 +43,10 @@
     <string name="state_stopped">gestoppt</string>
     <string name="state_error">Fehler</string>
     <string name="problem_no_token">noch kein GitHub-Token: fügen Sie unten einen ein, um die Ergebnisse zu veröffentlichen</string>
+
+    <string name="queue_full">Die Warteschlange für Ergebnisse ist voll. Veröffentlichung steht aus.</string>
+    <string name="start_on_boot">Nach einem Neustart starten</string>
+    <string name="app_updates">App-Updates</string>
+    <string name="install_update">Version %1$s verfügbar – zum Installieren antippen</string>
+    <string name="update_unavailable">Dieses Update ist nicht verfügbar. Öffne die App, um erneut zu prüfen.</string>
 </resources>

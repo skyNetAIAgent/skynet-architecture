@@ -1,28 +1,49 @@
-<!-- translation of android/README.md, source sha256: dd56c64ec3931fa625cd383ec84dcdb5618d80f9faca47d3c9a52cd30294927e -->
+<!-- translation of android/README.md, source sha256: 3fd07398dc6f1c3ed1d7c21b1315b13e43cdbf629cf72aab3887e8ebbd602e2b -->
 
 # Agente de pesquisa SkyNet para Android (experimental)
 
 [English](../../android/README.md) · [中文](../zh/ANDROID.md) · [Español](../es/ANDROID.md) · [Français](../fr/ANDROID.md) · [Deutsch](../de/ANDROID.md) · [Italiano](../it/ANDROID.md) · [Русский](../ru/ANDROID.md) · **Português** · [العربية](../ar/ANDROID.md)
 
-Um aplicativo Android que traz o mesmo [agente de pesquisa](../../agent/README.md) da versão para computador. É para quem não quer configurar o Termux: instale um arquivo, aperte Iniciar. Nesta etapa não há recompensas.
+Um aplicativo Android que traz o mesmo [agente de pesquisa](../../agent/README.md) da versão
+para computador. Instale um arquivo e aperte Iniciar. Por padrão, o agente assina cada
+resultado no dispositivo e o publica sem conta ou token.
+Nesta etapa não há recompensas.
 
-**Status: experimental.** Em 22 de novembro de 2026 o aplicativo foi verificado em um emulador Android 14 (x86_64) contra um repositório de teste local assinado com uma chave de teste: ele instalou, iniciou, conferiu as assinaturas, calculou sem erros todas as 7 porções das tarefas de teste, esperou enquanto o emulador estava fora do carregador, continuou trabalhando em segundo plano, guardou um token e com ele chegou à API real do GitHub, e parou e iniciou de novo mantendo o seu estado. Uma compilação apenas para ARM (`arm64-v8a`) fez o mesmo nesse emulador por meio da sua tradução de ARM. A parte em Python também passa nos testes em um computador. **Ainda não foi verificado em um telefone real**, no Android 7–13, em execuções longas nem contra os economizadores de bateria dos fabricantes de telefones. Executar o agente no [Termux](../../agent/README.md#install) continua sendo a outra forma.
+**Experimental.** O shell anterior foi testado em um emulador Android 14, em 22 de novembro
+de 2026. Ele concluiu todas as sete porções de teste, esperou pelo carregamento e manteve o
+seu estado entre paradas e inícios. O shell 0.2.0 inclui o agente 0.2.2. Os seus fluxos de
+instalação e de reinício ainda precisam ser testados no Android.
 
 ## Para participantes
 
-1. Baixe `skynet-agent.apk` da página [Releases](https://github.com/skyNetAIAgent/skynet-architecture/releases).
+1. Baixe `skynet-agent.apk` da
+   página [Releases](https://github.com/skyNetAIAgent/skynet-architecture/releases).
 2. Abra o arquivo. O Android pede que você permita instalar aplicativos do seu navegador ou gerenciador de arquivos.
 3. Abra "SkyNet Agent" e aperte **Iniciar**. Uma notificação permanente mostra que ele está em execução.
 
-O que saber:
-
-- Ele só trabalha enquanto o dispositivo está carregando, a menos que você marque "Trabalhar também na bateria". O carregador é verificado entre porções de trabalho: uma porção já iniciada (em geral menos de um minuto) é concluída mesmo se você desconectar o dispositivo.
-- Ele não inicia sozinho depois que o dispositivo reinicia: abra o aplicativo e aperte Iniciar de novo.
+- Ele só trabalha enquanto o dispositivo está carregando, a menos que você marque "Trabalhar também na bateria".
+  O carregador é verificado entre porções de trabalho: uma porção já iniciada (em geral menos de um
+  minuto) é concluída mesmo se você desconectar o dispositivo.
+- Para continuar depois de reiniciar o dispositivo, ative **Iniciar após reiniciar**. Vem desativado
+  por padrão. Apertar **Parar** mantém o agente parado após um reinício.
 - No Android 13 e mais recentes, se você recusar as notificações, o aplicativo continua funcionando; o Android passa a mostrá-lo apenas na lista de aplicativos em execução.
-- Para publicar resultados ele precisa de um token do GitHub: no GitHub abra Settings → Developer settings → Personal access tokens, crie um token que possa escrever issues de repositórios públicos e cole-o no aplicativo. O token fica guardado apenas dentro do aplicativo. Sem token, os resultados esperam no dispositivo (até 300, e então o aplicativo para de calcular).
+- Usuários avançados que selecionam `submit_via=github` podem inserir um token do GitHub na tela principal.
 - Android 7.0 ou mais recente, dispositivo de 64 bits, cerca de 40 MB.
 - O modo de IA opcional não está disponível no aplicativo.
 - Para removê-lo, desinstale o aplicativo; nada mais fica no dispositivo.
+
+## Atualizando o aplicativo
+
+Se você tem a versão 0.1.0, instale a 0.2.0 da página Releases por cima do aplicativo existente
+para manter as suas configurações e os resultados na fila. A partir da 0.2.0, abrir a tela
+verifica se há um novo APK. O Android também agenda uma verificação diária quando há uma rede
+disponível, mesmo que o agente esteja parado. Restrições de bateria podem atrasar essa verificação.
+
+O aplicativo verifica o manifesto da versão, assinado com a chave embutida no APK. Para uma versão
+compatível mais recente, ele baixa o arquivo da versão para o cache privado e confere o tamanho
+e o SHA-256. Toque no botão de atualização ou na notificação para instalá-la. No Android 8 e mais
+recentes, permita a instalação pelo SkyNet Agent se for solicitado, volte ao aplicativo e
+confirme no instalador do Android. Com as notificações desativadas, use o botão na tela principal.
 
 ## Como ele difere do agente para computador
 
@@ -31,9 +52,9 @@ O que saber:
 | Código do agente | `agent/skynet_agent` | o mesmo pacote, embutido no APK |
 | Trabalho | processos separados de baixa prioridade | uma porção por vez dentro do processo em segundo plano do aplicativo |
 | Limite de tempo | o processo de trabalho é encerrado | um vigia encerra o processo em segundo plano; o Android o reinicia e a tarefa fica para dispositivos mais rápidos |
-| Atualizações do agente | versão assinada do repositório | a mesma versão assinada, conferida pelo código embutido no APK: a assinatura, cada arquivo, nenhum arquivo fora da lista assinada, nunca abaixo da versão mais alta que já funcionou aqui. Uma versão nova tem três tentativas para chegar ao repositório; caso contrário, o aplicativo volta ao código embutido |
-| O próprio aplicativo | lançador e instalador | muda apenas com um novo APK |
-| Publicação | login no GitHub CLI | um token colado no aplicativo |
+| Atualizações do agente | versão assinada do repositório | o APK verifica os arquivos assinados e o número da versão. Um agente novo tem três inícios para passar em uma autoverificação local e concluir uma etapa do ciclo |
+| O próprio aplicativo | lançador e instalador | um APK verificado instalado com a sua confirmação |
+| Publicação | registros assinados por padrão | registros assinados por padrão |
 
 Limites, com honestidade. O APK é assinado com uma chave que está com os mantenedores do projeto; o Android só aceita uma atualização do aplicativo se ela estiver assinada com a mesma chave. A chave de lançamento (para o código do agente e as listas de tarefas) e essa chave do APK são dois pontos únicos de confiança que a rede SkyNet alvo não deve ter. O aplicativo carrega código Python assinado em tempo de execução, o que as regras do Google Play não permitem, por isso ele é distribuído como um arquivo.
 
@@ -50,7 +71,9 @@ O resultado é `app/build/outputs/apk/release/app-release-unsigned.apk`. Assine-
 
 Compile o aplicativo apenas a partir de um commit em que `agent/skynet_agent/trust.py` liste a chave de lançamento: um agente sem chave de lançamento não aceita tarefas. Nesse caso, a compilação de release para com um erro; `-PallowNoReleaseKey` compila mesmo assim esse APK, apenas para testes.
 
-A parte em Python do aplicativo é [`app/src/main/python/skynet_android.py`](../../android/app/src/main/python/skynet_android.py). Ela é testada em um computador por [`agent/tests/test_android_glue.py`](../../agent/tests/test_android_glue.py). O Python é embutido com [Chaquopy](https://chaquo.com/chaquopy/) (licença MIT).
+A ponte do agente e o verificador do APK têm testes de Python separados no computador.
+[Testes do agente](../../agent/tests/test_android_glue.py) · [Testes de atualização do APK](../../agent/tests/test_apk_update.py)
+O Python é embutido com [Chaquopy](https://chaquo.com/chaquopy/) (licença MIT).
 
 ## Licença
 

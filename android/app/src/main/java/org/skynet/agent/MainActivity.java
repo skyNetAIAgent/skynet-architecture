@@ -27,14 +27,13 @@ import java.io.FileOutputStream;
 import java.nio.charset.StandardCharsets;
 
 /**
- * One screen: what the agent is doing, start and stop, the "work on battery"
- * switch and the GitHub token used to publish results. The agent itself runs
- * in AgentService.
+ * Agent status, controls and available app updates.
  */
 public class MainActivity extends Activity {
 
     private final Handler handler = new Handler(Looper.getMainLooper());
     private TextView status;
+    private Button installUpdate;
     private LinearLayout tokenSettings;
     private SharedPreferences prefs;
 
@@ -93,14 +92,19 @@ public class MainActivity extends Activity {
     /** The agent reports its state as a code; the words come from this app's language files. */
     private String stateText(JSONObject s, boolean github) {
         String code = s.optString("code", "");
-        if ("outbox_full".equals(code) && !github) {
-            return getString(R.string.label_published, s.optInt("published", 0), s.optInt("outbox", 0));
-        }
+        if ("outbox_full".equals(code) && !github) return getString(R.string.queue_full);
+        String note = s.optString("note", "");
+        if (!github && tokenHint(note)) return getString(R.string.state_error);
         int id = getResources().getIdentifier("state_" + code, "string", getPackageName());
         if (id == 0 || code.isEmpty()) {
-            return s.optString("note", "");
+            return note;
         }
         return "error".equals(code) ? getString(id) + " (" + s.optString("note", "") + ")" : getString(id);
+    }
+
+    private boolean tokenHint(String message) {
+        String text = message.toLowerCase(java.util.Locale.ROOT);
+        return text.contains("token") || text.contains("gh auth login") || text.contains("github cli");
     }
 
     private boolean usesGitHub() {
@@ -108,6 +112,14 @@ public class MainActivity extends Activity {
     }
 
     private void showStatus() {
+        ApkUpdates update = ApkUpdates.ready;
+        if (update != null && update.file.isFile()) {
+            installUpdate.setText(getString(R.string.install_update, update.name));
+            installUpdate.setOnClickListener(v -> startActivity(InstallUpdateActivity.intent(this, update.hash)));
+            installUpdate.setVisibility(View.VISIBLE);
+        } else {
+            installUpdate.setVisibility(View.GONE);
+        }
         boolean wanted = prefs.getBoolean("running", false);
         boolean github = usesGitHub();
         tokenSettings.setVisibility(github ? View.VISIBLE : View.GONE);
@@ -117,7 +129,8 @@ public class MainActivity extends Activity {
             long age = System.currentTimeMillis() / 1000 - s.optLong("time", 0);
             if (!wanted) {
                 text.append(getString(R.string.stopped)).append('\n');
-            } else if (age > 120) {
+            } else if (age > ("working".equals(s.optString("code", "")) ? 60 * config().optInt("max_task_minutes", 120) + 120 : 120)) {
+                // the status is written between units; one unit may take long on a slow phone
                 text.append(getString(R.string.starting)).append('\n');
             } else {
                 text.append(getString(R.string.label_state, stateText(s, github))).append('\n');
@@ -135,7 +148,7 @@ public class MainActivity extends Activity {
             if ("no_token".equals(s.optString("problem_code", ""))) {
                 problem = github ? getString(R.string.problem_no_token) : "";
             }
-            if (!problem.isEmpty()) {
+            if (!problem.isEmpty() && (github || !tokenHint(problem))) {
                 text.append(getString(R.string.label_problem, problem)).append('\n');
             }
         } catch (Exception e) {
@@ -146,19 +159,12 @@ public class MainActivity extends Activity {
 
     private void startAgent() {
         prefs.edit().putBoolean("running", true).apply();
-        if (Build.VERSION.SDK_INT >= 33) {
-            requestPermissions(new String[]{"android.permission.POST_NOTIFICATIONS"}, 1);
-        }
-        Intent intent = new Intent(this, AgentService.class);
-        if (Build.VERSION.SDK_INT >= 26) {
-            startForegroundService(intent);
-        } else {
-            startService(intent);
-        }
+        AgentService.start(this);
     }
 
     private void stopAgent() {
         prefs.edit().putBoolean("running", false).apply();
+        AgentService.runningMarker(this).delete();
         stopService(new Intent(this, AgentService.class));
     }
 
@@ -194,6 +200,11 @@ public class MainActivity extends Activity {
         status.setTextIsSelectable(true);
         page.addView(status);
 
+        installUpdate = new Button(this);
+        installUpdate.setAllCaps(false);
+        installUpdate.setVisibility(View.GONE);
+        page.addView(installUpdate);
+
         page.addView(button(getString(R.string.start), new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -218,6 +229,13 @@ public class MainActivity extends Activity {
         });
         page.addView(battery);
 
+        CheckBox boot = new CheckBox(this);
+        boot.setText(R.string.start_on_boot);
+        boot.setChecked(prefs.getBoolean("start_on_boot", false));
+        boot.setOnCheckedChangeListener((view, checked) ->
+                prefs.edit().putBoolean("start_on_boot", checked).apply());
+        page.addView(boot);
+
         tokenSettings = new LinearLayout(this);
         tokenSettings.setOrientation(LinearLayout.VERTICAL);
         tokenSettings.setVisibility(usesGitHub() ? View.VISIBLE : View.GONE);
@@ -234,6 +252,11 @@ public class MainActivity extends Activity {
         ScrollView scroll = new ScrollView(this);
         scroll.addView(page);
         setContentView(scroll);
+        UpdateJob.schedule(this);
+        if (Build.VERSION.SDK_INT >= 33 && !prefs.getBoolean("asked_notifications", false)) {
+            prefs.edit().putBoolean("asked_notifications", true).apply();
+            requestPermissions(new String[]{"android.permission.POST_NOTIFICATIONS"}, 1);
+        }
     }
 
     private void addTokenSettings(LinearLayout page) {
@@ -266,6 +289,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+        ApkUpdates.onOpen(this);
         handler.post(refresh);
     }
 

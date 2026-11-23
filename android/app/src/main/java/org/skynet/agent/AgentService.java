@@ -13,11 +13,13 @@ import android.os.BatteryManager;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.util.Log;
 
 import com.chaquo.python.Python;
 import com.chaquo.python.android.AndroidPlatform;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * Runs the agent in the background, in its own process. The work itself is the
@@ -32,8 +34,21 @@ public class AgentService extends Service {
     private Thread worker;
     private PowerManager.WakeLock wakeLock;
 
+    public static void start(Context context) {
+        Intent intent = new Intent(context, AgentService.class);
+        if (Build.VERSION.SDK_INT >= 26) {
+            context.startForegroundService(intent);
+        } else {
+            context.startService(intent);
+        }
+    }
+
     public static File home(Context context) {
         return new File(context.getFilesDir(), "agent");
+    }
+
+    static File runningMarker(Context ctx) {
+        return new File(ctx.getFilesDir(), "service-started");
     }
 
     /** Called from Python. */
@@ -95,15 +110,24 @@ public class AgentService extends Service {
         if (worker == null) {
             final Context app = getApplicationContext();
             final AgentService host = this;
+            try {
+                runningMarker(app).createNewFile();
+            } catch (IOException e) {
+                Log.w("AgentService", "Cannot record service start", e);
+            }
             worker = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    if (!Python.isStarted()) {
-                        Python.start(new AndroidPlatform(app));
+                    try {
+                        if (!Python.isStarted()) {
+                            Python.start(new AndroidPlatform(app));
+                        }
+                        Python.getInstance().getModule("skynet_android")
+                                .callAttr("run", home(app).getAbsolutePath(), host);
+                    } finally {
+                        if (!stopRequested) runningMarker(app).delete();
+                        stopSelf();
                     }
-                    Python.getInstance().getModule("skynet_android")
-                            .callAttr("run", home(app).getAbsolutePath(), host);
-                    stopSelf();
                 }
             }, "skynet-agent");
             worker.start();

@@ -3,6 +3,7 @@
 
     python3 -I install.py            install into the default folder
     python3 -I install.py --home DIR install somewhere else
+    python3 -I install.py --from-dir DIR install a signed local release
 
 The installer authenticates release.json with its pinned public key before it
 downloads any code. It checks the files and runs verify-install locally before
@@ -442,8 +443,13 @@ def write_shim(home, bin_dir=None):
         folder = bin_dir or home
         os.makedirs(folder, exist_ok=True)
         shim = os.path.join(folder, "skynet-agent.cmd")
+        exe = sys.executable
+        if os.path.normcase(folder) == os.path.normcase(home):
+            launcher = r"%~dp0launcher.py"
+            if os.path.normcase(exe) == os.path.normcase(os.path.join(home, "python", "python.exe")):
+                exe = r"%~dp0python\python.exe"
         with open(shim, "w", encoding="ascii", errors="replace", newline="\r\n") as f:
-            f.write('@echo off\n"%s" "%s" %%*\n' % (sys.executable, launcher))
+            f.write('@echo off\nsetlocal DisableDelayedExpansion\n"%s" -I "%s" %%*\n' % (exe, launcher))
         return shim, 'Run it as:  & "%s" status' % shim
     if bin_dir:
         pass
@@ -463,14 +469,9 @@ def write_shim(home, bin_dir=None):
     return shim, hint
 
 
-def install(home, base, *, allow_local_http=False, allow_downgrade=False, test_key=None):
-    base = base.rstrip("/")
-
-    def get(url, limit=MAX_FILE_BYTES):
-        return fetch(url, limit, allow_local_http=allow_local_http)
-
-    raw = get(base + "/agent/release.json", 256 * 1024)
-    sig = get(base + "/agent/release.json.sig", 16384)
+def read_release(get, test_key=None):
+    raw = get("release.json", 256 * 1024)
+    sig = get("release.json.sig", 16384)
     verify_manifest(raw, sig, test_key)
     try:
         rel = json.loads(raw.decode("utf-8"))
@@ -502,13 +503,50 @@ def install(home, base, *, allow_local_http=False, allow_downgrade=False, test_k
         raise InstallError("invalid halt description")
     if halt and rel["seq"] <= halt["through_seq"]:
         raise InstallError("this release is paused by the maintainers")
+    return rel, raw, sig
+
+
+def local_reader(directory):
+    def get(path, limit=MAX_FILE_BYTES):
+        filename = os.path.join(directory, *path.split("/"))
+        info = os.lstat(filename)
+        if (not stat.S_ISREG(info.st_mode)
+                or getattr(info, "st_file_attributes", 0) & stat.FILE_ATTRIBUTE_REPARSE_POINT):
+            raise InstallError("unexpected file: " + path)
+        with open(filename, "rb") as stream:
+            data = stream.read(limit + 1)
+        if len(data) > limit:
+            raise InstallError("file is larger than expected: " + path)
+        return data
+    return get
+
+
+class NewerInstalled(InstallError):
+    """Setup can keep a newer active release when installing its runtime."""
+
+
+def install(home, base, *, from_dir=None, allow_local_http=False, allow_downgrade=False, test_key=None):
+    if from_dir is None:
+        def get(path, limit=MAX_FILE_BYTES):
+            return fetch(base.rstrip("/") + "/agent/" + path, limit, allow_local_http=allow_local_http)
+    else:
+        get = local_reader(from_dir)
+    rel, raw, sig = read_release(get, test_key)
+    if from_dir is not None:
+        problems = tree_problems(from_dir, rel["files"])
+        if problems:
+            raise InstallError(", ".join(problems))
     with update_lock(home):
         floor = sequence_floor(home)
         if rel["seq"] < floor:
-            if not allow_downgrade:
-                raise InstallError("release %d is older than %d" % (rel["seq"], floor))
+            if from_dir is not None or not allow_downgrade:
+                message = "release %d is older than %d" % (rel["seq"], floor)
+                current = read_local(os.path.join(home, "current.json"), {})
+                if from_dir is not None and current.get("seq", 0) > rel["seq"]:
+                    raise NewerInstalled(message)
+                raise InstallError(message)
             print("WARNING: installing release %d below %d" % (rel["seq"], floor), file=sys.stderr)
-        relative = prepare(home, rel, raw, sig, lambda path: get(base + "/agent/" + path))
+        relative = prepare(home, rel, raw, sig, get)
         check_candidate(home, os.path.join(home, *relative.split("/")), rel)
         switch_version(home, rel, relative)
     return rel
@@ -517,7 +555,10 @@ def install(home, base, *, allow_local_http=False, allow_downgrade=False, test_k
 def main(argv=None):
     parser = argparse.ArgumentParser(description="Install the SkyNet research agent.")
     parser.add_argument("--home", help="folder to install into (default: a folder in your profile)")
-    parser.add_argument("--base", help="address of the repository files (for mirrors and tests)")
+    source = parser.add_mutually_exclusive_group()
+    source.add_argument("--base", help="address of the repository files (for mirrors and tests)")
+    source.add_argument("--from-dir", help="directory containing only the signed release")
+    parser.add_argument("--keep-newer", action="store_true", help="keep a newer active release and refresh its shim")
     parser.add_argument("--bin-dir", help="folder for the skynet-agent start script")
     parser.add_argument("--no-shim", action="store_true", help="do not create a start script")
     parser.add_argument("--allow-local-http", action="store_true", help="allow HTTP on loopback for tests")
@@ -532,8 +573,14 @@ def main(argv=None):
     print("Installing the SkyNet research agent into %s" % home)
     try:
         os.makedirs(home, exist_ok=True)
-        rel = install(home, base, allow_local_http=args.allow_local_http, allow_downgrade=args.allow_downgrade,
-                      test_key=args.test_release_key)
+        try:
+            rel = install(home, base, from_dir=args.from_dir, allow_local_http=args.allow_local_http,
+                          allow_downgrade=args.allow_downgrade, test_key=args.test_release_key)
+            message = "Installed version %s." % rel["version"]
+        except NewerInstalled as e:
+            if not args.keep_newer:
+                raise
+            message = "Keeping the installed release: %s" % e
         if args.no_shim:
             hint = 'Run it as:  "%s" "%s" status' % (sys.executable, os.path.join(home, "launcher.py"))
         else:
@@ -541,7 +588,7 @@ def main(argv=None):
     except (InstallError, OSError, subprocess.SubprocessError) as e:
         print("Installation failed: %s" % e)
         return 1
-    print("Installed version %s." % rel["version"])
+    print(message)
     print(hint)
     print("")
     print("Next steps:")

@@ -1,24 +1,18 @@
-<!-- translation of android/README.md, source sha256: dd56c64ec3931fa625cd383ec84dcdb5618d80f9faca47d3c9a52cd30294927e -->
+<!-- translation of android/README.md, source sha256: 3fd07398dc6f1c3ed1d7c21b1315b13e43cdbf629cf72aab3887e8ebbd602e2b -->
 
 # Agente di ricerca SkyNet per Android (sperimentale)
 
 [English](../../android/README.md) · [中文](../zh/ANDROID.md) · [Español](../es/ANDROID.md) · [Français](../fr/ANDROID.md) · [Deutsch](../de/ANDROID.md) · **Italiano** · [Русский](../ru/ANDROID.md) · [Português](../pt/ANDROID.md) · [العربية](../ar/ANDROID.md)
 
 Un'app Android che porta lo stesso [agente di ricerca](../../agent/README.md) della versione
-desktop. È per chi non vuole configurare Termux: installate un file, premete Avvia.
+desktop. Installate un file e premete Avvia. Per impostazione predefinita l'agente firma ogni
+risultato sul dispositivo e lo pubblica senza un account o un token.
 In questa fase non sono previste ricompense.
 
-**Stato: sperimentale.** Il 22 novembre 2026 l'app è stata controllata su un emulatore
-Android 14 (x86_64) con un repository di test locale firmato con una chiave di test: si è
-installata, è partita, ha controllato le firme, ha calcolato tutte le 7 unità dei compiti di
-test senza errori, ha atteso mentre l'emulatore era scollegato dal caricatore, ha continuato
-a lavorare in background, ha salvato un token e con esso ha raggiunto la vera API di GitHub,
-e si è fermata ed è ripartita mantenendo il proprio stato. Una build solo ARM (`arm64-v8a`)
-ha fatto lo stesso su quell'emulatore tramite la sua traduzione ARM. La sua parte Python
-supera inoltre i test su un computer. **Non è ancora stata verificata su un telefono reale**,
-su Android 7–13, in esecuzioni lunghe o contro le funzioni di risparmio batteria dei
-produttori di telefoni. Eseguire l'agente in [Termux](../../agent/README.md#install) resta
-l'altro modo.
+**Sperimentale.** Il 22 novembre 2026 la shell precedente è stata provata su un emulatore
+Android 14. Ha completato tutte e sette le unità di test, ha atteso la ricarica e ha mantenuto
+il proprio stato tra arresti e avvii. La shell 0.2.0 include l'agente 0.2.2. I suoi flussi di
+installazione e riavvio devono ancora essere verificati su Android.
 
 ## Per i partecipanti
 
@@ -29,23 +23,35 @@ l'altro modo.
 3. Aprite "SkyNet Agent" e premete **Avvia**. Una notifica permanente mostra che è in
    esecuzione.
 
-Cosa sapere:
-
 - Funziona solo mentre il dispositivo è in carica, a meno che non spuntiate "Lavora anche a
   batteria". Il caricatore viene controllato tra una porzione di lavoro e l'altra: una
   porzione già iniziata (di solito meno di un minuto) viene completata anche se scollegate il
   dispositivo.
-- Non si avvia da solo dopo il riavvio del dispositivo: aprite l'app e premete di nuovo Avvia.
+- Per riprendere dopo aver riavviato il dispositivo, attivate **Avvio dopo il riavvio**.
+  L'opzione è disattivata per impostazione predefinita. Se premete **Arresta**, l'agente resta
+  fermo anche dopo un riavvio.
 - Su Android 13 e versioni successive, se rifiutate le notifiche, l'app funziona comunque;
   Android la mostra allora solo nell'elenco delle app in esecuzione.
-- Per pubblicare i risultati serve un token GitHub: in GitHub aprite Impostazioni →
-  Impostazioni sviluppatore → Token di accesso personale, create un token che possa scrivere
-  issue di repository pubblici e incollatelo nell'app. Il token viene conservato solo
-  all'interno dell'app. Senza un token i risultati restano in attesa sul dispositivo (fino a
-  300, poi l'app smette di calcolare).
+- Gli utenti avanzati che selezionano `submit_via=github` possono inserire un token GitHub
+  nella schermata principale.
 - Android 7.0 o successivo, un dispositivo a 64 bit, circa 40 MB.
 - La modalità IA facoltativa non è disponibile nell'app.
 - Per rimuoverla, disinstallate l'app; sul dispositivo non resta nient'altro.
+
+## Aggiornamento dell'app
+
+Se avete la versione 0.1.0, installate la 0.2.0 da Releases sopra l'app esistente per
+mantenere le impostazioni e i risultati in coda. Dalla 0.2.0 in poi, aprendo la schermata
+viene controllata la presenza di un nuovo APK. Android pianifica anche un controllo
+giornaliero quando è disponibile una rete, anche se l'agente è fermo. Le restrizioni sulla
+batteria possono ritardare quel controllo.
+
+L'app verifica il manifest di rilascio firmato con la chiave incorporata nell'APK. Per una
+versione compatibile più recente, scarica il file di rilascio nella cache privata e ne
+controlla le dimensioni e lo SHA-256. Toccate il pulsante di aggiornamento o la notifica per
+installare l'aggiornamento. Su Android 8 e versioni successive, consentite l'installazione da
+SkyNet Agent se vi viene chiesto, tornate all'app e confermate nel programma di installazione
+di Android. Con le notifiche disattivate, usate il pulsante nella schermata principale.
 
 ## Come si differenzia dall'agente desktop
 
@@ -54,9 +60,9 @@ Cosa sapere:
 | Codice dell'agente | `agent/skynet_agent` | lo stesso pacchetto, incorporato nell'APK |
 | Lavoro | processi separati a bassa priorità | un'unità alla volta nel processo in background dell'app |
 | Limite di tempo | il processo worker viene terminato | un watchdog termina il processo in background; Android lo riavvia e il compito viene lasciato ai dispositivi più veloci |
-| Aggiornamenti dell'agente | versione firmata dal repository | la stessa versione firmata, controllata dal codice incorporato nell'APK: firma, ogni file, nessun file fuori dall'elenco firmato, mai sotto la versione più alta che ha già funzionato qui. Una nuova versione ha tre tentativi per raggiungere il repository; altrimenti l'app torna al codice incorporato |
-| L'app stessa | programma di avvio e programma di installazione | cambia solo con un nuovo APK |
-| Pubblicazione | accesso con GitHub CLI | un token incollato nell'app |
+| Aggiornamenti dell'agente | versione firmata dal repository | l'APK verifica i file firmati e il numero di rilascio. Un nuovo agente ha tre avvii per superare un autocontrollo locale e completare un passo del ciclo |
+| L'app stessa | programma di avvio e programma di installazione | un APK verificato installato con la vostra conferma |
+| Pubblicazione | record firmati per impostazione predefinita | record firmati per impostazione predefinita |
 
 Limiti, onestamente. L'APK è firmato con una chiave detenuta dai manutentori del progetto; Android
 accetta un aggiornamento dell'app solo se è firmato con la stessa chiave. La chiave di rilascio
@@ -84,8 +90,8 @@ rilascio: un agente senza chiave di rilascio non accetta compiti. La build di ri
 ferma con un errore in quel caso; `-PallowNoReleaseKey` compila comunque un APK del genere,
 solo per i test.
 
-La parte Python dell'app è [`app/src/main/python/skynet_android.py`](../../android/app/src/main/python/skynet_android.py).
-Viene testata su un computer da [`agent/tests/test_android_glue.py`](../../agent/tests/test_android_glue.py).
+Il bridge dell'agente e il verificatore dell'APK hanno test Python separati sul desktop.
+[Test dell'agente](../../agent/tests/test_android_glue.py) · [Test degli aggiornamenti dell'APK](../../agent/tests/test_apk_update.py)
 Python è incorporato con [Chaquopy](https://chaquo.com/chaquopy/) (licenza MIT).
 
 ## Licenza

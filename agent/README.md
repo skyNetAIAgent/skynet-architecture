@@ -20,7 +20,7 @@ network; it is a tool for designing it.
 | Runs built-in computations at the lowest CPU priority, one at a time by default | Works on battery power, unless you allow it |
 | Publishes each result as a record signed with this device's own key, through public relays and full nodes | Sends your files, your hardware identifiers or anything else from your computer |
 | Updates itself, but only to a version signed with the project's release key | Installs an update with a wrong signature, a wrong file hash or an older number |
-| Keeps everything in one folder in your profile | Needs administrator rights, or starts by itself unless you turn autostart on |
+| Installs in your profile and lets you choose whether to start at sign-in | Needs administrator rights |
 
 The first tasks are exact calculations about SkyNet's payment rules, for example: "can a
 participant who leaves the network profit from a burst of fake results, and from what share
@@ -29,12 +29,15 @@ results are compared. See [tasks/README.md](../tasks/README.md).
 
 ## Requirements
 
-- Python 3.9 or newer. Nothing else: the agent uses only Python's standard library.
+- The Windows x64 installer includes Python. Other methods require Python 3.9 or newer.
 - A few megabytes of disk space and an Internet connection.
 
 ## Install
 
-**Windows** (PowerShell):
+**Windows x64**
+
+1. Download `SkyNetAgentSetup-<version>.exe` from [Releases](https://github.com/skyNetAIAgent/skynet-architecture/releases) and run it. Setup offers to start the agent now and at Windows sign-in. Both boxes are checked by default. For checksum and SmartScreen instructions, see the [Windows installer guide](../installer/windows/README.md).
+2. If you already have Python, you can install from PowerShell.
 
 ```powershell
 irm https://raw.githubusercontent.com/skyNetAIAgent/skynet-architecture/main/agent/install.ps1 | iex
@@ -64,7 +67,7 @@ If you prefer to read before you run: download
 
 The installer puts the agent into one folder (`%LOCALAPPDATA%\SkyNetAgent` on Windows,
 `~/Library/Application Support/SkyNetAgent` on macOS, `~/.local/share/skynet-agent` on Linux
-and Android) and creates a `skynet-agent` command. It starts nothing.
+and Android) and creates a `skynet-agent` command. With the command-line installers, start the agent yourself.
 
 ## First steps
 
@@ -75,8 +78,9 @@ skynet-agent run                  # work until you press Ctrl+C
 skynet-agent autostart enable     # optional: start when you log in
 ```
 
-On Windows the command is the file `skynet-agent.cmd` in the agent folder; the installer
-prints the exact line.
+On Windows, run `.\skynet-agent.cmd` from the agent folder. The EXE installer adds status,
+pause, resume and stop shortcuts under **SkyNet Agent** in the Start menu. The agent updates
+its own files from signed releases. Run a newer installer to update its bundled Python.
 
 ### Publishing results
 
@@ -191,6 +195,10 @@ not slowed down. On a phone the battery is not used unless you allow it; keep th
 charger.
 
 ## Remove
+
+For an EXE installation, choose **SkyNet Agent → Uninstall** in the Start menu. The
+uninstaller keeps your device key and unsent results by default. Select the data deletion
+checkbox to remove them as well. For a command-line installation, run the following command.
 
 ```sh
 skynet-agent uninstall --yes

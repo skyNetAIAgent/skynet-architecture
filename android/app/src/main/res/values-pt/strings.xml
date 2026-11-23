@@ -42,4 +42,10 @@
     <string name="state_stopped">parado</string>
     <string name="state_error">erro</string>
     <string name="problem_no_token">ainda sem token do GitHub: cole um abaixo para publicar os resultados</string>
+
+    <string name="queue_full">A fila de resultados está cheia. Aguardando a publicação.</string>
+    <string name="start_on_boot">Iniciar após reiniciar o dispositivo</string>
+    <string name="app_updates">Atualizações do aplicativo</string>
+    <string name="install_update">Versão %1$s disponível. Toque para instalar</string>
+    <string name="update_unavailable">Esta atualização não está disponível. Abra o aplicativo para verificar novamente.</string>
 </resources>

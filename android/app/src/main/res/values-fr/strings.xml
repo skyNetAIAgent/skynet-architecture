@@ -42,4 +42,10 @@
     <string name="state_stopped">arrêté</string>
     <string name="state_error">erreur</string>
     <string name="problem_no_token">pas encore de jeton GitHub : collez-en un ci-dessous pour publier les résultats</string>
+
+    <string name="queue_full">La file des résultats est pleine. Publication en attente.</string>
+    <string name="start_on_boot">Démarrer après le redémarrage</string>
+    <string name="app_updates">Mises à jour de l\'application</string>
+    <string name="install_update">Version %1$s disponible. Touchez pour l\'installer</string>
+    <string name="update_unavailable">Cette mise à jour est indisponible. Ouvrez l\'application pour vérifier à nouveau.</string>
 </resources>

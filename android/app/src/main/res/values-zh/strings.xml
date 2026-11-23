@@ -42,4 +42,10 @@
     <string name="state_stopped">已停止</string>
     <string name="state_error">错误</string>
     <string name="problem_no_token">还没有 GitHub 令牌：请在下方粘贴一个以发布结果</string>
+
+    <string name="queue_full">结果队列已满，正在等待发布。</string>
+    <string name="start_on_boot">重启后启动</string>
+    <string name="app_updates">应用更新</string>
+    <string name="install_update">新版本 %1$s 可用，点按即可安装</string>
+    <string name="update_unavailable">此更新不可用。请打开应用重新检查。</string>
 </resources>
