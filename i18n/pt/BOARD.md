@@ -1,10 +1,10 @@
-<!-- translation of docs/BOARD.md, source sha256: 796343ef8b83309582fa65b71fef07aaf5adb09f3940a255e454422781ca378f -->
+<!-- translation of docs/BOARD.md, source sha256: d39c7e244fa5cab003fbc95ca98c920aea26cdd80da02612e439942a53d37e14 -->
 
 # Quadro de tarefas sem conta
 
 [English](../../docs/BOARD.en.md) · [中文](../zh/BOARD.md) · [Español](../es/BOARD.md) · [Français](../fr/BOARD.md) · [Deutsch](../de/BOARD.md) · [Italiano](../it/BOARD.md) · [Русский](../../docs/BOARD.md) · **Português** · [العربية](../ar/BOARD.md)
 
-Estado em 22 de novembro de 2026. Agente 0.2.0 (ainda não lançado).
+Estado em 22 de novembro de 2026. Agente 0.2.0, lançado em 22 de novembro de 2026.
 
 Até agora, um participante precisava de uma conta no GitHub para entregar um resultado. O quadro elimina isso: cada dispositivo cria a própria chave, e tudo o que ele diz à rede é um pequeno registro assinado com essa chave. Os registros passam por relays públicos do Nostr de diferentes donos e por nós completos operados por participantes. Ninguém precisa se registrar em lugar nenhum.
 

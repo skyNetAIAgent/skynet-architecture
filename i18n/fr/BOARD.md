@@ -1,10 +1,10 @@
-<!-- translation of docs/BOARD.md, source sha256: 796343ef8b83309582fa65b71fef07aaf5adb09f3940a255e454422781ca378f -->
+<!-- translation of docs/BOARD.md, source sha256: d39c7e244fa5cab003fbc95ca98c920aea26cdd80da02612e439942a53d37e14 -->
 
 # Tableau des tâches sans compte
 
 [English](../../docs/BOARD.en.md) · [中文](../zh/BOARD.md) · [Español](../es/BOARD.md) · **Français** · [Deutsch](../de/BOARD.md) · [Italiano](../it/BOARD.md) · [Русский](../../docs/BOARD.md) · [Português](../pt/BOARD.md) · [العربية](../ar/BOARD.md)
 
-État au 22 novembre 2026. Agent 0.2.0 (pas encore publié).
+État au 22 novembre 2026. Agent 0.2.0, publié le 22 novembre 2026.
 
 Jusqu'à présent, un participant devait avoir un compte GitHub pour remettre un résultat. Le tableau supprime cette obligation : chaque appareil crée sa propre clé, et tout ce qu'il dit au réseau est un petit enregistrement signé avec cette clé. Les enregistrements transitent par des relais Nostr publics appartenant à différents propriétaires et par des nœuds complets gérés par des participants. Personne n'a à s'inscrire où que ce soit.
 

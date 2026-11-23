@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: 4cd77f720933922c55c4d78c3e761ca614215cc0ed8610b0fb2ae2e3fbee22e2 -->
+<!-- translation of docs/ROADMAP.md, source sha256: 191cff633e617eaad62a24c76710c67b4bc4307248d04a984ba3e3c863a678ff -->
 
 # Roadmap: protection against cheating
 
@@ -58,14 +58,14 @@ of ideas.
 | What | Status | Where it is recorded |
 |---|---|---|
 | From signatures and short answers it cannot be established which device worked and for how long: a proxy, a cache, and an idle card give the same data | Established by reasoning | [OPEN_QUESTIONS](OPEN_QUESTIONS.en.md), "What has already been rejected" |
-| The network pays for a verifiable result, not for a resource | Basis of the project; the unit of result and the acceptance condition await confirmation (D2) | [CURRENT_DESIGN](CURRENT_DESIGN.en.md), section 1 |
+| The network pays for a verifiable result, not for a resource | Accepted (D2); the unit of result and the acceptance condition are not yet defined | [CURRENT_DESIGN](CURRENT_DESIGN.en.md), section 1 |
 | Deferred payment instead of a deposit: a participant can lose only the pending amount | Accepted | CURRENT_DESIGN, section 2 |
 | Variant A: verification by sampling, with cancellation of pending rewards when fraud is detected | Current specification | CURRENT_DESIGN, section 3 |
-| Variant B: the network pays only for verified tasks, paying `1/p` times the base price for each | Proposal (D3) | CURRENT_DESIGN, section 3 |
+| Variant B: the network pays only for verified tasks, paying `1/p` times the base price for each | Main candidate; the choice after comparison (D3) | CURRENT_DESIGN, section 3 |
 | Bit-for-bit match of the result through integer arithmetic | Candidate, not measured | OPEN_QUESTIONS, Q2 |
 | Dispute by halving with recomputation of one step in the ledger | Measured for one row of the model; not built for the full model | [PILOT_RESULTS](PILOT_RESULTS.en.md) |
 | Verification of matrix multiplication with a random vector inside a dispute | Candidate, only a calculated estimate exists | CURRENT_DESIGN, section 3 |
-| An unchangeable verification core that cannot be revoked by a vote | Proposal (D4) | CURRENT_DESIGN, section 8 |
+| An unchangeable verification core that cannot be revoked by a vote | Accepted (D4) | CURRENT_DESIGN, section 8 |
 
 **What is known about the strength of the defense.**
 
@@ -109,50 +109,143 @@ of ideas.
 9. A saboteur who needs no profit, and poisoning of training data. Economic defense does not act
    against them.
 
-## 3. Decisions awaiting approval
+## 3. Decisions
 
-Until a decision is made, the plan items that depend on it remain proposals.
+Decisions D1–D5 were made on 23 November 2026.
 
-| № | Question | What depends on it |
+| № | Question | Decision |
 |---|---|---|
-| D1 | What is accepted as a guarantee. Is "cheating brings nothing, what was spent is lost, honest work is more profitable" enough? Is limited leakage under collusion acceptable, or must a false payout be excluded even under full collusion of verifiers | Readiness criteria, stages 3 and 4 |
-| D2 | Fix payment for a verifiable result instead of power and time; define the unit of result and the acceptance condition | Stages 2–6 |
-| D3 | Variant A, Variant B, or neither. Decided after comparison on the same attacks and the same price (stage 2) | Stages 3 and 6 |
-| D4 | The unchangeable verification core and what it includes | Stage 6 |
-| D5 | First experiment: integer Qwen3.5-4B on two different GPUs (whether bits match, speed, quality) | Stage 5 |
+| D1 | What is accepted as a guarantee | **The cheater does not get what they want.** Attempts to cheat cannot be excluded, but any attempt must be useless for the one who makes it: the expected gain from a fake is not greater than zero compared with honest work and with inaction, for any coalition, including a newcomer with an empty account and any number of keys. The goal is for a false result not to be paid at all. A strict loss on every attempt is not required. A limited but positive leakage (for example, `R·q^k` for a newcomer in Variant B) does **not satisfy** the criterion and remains an open hole |
+| D2 | The basis of payment | **Accepted: only a verifiable result is paid.** Switched-on equipment, operating time, and claimed power are not a basis of payment: a GPU can be loaded with something extraneous as well |
+| D3 | Variant A or B | **The decision is made after comparison on the same attacks and the same price (stage 2).** The main candidate is Variant B |
+| D4 | The unchangeable verification core | **Accepted in a strengthened form.** The check runs automatically, without human involvement and without votes. The rules of the check are not changed by vote. Each node itself executes the check according to the pinned fingerprint of the rules, so replacing the algorithm on one node or at one program vendor does not change the decisions of others. Open: how to fix an error in the core itself (only by moving to a new network) and how a participant can make sure their program matches the published fingerprint (a reproducible build). The release key with which mini-agents are currently signed is a research tool; it must not exist in the target network |
+| D5 | The first experiment with integer Qwen3.5-4B | **Permitted:** an RTX 2060 GPU on the maintainer's home Linux, their computer, and, with consent, the devices of other participants via mini-agents. It is carried out after stage 0 |
+
+**Order of work.** Stage 0 is completed first — mini-agents and smartphone apps, so that other people can join the work. Then stages 1–5 according to this map.
 
 ## 4. Stages and checklist
 
-Stages 1–4 run in parallel: they are calculations and reasoning. The search for new algorithms
-(stage 4) does not wait for the others. Stage 5 requires decision D5. Stage 6 brings the results
-together.
+Stage 0 is completed first. Then stages 1–4 run in parallel: these are calculations and reasoning. Stage 5 (the experiment permitted by decision D5) runs after stage 0. Stage 6 brings the results together.
 
-### Stage 0. Collaboration tools
+### Stage 0. Mini-agents and smartphone apps (done first)
+
+**The goal of the stage.** On every supported platform a person goes through the path "downloaded → installed → launched", and after that the mini-agent, without human involvement, updates itself, takes tasks, and returns the result. Without an account, without administrator rights, without pre-installed Python. Each step is checked on a live device, not only by automatic tests.
+
+**Done when** for each platform from the list below: a person without experience has gone through the path using one page of instructions; the agent on that device received a new release by itself, took a task from a new list by itself, its result appeared on the full node and matched the result of another device. Recorded are the system, the architecture, the versions before and after, and the identifier of the record on the node.
+
+Platforms: Windows, Linux, macOS, Android. There will be no agent for iOS: iOS does not let an app compute in the background for long, and the App Store rules prohibit downloading executable code. Instead, a board viewer is possible (a separate decision).
+
+Already done:
 
 - [x] A public repository, an unchangeable basis in nine languages (label `core-v1`).
 - [x] An agent program for Windows, Linux, and macOS: signed tasks and updates,
-      automatic checks on three systems (release 0.2.0).
+      automatic checks on three systems (release 0.2.0). Installation with one command
+      in the terminal; Python 3.9+ is required.
 - [x] Results and the [task board](BOARD.en.md) without an account.
 - [x] The first full node storing the history of records.
 - [x] The first research task "Defense against cheaters" on the board, in nine languages.
-- [ ] A report for a board task from a participant not connected with the maintainers, stating by
-      whom and how it was obtained. Currently all records in the network are made by the maintainers'
-      devices. Different keys do not prove different owners.
-- [ ] Independent confirmation of all 702 chunks of the first task list (currently 40).
-- [ ] An agent update from one released version to the next, observed on a live
-      installation (currently verified only by tests).
-- [ ] An Android app: testing on a real phone, publishing results without a token.
-- [ ] Installation without pre-installed Python: one file for Windows, macOS, and Linux.
-- [ ] Instructions for an AI assistant: how to take a task from the board, submit a report, and check
-      someone else's.
-- [ ] An automatic cycle for AI assistants: the agent itself picks up new board tasks and passes
-      them to the participant's local model. Currently this is done by commands manually.
+- [x] A trial Android app 0.1.0 (checked only on the emulator).
+
+**Step 1. Update reliability (release 0.2.1, without new tasks)**
+
+- [ ] The first installation checks the release signature with a key embedded in the installer
+      itself, **before** the downloaded code runs. Currently the downloaded agent checks itself.
+- [ ] Switching to a new version in one atomic operation: first the new directory is prepared and
+      checked, then one pointer is changed; the previous healthy bundle is kept.
+- [ ] The highest accepted release number is stored outside the version directories and is also
+      checked on reinstall (protection against rollback to an old release).
+- [ ] The device key, settings, progress, and unsent results are stored outside the version
+      directories and survive an update and a reinstall.
+- [ ] Without the network the agent keeps working on the last healthy version and retries the
+      connection with a growing interval.
+- [ ] An automatic check in CI: a substituted file, a foreign key, an old number, an extra file,
+      an interrupted download, and an incompatible Python are rejected, and the working version
+      remains.
+- [ ] **Live check:** the 0.2.0 installations on Windows, the home Linux, and the server upgrade
+      to 0.2.1 by themselves, with the device key and progress preserved.
+
+**Step 2. Android: an app without a token**
+
+- [ ] A new APK with the embedded agent 0.2.1: publication by signed records, the token screen
+      and the token hints are removed.
+- [ ] Fix the false rollback without the network: currently three launches without a connection
+      mark a healthy new version as failed. Confirm the version by a local self-check.
+- [ ] Once a day the app checks for new APK versions, compares the hash and the project signature,
+      and offers to install; installation is confirmed by a person (this is how Android outside the
+      store works).
+- [ ] Starting after a reboot by a user toggle.
+- [ ] Checking the update on top of APK 0.1.0 on the emulator: progress and the key are preserved.
+- [ ] **Live check on a real phone** (a participant with a phone is needed): installation,
+      working while charging, reboot, the manufacturer's power saving.
+
+**Step 3. Windows: a one-file installer**
+
+- [ ] `SkyNetAgentSetup.exe` is built in GitHub Actions; inside are the embeddable Python from
+      python.org, the agent, and a signed release. Installs into the user profile, without
+      administrator rights, works without the network.
+- [ ] A status window: whether the agent is running, what it is computing, pause, exit.
+- [ ] A "start at login" checkbox in the installer; the choice is preserved on update.
+- [ ] Uninstalling via "Apps"; when uninstalling, the device key can be kept.
+- [ ] A check on a clean Windows without Python, in a profile with Cyrillic and spaces in the name.
+
+**Step 4. Linux**
+
+- [ ] The installer uses the system Python 3.9+, and if there is none, downloads a portable Python
+      and checks its hash.
+- [ ] A systemd user service with the user's consent; running without logging in is a separate
+      checkbox.
+- [ ] A check on Linux Mint, Ubuntu, and Debian.
+
+**Step 5. macOS (experimental, until there is a Mac to check)**
+
+- [ ] The `SkyNetAgent.pkg` package with portable Python for arm64 and x86_64, built in GitHub
+      Actions, installs into the user profile, starts at login with consent.
+- [ ] Checking the installation and one computation on a macOS machine in CI.
+- [ ] A live check on a participant's Mac.
+
+**Step 6. Updating the embedded Python and the wrappers**
+
+- [ ] A signed description of the bundle for each system and architecture: the versions and hashes
+      of Python, the installer, and the wrapper. The agent updates Python as well, not only its own
+      files.
+
+**Step 7. Task flow**
+
+- [ ] Four new computational tasks of stage 2 (the exit campaign of Variant B, apprentice seats,
+      a lottery with a chosen verification share, the winning-token certificate) — new built-in
+      kernels; each has a reference chunk with an expected hash.
+- [ ] The kernel code is released before the task list that requires it. An old agent skips an
+      incompatible task and keeps working.
+- [ ] When all tasks are computed, the agent waits and picks up the next list by itself.
+- [ ] The result collector runs on a schedule on the full node and publishes a summary.
+- [ ] Independent confirmation of all 702 chunks of the first list (currently 40).
+
+**Step 8. Pilot with other people**
+
+- [ ] The "How to connect" page in nine languages: one link per system.
+- [ ] One participant per platform not connected with the maintainers; the stage readiness
+      criteria are met.
 - [ ] Second and third full nodes with different owners.
-- [ ] Fix the outdated line in BOARD ("agent 0.2.0 has not been released yet").
+
+**Step 9. AI agents**
+
+- [ ] The agent itself picks up new board tasks and passes them to the participant's local model;
+      the answer is sent only after a person approves. The task text is considered untrusted.
+- [ ] Instructions for an AI assistant: how to take a task from the board, submit a report, and
+      check someone else's.
+- [ ] A report for a board task from a participant not connected with the maintainers.
+
+**Owner's decisions for stage 0** (they cost money, so they are not made without the owner):
+
+- A code-signing certificate for Windows. Without it, Windows shows a SmartScreen warning on
+  installation, and it has to be bypassed manually.
+- An Apple Developer account for macOS. Without it, macOS blocks launching the package until
+  permission is given in the settings.
+- A board viewer for iOS: whether to make it or not.
 
 ### Stage 1. Precise formulation
 
-- [ ] Decisions D1 and D2 are made and recorded.
+- [x] Decisions D1 and D2 are made and recorded (section 3).
 - [ ] For one public request and one training step the following are recorded: the acceptance rule,
       the arithmetic, the basis for issuing credits, the moment the result is fixed relative to the
       draw, and the moment when the result may be used.
@@ -267,7 +360,7 @@ carry it to a construction or close it with a counterexample.
 Done when: for each direction there is published a construction with an estimate, a counterexample,
 or a proven bound. A construction is considered found if it satisfies all the criteria of section 1.
 
-### Stage 5. Grounds established only by experiment (requires D5)
+### Stage 5. Grounds established only by experiment (permitted by D5)
 
 - [ ] Integer Qwen3.5-4B on two different GPUs: whether the bits match.
 - [ ] Its speed relative to the usual profile on the same cards.
@@ -282,8 +375,8 @@ repeated the measurement. Bit match applies only to the tested configurations.
 
 ### Stage 6. Consolidation and acceptance
 
-- [ ] Decision D4 on the unchangeable core — before the final check against a capture of the
-      majority.
+- [x] Decision D4 on the unchangeable core (section 3).
+- [ ] The composition of the core and the way a participant makes sure their program matches the published fingerprint.
 - [ ] Update CURRENT_DESIGN and the attack table based on the results of stages 1–5.
 - [ ] One claim is traced on paper from task approval to the use of the result, including rejection,
       repeat, and network partition.

@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: 4cd77f720933922c55c4d78c3e761ca614215cc0ed8610b0fb2ae2e3fbee22e2 -->
+<!-- translation of docs/ROADMAP.md, source sha256: 191cff633e617eaad62a24c76710c67b4bc4307248d04a984ba3e3c863a678ff -->
 
 # Tabella di marcia: difesa dall'inganno
 
@@ -59,14 +59,14 @@ non con l'assenza di idee.
 | Che cosa | Stato | Dove è registrato |
 |---|---|---|
 | Da firme e risposte brevi non si può stabilire quale dispositivo ha lavorato e per quanto tempo: un intermediario, una cache e una scheda inattiva danno gli stessi dati | Stabilito con il ragionamento | [OPEN_QUESTIONS](OPEN_QUESTIONS.md), «Che cosa è già stato scartato» |
-| La rete paga per il risultato verificabile, non per la risorsa | Base del progetto; l'unità di risultato e la condizione di accettazione attendono di essere fissate (D2) | [CURRENT_DESIGN](CURRENT_DESIGN.md), sezione 1 |
+| La rete paga per il risultato verificabile, non per la risorsa | Accettato (D2); l'unità di risultato e la condizione di accettazione non sono ancora definite | [CURRENT_DESIGN](CURRENT_DESIGN.md), sezione 1 |
 | Pagamento differito al posto del deposito: il partecipante risponde solo con la somma in sospeso | Accettato | CURRENT_DESIGN, sezione 2 |
-| Variante A: verifica a campione con annullamento delle ricompense non ancora maturate | Specifica attuale | CURRENT_DESIGN, sezione 3 |
-| Variante B: la rete paga solo per i compiti verificati, `1/p` volte di più | Proposta (D3) | CURRENT_DESIGN, sezione 3 |
+| Variante A: verifica a campione con annullamento | Specifica attuale | CURRENT_DESIGN, sezione 3 |
+| Variante B: la rete paga solo per i compiti verificati, `1/p` volte di più | Candidato principale; scelta dopo il confronto (D3) | CURRENT_DESIGN, sezione 3 |
 | Coincidenza del risultato bit a bit tramite aritmetica intera | Candidato, non misurato | OPEN_QUESTIONS, Q2 |
 | Controversia per dimezzamento con ricalcolo di un passo nel registro | Misurato per una riga del modello; per il modello completo non costruito | [PILOT_RESULTS](PILOT_RESULTS.md) |
 | Verifica della moltiplicazione di matrici con un vettore casuale dentro la controversia | Candidato, c'è solo una stima calcolata | CURRENT_DESIGN, sezione 3 |
-| Nucleo di verifica immutabile, che non si può revocare con una votazione | Proposta (D4) | CURRENT_DESIGN, sezione 8 |
+| Nucleo di verifica immutabile, che non si può revocare con una votazione | Accettato (D4) | CURRENT_DESIGN, sezione 8 |
 
 **Che cosa si sa sulla forza della difesa.**
 
@@ -113,49 +113,161 @@ non con l'assenza di idee.
 9. Un sabotatore a cui non serve il profitto e l'avvelenamento dei dati di addestramento. Su di essi la
    difesa economica non agisce.
 
-## 3. Decisioni in attesa di approvazione
+## 3. Decisioni
 
-Finché una decisione non è presa, i punti del piano che ne dipendono restano proposte.
+Le decisioni D1–D5 sono prese il 23 novembre 2026.
 
-| N. | Domanda | Che cosa dipende da essa |
+| N. | Domanda | Decisione |
 |---|---|---|
-| D1 | Che cosa si accetta come garanzia. Basta «l'inganno non rende nulla, ciò che si è speso va perso, il lavoro onesto conviene di più»? È ammessa una perdita limitata in caso di collusione, o un pagamento indebito va escluso anche con collusione completa dei verificatori | Segni di completamento, fasi 3 e 4 |
-| D2 | Fissare il pagamento per il risultato verificabile al posto della potenza e del tempo; definire l'unità di risultato e la condizione di accettazione | Fasi 2–6 |
-| D3 | Variante A, variante B o nessuna. Si decide dopo il confronto sugli stessi attacchi e allo stesso costo (fase 2) | Fasi 3 e 6 |
-| D4 | Il nucleo di verifica immutabile e che cosa vi rientra | Fase 6 |
-| D5 | Prima esperienza: Qwen3.5-4B ad aritmetica intera su due schede video diverse (se i bit coincidono, velocità, qualità) | Fase 5 |
+| D1 | Che cosa si accetta come garanzia | **Il truffatore non ottiene ciò che vuole.** Non si possono escludere i tentativi di inganno, ma ogni tentativo deve essere inutile per chi lo fa: il guadagno atteso di una contraffazione non è maggiore di zero rispetto al lavoro onesto e rispetto all'inazione, per qualsiasi coalizione, incluso un novizio con il conto vuoto e un numero qualsiasi di chiavi. L'obiettivo è che il risultato falso non venga pagato affatto. Non è richiesta una perdita netta su ogni tentativo. Una perdita limitata ma positiva (per esempio `R·q^k` per un novizio nella variante B) **non soddisfa** il criterio e resta un buco aperto |
+| D2 | Il fondamento del pagamento | **Accettato: viene pagato solo il risultato verificabile.** L'attrezzatura accesa, il tempo di lavoro e la potenza dichiarata non sono il fondamento del pagamento: una scheda video si può caricare anche con qualcosa di estraneo |
+| D3 | Variante A o B | **La decisione viene presa dopo il confronto sugli stessi attacchi e allo stesso costo (fase 2).** Il candidato principale è la variante B |
+| D4 | Il nucleo di verifica immutabile | **Accettato in forma rafforzata.** La verifica procede automaticamente, senza intervento umano e senza votazioni. Le regole di verifica non si cambiano con una votazione. Ogni nodo esegue da sé la verifica secondo l'impronta fissata delle regole, perciò la sostituzione dell'algoritmo su un nodo o presso un fornitore del programma non cambia le decisioni degli altri. Aperto: come correggere un errore nel nucleo stesso (solo passando a una nuova rete) e come un partecipante si convince che il suo programma corrisponde all'impronta pubblicata (build riproducibile). La chiave di rilascio con cui ora si firmano i mini-agenti è uno strumento di ricerca; nella rete di destinazione non deve esserci |
+| D5 | Prima esperienza con Qwen3.5-4B ad aritmetica intera | **Consentito:** la scheda video RTX 2060 sul Linux domestico del manutentore, il suo computer e, con il consenso, i dispositivi di altri partecipanti tramite i mini-agenti. Si esegue dopo la fase 0 |
+
+**Ordine di lavoro.** Prima si completa la fase 0 — i mini-agenti e le applicazioni per smartphone,
+perché altre persone possano collegarsi al lavoro. Poi le fasi 1–5 secondo questa tabella di marcia.
 
 ## 4. Fasi e lista di controllo
 
-Le fasi 1–4 procedono in parallelo: sono calcoli e ragionamenti. La ricerca di nuovi algoritmi (fase 4)
-non aspetta le altre. La fase 5 richiede la decisione D5. La fase 6 riunisce i risultati.
+Prima si completa la fase 0. Poi le fasi 1–4 procedono in parallelo: sono calcoli e ragionamenti.
+La fase 5 (l'esperimento è consentito dalla decisione D5) procede dopo la fase 0. La fase 6 riunisce
+i risultati.
 
-### Fase 0. Strumenti di collaborazione
+### Fase 0. Mini-agenti e applicazioni per smartphone (si esegue per prima)
+
+**Obiettivo della fase.** Su ogni piattaforma supportata una persona percorre il percorso «scaricato →
+installato → avviato», e poi il mini-agente senza intervento umano si aggiorna, prende i compiti e
+restituisce il risultato. Senza account, senza diritti di amministratore, senza Python preinstallato.
+Ogni passo è verificato su un dispositivo reale, non solo con test automatici.
+
+**Completato quando** per ogni piattaforma dell'elenco qui sotto: una persona senza esperienza ha
+percorso il percorso con una sola pagina di istruzioni; l'agente su quel dispositivo ha ricevuto da
+solo un nuovo rilascio, ha preso da solo un compito del nuovo elenco, il suo risultato è apparso sul
+nodo completo ed è coinciso con il risultato di un altro dispositivo. Sono registrati il sistema,
+l'architettura, le versioni prima e dopo e l'identificatore della registrazione sul nodo.
+
+Piattaforme: Windows, Linux, macOS, Android. Non ci sarà un agente per iOS: iOS non consente a
+un'app di calcolare a lungo in background, e le regole dell'App Store vietano di caricare codice
+eseguibile. In alternativa è possibile un visualizzatore della bacheca (decisione separata).
+
+Già fatto:
 
 - [x] Repository pubblico, base immutabile in nove lingue (etichetta `core-v1`).
 - [x] Programma-agente per Windows, Linux e macOS: compiti e aggiornamenti firmati,
-      verifiche automatiche su tre sistemi (versione 0.2.0).
+      verifiche automatiche su tre sistemi (versione 0.2.0). Installazione con un solo comando
+      nel terminale; serve Python 3.9+.
 - [x] Risultati e [bacheca dei compiti](BOARD.md) senza account.
 - [x] Primo nodo completo, che conserva la cronologia delle registrazioni.
 - [x] Primo compito di ricerca «Difesa dai truffatori» sulla bacheca, in nove lingue.
-- [ ] Relazione su un compito della bacheca da parte di un partecipante non legato ai manutentori, con
-      l'indicazione di chi e come l'ha ottenuta. Ora tutte le registrazioni nella rete sono fatte dai
-      dispositivi dei manutentori. Chiavi diverse non dimostrano proprietari diversi.
-- [ ] Conferma indipendente di tutte le 702 porzioni del primo elenco di compiti (ora 40).
-- [ ] Aggiornamento dell'agente da una versione rilasciata alla successiva, osservato su un'installazione
-      reale (ora verificato solo con i test).
-- [ ] Applicazione Android: verifica su un telefono reale, pubblicazione dei risultati senza token.
-- [ ] Installazione senza Python già installato: un solo file per Windows, macOS e Linux.
-- [ ] Istruzioni per l'assistente IA: come prendere un compito dalla bacheca, consegnare una relazione e
-      verificare quella altrui.
-- [ ] Ciclo automatico per gli assistenti IA: l'agente prende da solo i nuovi compiti della bacheca e li
-      passa al modello locale del partecipante. Ora si fa con comandi a mano.
+- [x] App Android di prova 0.1.0 (verificata solo sull'emulatore).
+
+**Passo 1. Affidabilità dell'aggiornamento (versione 0.2.1, senza nuovi compiti)**
+
+- [ ] La prima installazione verifica la firma della versione con la chiave incorporata nello stesso
+      installatore, **prima** di eseguire il codice scaricato. Ora l'agente scaricato verifica se
+      stesso.
+- [ ] Passaggio alla nuova versione con una sola operazione atomica: prima si prepara e si verifica
+      il nuovo catalogo, poi si cambia un solo puntatore; il precedente insieme funzionante viene
+      conservato.
+- [ ] Il numero di versione più alto accettato è conservato fuori dai cataloghi delle versioni e
+      viene verificato anche alla reinstallazione (difesa dal ritorno a una versione vecchia).
+- [ ] La chiave del dispositivo, le impostazioni, il progresso e i risultati non inviati sono
+      conservati fuori dai cataloghi delle versioni e sopravvivono all'aggiornamento e alla
+      reinstallazione.
+- [ ] Senza rete l'agente continua a lavorare sull'ultima versione funzionante e ripete il
+      collegamento con un intervallo crescente.
+- [ ] Verifica automatica in CI: un file sostituito, una chiave altrui, un numero vecchio, un file
+      in più, un download interrotto e un Python incompatibile vengono rifiutati, la versione
+      funzionante resta.
+- [ ] **Verifica dal vivo:** le installazioni 0.2.0 su Windows, Linux domestico e sul server passano
+      da sole alla 0.2.1, la chiave del dispositivo e il progresso sono conservati.
+
+**Passo 2. Android: app senza token**
+
+- [ ] Nuovo APK con l'agente 0.2.1 incorporato: pubblicazione con registrazioni firmate, la schermata
+      del token e i suggerimenti sul token sono rimossi.
+- [ ] Correggere il falso ritorno alla versione precedente senza rete: ora tre avvii senza
+      collegamento segnano una versione nuova funzionante come difettosa. Confermare la versione con
+      una autoverifica locale.
+- [ ] L'app verifica una volta al giorno le nuove versioni dell'APK, confronta l'hash e la firma del
+      progetto e propone di installare; l'installazione è confermata da una persona (così funziona
+      Android fuori dallo store).
+- [ ] Avvio dopo il riavvio tramite l'interruttore dell'utente.
+- [ ] Verifica dell'aggiornamento sopra l'APK 0.1.0 sull'emulatore: progresso e chiave si conservano.
+- [ ] **Verifica dal vivo su un telefono reale** (serve un partecipante con un telefono):
+      installazione, lavoro durante la ricarica, riavvio, risparmio energetico del produttore.
+
+**Passo 3. Windows: installatore in un solo file**
+
+- [ ] `SkyNetAgentSetup.exe` viene compilato in GitHub Actions; dentro, Python incorporato da
+      python.org, l'agente e la versione firmata. Installazione nel profilo utente, senza diritti di
+      amministratore, funziona senza rete.
+- [ ] Finestra di stato: se l'agente lavora, che cosa calcola, pausa, uscita.
+- [ ] Casella «avvia all'accesso» nell'installatore; la scelta si conserva all'aggiornamento.
+- [ ] Rimozione tramite «App»; alla rimozione si può conservare la chiave del dispositivo.
+- [ ] Verifica su Windows pulito senza Python, in un profilo con caratteri cirillici e spazi nel
+      nome.
+
+**Passo 4. Linux**
+
+- [ ] L'installatore usa il Python di sistema 3.9+ e, se non c'è, scarica un Python portatile e ne
+      verifica l'hash.
+- [ ] Servizio utente systemd con il consenso dell'utente; il lavoro senza accesso al sistema è una
+      casella separata.
+- [ ] Verifica su Linux Mint, Ubuntu e Debian.
+
+**Passo 5. macOS (sperimentale, finché non c'è un Mac per la verifica)**
+
+- [ ] Pacchetto `SkyNetAgent.pkg` con Python portatile per arm64 e x86_64, compilato in GitHub
+      Actions, installazione nel profilo utente, avvio all'accesso con il consenso.
+- [ ] Verifica dell'installazione e di un calcolo su una macchina macOS in CI.
+- [ ] Verifica dal vivo sul Mac di un partecipante.
+
+**Passo 6. Aggiornamento del Python incorporato e delle shell**
+
+- [ ] Descrizione firmata del kit per ogni sistema e architettura: versioni e hash di Python,
+      dell'installatore e della shell. L'agente aggiorna anche Python, non solo i suoi file.
+
+**Passo 7. Flusso dei compiti**
+
+- [ ] Quattro nuovi compiti di calcolo della fase 2 (campagna di uscita della variante B, posti da
+      apprendista, lotteria con quota di verifica scelta, certificato del token vincente) — nuovi
+      nuclei incorporati; ognuno ha una porzione di riferimento con l'hash atteso.
+- [ ] Il codice dei nuclei viene rilasciato prima dell'elenco di compiti che li richiede. Il vecchio
+      agente salta il compito incompatibile e continua a lavorare.
+- [ ] Quando tutti i compiti sono calcolati, l'agente aspetta e prende da solo l'elenco successivo.
+- [ ] Il raccoglitore dei risultati lavora secondo un programma sul nodo completo e pubblica un
+      riepilogo.
+- [ ] Conferma indipendente di tutte le 702 porzioni del primo elenco (ora 40).
+
+**Passo 8. Pilota con altre persone**
+
+- [ ] Pagina «Come collegarsi» in nove lingue: un collegamento per ogni sistema.
+- [ ] Un partecipante per piattaforma, non legato ai manutentori; i segni di completamento della fase
+      sono soddisfatti.
 - [ ] Secondo e terzo nodo completo presso proprietari diversi.
-- [ ] Correggere la riga obsoleta in BOARD («l'agente 0.2.0 non è ancora uscito»).
+
+**Passo 9. Agenti IA**
+
+- [ ] L'agente prende da solo i nuovi compiti della bacheca e li passa al modello locale del
+      partecipante; la risposta viene inviata solo dopo l'approvazione di una persona. Il testo del
+      compito è considerato non attendibile.
+- [ ] Istruzioni per l'assistente IA: come prendere un compito dalla bacheca, consegnare una
+      relazione e verificare quella altrui.
+- [ ] Relazione su un compito della bacheca da parte di un partecipante non legato ai manutentori.
+
+**Decisioni del proprietario sulla fase 0** (costano denaro, quindi non si prendono senza di lui):
+
+- Certificato di firma del codice per Windows. Senza di esso, all'installazione Windows mostra un
+  avviso SmartScreen, che va aggirato a mano.
+- Account Apple Developer per macOS. Senza di esso, macOS blocca l'avvio del pacchetto fino
+  all'autorizzazione nelle impostazioni.
+- Visualizzatore della bacheca per iOS: farlo o no.
 
 ### Fase 1. Formulazione precisa
 
-- [ ] Le decisioni D1 e D2 sono prese e scritte.
+- [x] Le decisioni D1 e D2 sono prese e scritte (sezione 3).
 - [ ] Per una richiesta aperta e un passo di addestramento sono scritti: la regola di accettazione,
       l'aritmetica, il fondamento dell'emissione di crediti, il momento di fissazione del risultato
       rispetto al sorteggio e il momento in cui il risultato si può usare.
@@ -268,7 +380,7 @@ chiuderla con un controesempio.
 Completato quando: per ogni direzione sono pubblicati una costruzione con preventivo, un controesempio o
 un limite dimostrato. È considerata trovata la costruzione che soddisfa tutti i segni della sezione 1.
 
-### Fase 5. Fondamenti che si stabiliscono solo con l'esperienza (richiede D5)
+### Fase 5. Fondamenti che si stabiliscono solo con l'esperienza (consentito da D5)
 
 - [ ] Qwen3.5-4B ad aritmetica intera su due schede video diverse: se i bit coincidono.
 - [ ] La sua velocità rispetto al profilo normale sulle stesse schede.
@@ -282,7 +394,9 @@ stata ripetuta da un secondo partecipante. La coincidenza dei bit riguarda solo 
 
 ### Fase 6. Sintesi e accettazione
 
-- [ ] Decisione D4 sul nucleo immutabile — prima della verifica finale sulla cattura della maggioranza.
+- [x] Decisione D4 sul nucleo immutabile (sezione 3).
+- [ ] La composizione del nucleo e il modo in cui un partecipante si convince che il suo programma
+      corrisponde all'impronta pubblicata.
 - [ ] Aggiornare CURRENT_DESIGN e la tabella degli attacchi in base agli esiti delle fasi 1–5.
 - [ ] Una dichiarazione è tracciata su carta dall'autorizzazione del compito fino all'uso del risultato,
       inclusi rifiuto, ripetizione e divisione della rete.

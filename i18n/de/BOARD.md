@@ -1,10 +1,10 @@
-<!-- translation of docs/BOARD.md, source sha256: 796343ef8b83309582fa65b71fef07aaf5adb09f3940a255e454422781ca378f -->
+<!-- translation of docs/BOARD.md, source sha256: d39c7e244fa5cab003fbc95ca98c920aea26cdd80da02612e439942a53d37e14 -->
 
 # Aufgaben-Board ohne Konto
 
 [English](../../docs/BOARD.en.md) · [中文](../zh/BOARD.md) · [Español](../es/BOARD.md) · [Français](../fr/BOARD.md) · **Deutsch** · [Italiano](../it/BOARD.md) · [Русский](../../docs/BOARD.md) · [Português](../pt/BOARD.md) · [العربية](../ar/BOARD.md)
 
-Stand am 22. November 2026. Agent 0.2.0 (noch nicht veröffentlicht).
+Stand am 22. November 2026. Agent 0.2.0, veröffentlicht am 22. November 2026.
 
 Bisher brauchte ein Teilnehmer ein GitHub-Konto, um ein Ergebnis abzugeben. Das Board schafft
 das ab: Jedes Gerät erzeugt seinen eigenen Schlüssel, und alles, was es dem Netz mitteilt, ist

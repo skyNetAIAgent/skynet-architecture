@@ -1,10 +1,10 @@
-<!-- translation of docs/BOARD.md, source sha256: 796343ef8b83309582fa65b71fef07aaf5adb09f3940a255e454422781ca378f -->
+<!-- translation of docs/BOARD.md, source sha256: d39c7e244fa5cab003fbc95ca98c920aea26cdd80da02612e439942a53d37e14 -->
 
 # 无需账号的任务板
 
 [English](../../docs/BOARD.en.md) · **中文** · [Español](../es/BOARD.md) · [Français](../fr/BOARD.md) · [Deutsch](../de/BOARD.md) · [Italiano](../it/BOARD.md) · [Русский](../../docs/BOARD.md) · [Português](../pt/BOARD.md) · [العربية](../ar/BOARD.md)
 
-状态截至 2026 年 11 月 22 日。代理程序 0.2.0（尚未发布）。
+状态截至 2026 年 11 月 22 日。代理程序 0.2.0，已于 2026 年 11 月 22 日发布。
 
 在此之前，参与者需要 GitHub 账号才能提交结果。任务板消除了这一要求：每台设备都创建自己的密钥，它对网络说的每一句话都是一条用该密钥签名的小记录。记录通过不同所有者运营的公开 Nostr 中继和参与者运行的全节点传递。任何人都不必在任何地方注册。
 

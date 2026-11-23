@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: 4cd77f720933922c55c4d78c3e761ca614215cc0ed8610b0fb2ae2e3fbee22e2 -->
+<!-- translation of docs/ROADMAP.md, source sha256: 191cff633e617eaad62a24c76710c67b4bc4307248d04a984ba3e3c863a678ff -->
 
 # Roadmap: Schutz vor Betrug
 
@@ -62,14 +62,14 @@ benannten Daten des Prüfers gezeigt, nicht durch das Fehlen von Ideen.
 | Was | Status | Wo es festgehalten ist |
 |---|---|---|
 | Anhand von Signaturen und kurzen Antworten lässt sich nicht feststellen, welches Gerät wie lange gearbeitet hat: ein Vermittler, ein Cache und eine untätige Karte liefern dieselben Daten | Durch Überlegung festgestellt | [OPEN_QUESTIONS](OPEN_QUESTIONS.md), „Was bereits verworfen wurde“ |
-| Das Netz bezahlt für das überprüfbare Ergebnis, nicht für die Ressource | Grundlage des Projekts; die Ergebniseinheit und die Annahmebedingung warten auf Festschreibung (D2) | [CURRENT_DESIGN](CURRENT_DESIGN.md), Abschnitt 1 |
+| Das Netz bezahlt für das überprüfbare Ergebnis, nicht für die Ressource | Angenommen (D2); die Ergebniseinheit und die Annahmebedingung sind noch nicht bestimmt | [CURRENT_DESIGN](CURRENT_DESIGN.md), Abschnitt 1 |
 | Aufgeschobene Auszahlung statt Pfand: Der Teilnehmer haftet nur mit dem ausstehenden Betrag | Angenommen | CURRENT_DESIGN, Abschnitt 2 |
 | Variante A: Stichprobenprüfung mit Abzug | Aktuelle Spezifikation | CURRENT_DESIGN, Abschnitt 3 |
-| Variante B: Das Netz bezahlt nur für geprüfte Aufgaben, und zwar zum `1/p`-Fachen des regulären Preises | Vorschlag (D3) | CURRENT_DESIGN, Abschnitt 3 |
+| Variante B: Das Netz bezahlt nur für geprüfte Aufgaben, und zwar zum `1/p`-Fachen des regulären Preises | Hauptkandidat; Wahl nach dem Vergleich (D3) | CURRENT_DESIGN, Abschnitt 3 |
 | Übereinstimmung des Ergebnisses bis aufs Bit durch ganzzahlige Arithmetik | Kandidat, nicht gemessen | OPEN_QUESTIONS, Q2 |
 | Streitfall durch Halbieren mit Neuberechnung eines Schritts im Journal | Gemessen für eine Zeile des Modells; für das vollständige Modell nicht gebaut | [PILOT_RESULTS](PILOT_RESULTS.md) |
 | Prüfung der Matrixmultiplikation mit einem Zufallsvektor innerhalb des Streitfalls | Kandidat, es gibt nur eine rechnerische Schätzung | CURRENT_DESIGN, Abschnitt 3 |
-| Ein unveränderlicher Prüfkern, der nicht per Abstimmung abgeschafft werden kann | Vorschlag (D4) | CURRENT_DESIGN, Abschnitt 8 |
+| Ein unveränderlicher Prüfkern, der nicht per Abstimmung abgeschafft werden kann | Angenommen (D4) | CURRENT_DESIGN, Abschnitt 8 |
 
 **Was über die Stärke des Schutzes bekannt ist.**
 
@@ -121,53 +121,168 @@ benannten Daten des Prüfers gezeigt, nicht durch das Fehlen von Ideen.
 9. Ein Saboteur, der keinen Nutzen braucht, und die Vergiftung von Trainingsdaten. Der
    wirtschaftliche Schutz wirkt bei ihnen nicht.
 
-## 3. Entscheidungen, die auf Genehmigung warten
+## 3. Entscheidungen
 
-Solange eine Entscheidung nicht getroffen ist, bleiben die davon abhängigen Punkte des Plans
-Vorschläge.
+Die Entscheidungen D1–D5 wurden am 23. November 2026 getroffen.
 
-| Nr. | Frage | Was davon abhängt |
+| Nr. | Frage | Entscheidung |
 |---|---|---|
-| D1 | Was als Garantie angenommen wird. Genügt „Betrug bringt nichts, Ausgegebenes geht verloren, ehrliche Arbeit lohnt sich mehr“? Ist eine begrenzte Leckage bei Absprache zulässig, oder muss eine falsche Auszahlung auch bei vollständiger Absprache der Prüfer ausgeschlossen sein | Fertigstellungskriterien, Phasen 3 und 4 |
-| D2 | Die Bezahlung für das überprüfbare Ergebnis statt für Leistung und Zeit festschreiben; die Ergebniseinheit und die Annahmebedingung bestimmen | Phasen 2–6 |
-| D3 | Variante A, Variante B oder keine. Entscheidet sich nach dem Vergleich bei gleichen Angriffen und gleichem Preis (Phase 2) | Phasen 3 und 6 |
-| D4 | Der unveränderliche Prüfkern und was zu ihm gehört | Phase 6 |
-| D5 | Erster Versuch: ganzzahliges Qwen3.5-4B auf zwei verschiedenen Grafikkarten (ob die Bits übereinstimmen, Geschwindigkeit, Qualität) | Phase 5 |
+| D1 | Was als Garantie angenommen wird | **Der Betrüger bekommt nicht, was er will.** Betrugsversuche lassen sich nicht ausschließen, aber jeder Versuch muss für denjenigen, der ihn unternimmt, nutzlos sein: Der erwartete Gewinn aus einer Fälschung ist nicht größer als null im Vergleich zur ehrlichen Arbeit und zur Untätigkeit, für jede Koalition, einschließlich eines Neulings mit leerem Konto und beliebig vieler Schlüssel. Das Ziel ist, dass ein falsches Ergebnis überhaupt nicht bezahlt wird. Ein Nettoverlust bei jedem Versuch ist nicht erforderlich. Eine begrenzte, aber positive Leckage (zum Beispiel `R·q^k` bei einem Neuling in Variante B) **erfüllt** das Kriterium **nicht** und bleibt ein offenes Loch |
+| D2 | Grundlage der Bezahlung | **Angenommen: Bezahlt wird nur das überprüfbare Ergebnis.** Eingeschaltete Ausrüstung, Arbeitszeit und behauptete Leistung sind keine Grundlage der Bezahlung: Eine Grafikkarte lässt sich auch mit etwas Fremdem belasten |
+| D3 | Variante A oder B | **Die Entscheidung wird nach dem Vergleich bei gleichen Angriffen und gleichem Preis (Phase 2) getroffen.** Hauptkandidat ist Variante B |
+| D4 | Unveränderlicher Prüfkern | **Angenommen in verstärkter Form.** Die Prüfung läuft automatisch, ohne Beteiligung eines Menschen und ohne Abstimmungen. Die Regeln der Prüfung werden nicht per Abstimmung geändert. Jeder Knoten führt die Prüfung selbst nach dem festgeschriebenen Fingerabdruck der Regeln aus, deshalb ändert ein Austausch des Algorithmus auf einem Knoten oder bei einem Anbieter des Programms nichts an den Entscheidungen der anderen. Offen: wie ein Fehler im Kern selbst behoben wird (nur durch den Übergang zu einem neuen Netz) und wie ein Teilnehmer sich vergewissert, dass sein Programm dem veröffentlichten Fingerabdruck entspricht (reproduzierbarer Build). Der Release-Schlüssel, mit dem derzeit die Mini-Agenten signiert werden, ist ein Werkzeug der Forschung; im Zielnetz darf es ihn nicht geben |
+| D5 | Erster Versuch mit dem ganzzahligen Qwen3.5-4B | **Erlaubt:** eine Grafikkarte RTX 2060 auf dem heimischen Linux des Betreuers, dessen Computer und, mit Einverständnis, Geräte anderer Teilnehmer über Mini-Agenten. Wird nach Phase 0 ausgeführt |
+
+**Reihenfolge der Arbeit.** Zuerst wird Phase 0 abgeschlossen — die Mini-Agenten und die
+Anwendungen für Smartphones, damit sich andere Menschen an der Arbeit beteiligen können. Danach
+die Phasen 1–5 nach dieser Roadmap.
 
 ## 4. Phasen und Checkliste
 
-Die Phasen 1–4 laufen gleichzeitig: Es sind Berechnungen und Überlegungen. Die Suche nach neuen
-Algorithmen (Phase 4) wartet nicht auf die übrigen. Phase 5 erfordert die Entscheidung D5. Phase 6
-führt die Ergebnisse zusammen.
+Zuerst wird Phase 0 abgeschlossen. Danach laufen die Phasen 1–4 gleichzeitig: Es sind
+Berechnungen und Überlegungen. Phase 5 (der Versuch ist durch die Entscheidung D5 erlaubt) läuft
+nach Phase 0. Phase 6 führt die Ergebnisse zusammen.
 
-### Phase 0. Werkzeuge für die Zusammenarbeit
+### Phase 0. Mini-Agenten und Anwendungen für Smartphones (wird zuerst ausgeführt)
+
+**Ziel der Phase.** Auf jeder unterstützten Plattform durchläuft ein Mensch den Weg „heruntergeladen → installiert → gestartet“, und danach aktualisiert sich der Mini-Agent ohne Beteiligung des Menschen, nimmt Aufgaben und liefert das Ergebnis ab. Ohne Benutzerkonto, ohne Administratorrechte, ohne vorab installiertes Python. Jeder Schritt ist auf einem lebenden Gerät geprüft, nicht nur durch automatische Tests.
+
+**Fertig, wenn** für jede Plattform aus der Liste unten: ein Mensch ohne Erfahrung den Weg anhand
+einer einzigen Seite der Anleitung gegangen ist; der Agent auf diesem Gerät selbst einen neuen
+Release erhalten hat, selbst eine Aufgabe der neuen Liste genommen hat, sein Ergebnis auf dem
+vollständigen Knoten erschienen ist und mit dem Ergebnis eines anderen Geräts übereingestimmt hat.
+Aufgeschrieben sind System, Architektur, die Versionen davor und danach und die Kennung des
+Eintrags auf dem Knoten.
+
+Plattformen: Windows, Linux, macOS, Android. Einen Agenten für iOS wird es nicht geben: iOS
+erlaubt einer Anwendung nicht, lange im Hintergrund zu rechnen, und die Regeln des App Store
+verbieten das Laden von ausführbarem Code. Stattdessen ist ein Betrachter des Bretts möglich
+(gesonderte Entscheidung).
+
+Bereits erledigt:
 
 - [x] Öffentliches Repositorium, unveränderliche Grundlage in neun Sprachen (Tag `core-v1`).
 - [x] Agentenprogramm für Windows, Linux und macOS: signierte Aufgaben und Aktualisierungen,
-      automatische Prüfungen auf drei Systemen (Release 0.2.0).
+      automatische Prüfungen auf drei Systemen (Release 0.2.0). Installation mit einem Befehl
+      im Terminal; Python 3.9+ ist nötig.
 - [x] Ergebnisse und [Aufgabenbrett](BOARD.md) ohne Benutzerkonto.
 - [x] Erster vollständiger Knoten, der den Verlauf der Einträge speichert.
 - [x] Erste Forschungsaufgabe „Schutz vor Betrügern“ auf dem Brett, in neun Sprachen.
-- [ ] Bericht zu einer Brettaufgabe von einem Teilnehmer, der nicht mit den Betreuern verbunden
-      ist, mit Angabe, von wem und wie er erzielt wurde. Derzeit sind alle Einträge im Netz von
-      Geräten der Betreuer gemacht. Verschiedene Schlüssel beweisen nicht verschiedene Besitzer.
-- [ ] Unabhängige Bestätigung aller 702 Portionen der ersten Aufgabenliste (derzeit 40).
-- [ ] Aktualisierung des Agenten von einer veröffentlichten Version auf die nächste, beobachtet
-      auf einer laufenden Installation (derzeit nur durch Tests geprüft).
-- [ ] Android-Anwendung: Prüfung auf einem echten Telefon, Veröffentlichung der Ergebnisse ohne
-      Token.
-- [ ] Installation ohne vorab installiertes Python: eine Datei für Windows, macOS und Linux.
+- [x] Testanwendung für Android 0.1.0 (nur auf dem Emulator geprüft).
+
+**Schritt 1. Zuverlässigkeit der Aktualisierung (Release 0.2.1, ohne neue Aufgaben)**
+
+- [ ] Die erste Installation prüft die Signatur des Release mit einem in den Installer selbst
+      eingebetteten Schlüssel, **bevor** der heruntergeladene Code gestartet wird. Derzeit prüft
+      der heruntergeladene Agent sich selbst.
+- [ ] Der Wechsel auf eine neue Version mit einer einzigen atomaren Operation: Zuerst wird das
+      neue Verzeichnis vorbereitet und geprüft, dann wird ein einziger Zeiger geändert; der
+      vorherige funktionsfähige Satz bleibt erhalten.
+- [ ] Die größte angenommene Release-Nummer wird außerhalb der Versionsverzeichnisse gespeichert
+      und auch bei einer Neuinstallation geprüft (Schutz vor dem Rückstieg auf einen alten
+      Release).
+- [ ] Geräteschlüssel, Einstellungen, Fortschritt und nicht gesendete Ergebnisse werden außerhalb
+      der Versionsverzeichnisse gespeichert und überstehen Aktualisierung und Neuinstallation.
+- [ ] Ohne Netz arbeitet der Agent auf der letzten funktionsfähigen Version weiter und wiederholt
+      die Verbindung mit wachsendem Abstand.
+- [ ] Automatische Prüfung in CI: eine ausgetauschte Datei, ein fremder Schlüssel, eine alte
+      Nummer, eine überzählige Datei, ein abgebrochener Download und ein inkompatibles Python
+      werden verworfen, die funktionsfähige Version bleibt erhalten.
+- [ ] **Prüfung an einer laufenden Installation:** Die Installationen von 0.2.0 auf Windows,
+      heimischem Linux und einem Server wechseln selbst auf 0.2.1; Geräteschlüssel und Fortschritt
+      sind erhalten.
+
+**Schritt 2. Android: Anwendung ohne Token**
+
+- [ ] Neue APK mit eingebettetem Agenten 0.2.1: Veröffentlichung durch signierte Einträge, der
+      Token-Bildschirm und die Hinweise zum Token sind entfernt.
+- [ ] Den fälschlichen Rückstieg ohne Netz beheben: Derzeit markieren drei Starts ohne Verbindung
+      die funktionsfähige neue Version als fehlerhaft. Die Version per lokaler Selbstprüfung
+      bestätigen.
+- [ ] Die Anwendung prüft einmal täglich neue APK-Versionen, gleicht Hash und Signatur des
+      Projekts ab und bietet die Installation an; die Installation bestätigt der Mensch (so ist
+      Android außerhalb des Stores aufgebaut).
+- [ ] Start nach dem Neustart über einen Schalter des Nutzers.
+- [ ] Prüfung der Aktualisierung über APK 0.1.0 im Emulator: Fortschritt und Schlüssel bleiben
+      erhalten.
+- [ ] **Prüfung auf einem echten Telefon** (ein Teilnehmer mit einem Telefon ist nötig):
+      Installation, Arbeit beim Laden, Neustart, Energiesparen des Herstellers.
+
+**Schritt 3. Windows: Installer als eine Datei**
+
+- [ ] `SkyNetAgentSetup.exe` wird in GitHub Actions gebaut; darin ein eingebettetes Python von
+      python.org, der Agent und ein signierter Release. Installation ins Profil des Nutzers, ohne
+      Administratorrechte, funktioniert ohne Netz.
+- [ ] Statusfenster: ob der Agent arbeitet, was er rechnet, Pause, Beenden.
+- [ ] Ein Häkchen „beim Anmelden starten“ im Installer; die Wahl bleibt bei der Aktualisierung
+      erhalten.
+- [ ] Deinstallation über „Apps“; bei der Deinstallation kann der Geräteschlüssel behalten
+      werden.
+- [ ] Prüfung auf einem sauberen Windows ohne Python, in einem Profil mit kyrillischen Zeichen
+      und Leerzeichen im Namen.
+
+**Schritt 4. Linux**
+
+- [ ] Der Installer nutzt das systemweite Python 3.9+, und wenn es fehlt, lädt er ein portables
+      Python herunter und prüft dessen Hash.
+- [ ] Ein systemd-Benutzerdienst mit Einverständnis des Nutzers; Arbeit ohne Anmeldung ist ein
+      gesondertes Häkchen.
+- [ ] Prüfung auf Linux Mint, Ubuntu und Debian.
+
+**Schritt 5. macOS (experimentell, solange kein Mac zum Prüfen vorhanden ist)**
+
+- [ ] Paket `SkyNetAgent.pkg` mit portablem Python für arm64 und x86_64, wird in GitHub Actions
+      gebaut, Installation ins Profil des Nutzers, Start bei der Anmeldung mit Einverständnis.
+- [ ] Prüfung der Installation und einer Berechnung auf einem macOS-Rechner in CI.
+- [ ] Prüfung auf dem Mac eines Teilnehmers.
+
+**Schritt 6. Aktualisierung des eingebetteten Python und der Shells**
+
+- [ ] Signierte Beschreibung des Satzes für jedes System und jede Architektur: Versionen und
+      Hashes von Python, Installer und Shell. Der Agent aktualisiert auch Python, nicht nur seine
+      eigenen Dateien.
+
+**Schritt 7. Aufgabenstrom**
+
+- [ ] Vier neue Rechenaufgaben der Phase 2 (Ausstiegskampagne in Variante B, Lehrlingsplätze,
+      Lotterie mit gewähltem Prüfanteil, Zertifikat des gewinnenden Tokens) — neue eingebaute
+      Kerne; jede mit einer Referenzportion mit erwartetem Hash.
+- [ ] Der Code der Kerne wird vor der Aufgabenliste veröffentlicht, die sie benötigt. Der alte
+      Agent überspringt eine inkompatible Aufgabe und arbeitet weiter.
+- [ ] Wenn alle Aufgaben gerechnet sind, wartet der Agent und nimmt selbst die nächste Liste auf.
+- [ ] Der Ergebnissammler arbeitet nach Zeitplan auf dem vollständigen Knoten und veröffentlicht
+      eine Übersicht.
+- [ ] Unabhängige Bestätigung aller 702 Portionen der ersten Liste (derzeit 40).
+
+**Schritt 8. Pilot mit anderen Menschen**
+
+- [ ] Seite „Wie man sich anschließt“ in neun Sprachen: ein Link für jedes System.
+- [ ] Je ein Teilnehmer, der nicht mit den Betreuern verbunden ist, auf jeder Plattform; die
+      Fertigstellungskriterien der Phase sind erfüllt.
+- [ ] Zweiter und dritter vollständiger Knoten bei verschiedenen Besitzern.
+
+**Schritt 9. KI-Agenten**
+
+- [ ] Der Agent holt selbst neue Aufgaben des Bretts und übergibt sie dem lokalen Modell des
+      Teilnehmers; die Antwort wird erst nach Freigabe durch den Menschen gesendet. Der Text der
+      Aufgabe gilt als nicht vertrauenswürdig.
 - [ ] Anleitung für den KI-Assistenten: wie man eine Aufgabe vom Brett nimmt, einen Bericht
       einreicht und einen fremden prüft.
-- [ ] Automatischer Zyklus für KI-Assistenten: Der Agent holt selbst neue Aufgaben vom Brett und
-      übergibt sie dem lokalen Modell des Teilnehmers. Derzeit geschieht das manuell durch
-      Befehle.
-- [ ] Zweiter und dritter vollständiger Knoten bei verschiedenen Besitzern.
-- [ ] Die veraltete Zeile in BOARD korrigieren („Agent 0.2.0 ist noch nicht veröffentlicht“).
+- [ ] Bericht zu einer Brettaufgabe von einem Teilnehmer, der nicht mit den Betreuern verbunden
+      ist.
+
+**Entscheidungen des Eigentümers zu Phase 0** (sie kosten Geld, deshalb werden sie nicht ohne
+ihn getroffen):
+
+- Ein Codesignatur-Zertifikat für Windows. Ohne es zeigt Windows bei der Installation eine
+  SmartScreen-Warnung, und man muss sie manuell umgehen.
+- Ein Apple-Developer-Account für macOS. Ohne es blockiert macOS den Start des Pakets bis zur
+  Erlaubnis in den Einstellungen.
+- Ein Betrachter des Bretts für iOS: machen oder nicht.
 
 ### Phase 1. Genaue Formulierung
 
-- [ ] Die Entscheidungen D1 und D2 sind getroffen und aufgeschrieben.
+- [x] Die Entscheidungen D1 und D2 sind getroffen und aufgeschrieben (Abschnitt 3).
 - [ ] Für eine offene Anfrage und einen Lernschritt sind aufgeschrieben: Annahmeregel, Arithmetik,
       Grundlage der Ausgabe von Credits, der Zeitpunkt, zu dem das Ergebnis im Verhältnis zur Auslosung festgelegt wird und der Zeitpunkt, ab dem das Ergebnis genutzt werden darf.
 - [ ] Gegnermodell in einem Dokument: Absprache, viele Schlüssel, Weggang, gemietete
@@ -290,7 +405,7 @@ Fertig, wenn: Für jede Richtung eine Konstruktion mit Kostenvoranschlag, ein Ge
 eine bewiesene Grenze veröffentlicht ist. Als gefunden gilt eine Konstruktion, die alle Kriterien
 aus Abschnitt 1 erfüllt.
 
-### Phase 5. Grundlagen, die sich nur durch Erfahrung feststellen lassen (erfordert D5)
+### Phase 5. Grundlagen, die sich nur durch Erfahrung feststellen lassen (durch D5 erlaubt)
 
 - [ ] Ganzzahliges Qwen3.5-4B auf zwei verschiedenen Grafikkarten: ob die Bits übereinstimmen.
 - [ ] Seine Geschwindigkeit gegenüber dem gewöhnlichen Profil auf denselben Karten.
@@ -305,8 +420,9 @@ geprüften Konfigurationen.
 
 ### Phase 6. Zusammenführung und Abnahme
 
-- [ ] Die Entscheidung D4 über den unveränderlichen Kern — vor der abschließenden Prüfung auf
-      Mehrheitsübernahme.
+- [x] Die Entscheidung D4 über den unveränderlichen Kern (Abschnitt 3).
+- [ ] Zusammensetzung des Kerns und die Art, wie ein Teilnehmer sich vergewissert, dass
+      sein Programm dem veröffentlichten Fingerabdruck entspricht.
 - [ ] CURRENT_DESIGN und die Angriffstabelle nach dem Ergebnis der Phasen 1–5 aktualisieren.
 - [ ] Eine Meldung ist auf dem Papier von der Freigabe der Aufgabe bis zur Nutzung des Ergebnisses
       verfolgt, einschließlich Ablehnung, Wiederholung und Netztrennung.

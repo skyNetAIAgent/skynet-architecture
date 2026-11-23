@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: 4cd77f720933922c55c4d78c3e761ca614215cc0ed8610b0fb2ae2e3fbee22e2 -->
+<!-- translation of docs/ROADMAP.md, source sha256: 191cff633e617eaad62a24c76710c67b4bc4307248d04a984ba3e3c863a678ff -->
 
 # Hoja de ruta: defensa contra el engaño
 
@@ -55,14 +55,14 @@ no con la ausencia de ideas.
 | Qué | Estado | Dónde está escrito |
 |---|---|---|
 | Por las firmas y las respuestas cortas no se puede establecer qué dispositivo trabajó ni durante cuánto tiempo: un intermediario, una caché y una tarjeta inactiva dan los mismos datos | Establecido por razonamiento | [OPEN_QUESTIONS](OPEN_QUESTIONS.md), «Qué se ha descartado» |
-| La red paga por un resultado verificable, no por el recurso | Base del proyecto; la unidad del resultado y la condición de aceptación esperan fijarse (D2) | [CURRENT_DESIGN](CURRENT_DESIGN.md), sección 1 |
+| La red paga por un resultado verificable, no por el recurso | Aceptado (D2); la unidad del resultado y la condición de aceptación aún no están definidas | [CURRENT_DESIGN](CURRENT_DESIGN.md), sección 1 |
 | Pago diferido en lugar de depósito: el participante responde solo con la suma en espera | Aceptado | CURRENT_DESIGN, sección 2 |
 | Variante A: verificación por muestreo con anulación de las recompensas pendientes si se detecta fraude | Especificación actual | CURRENT_DESIGN, sección 3 |
-| Variante B: la red paga solo por las tareas verificadas, `1/p` veces más caras | Propuesta (D3) | CURRENT_DESIGN, sección 3 |
+| Variante B: la red paga solo por las tareas verificadas, `1/p` veces más caras | Candidato principal; la elección tras la comparación (D3) | CURRENT_DESIGN, sección 3 |
 | Coincidencia del resultado bit a bit mediante aritmética entera | Candidato, no medido | OPEN_QUESTIONS, Q2 |
 | Disputa dividiendo a la mitad con recálculo de un paso en el registro | Medido para una fila del modelo; no construido para el modelo completo | [PILOT_RESULTS](PILOT_RESULTS.md) |
 | Comprobación de la multiplicación de matrices con un vector aleatorio dentro de la disputa | Candidato, solo hay una estimación calculada | CURRENT_DESIGN, sección 3 |
-| Núcleo de verificación inmutable que no se puede anular por votación | Propuesta (D4) | CURRENT_DESIGN, sección 8 |
+| Núcleo de verificación inmutable que no se puede anular por votación | Aceptado (D4) | CURRENT_DESIGN, sección 8 |
 
 **Lo que se sabe sobre la fuerza de la defensa.**
 
@@ -105,48 +105,163 @@ no con la ausencia de ideas.
 9. Un saboteador que no necesita beneficio y el envenenamiento de los datos de entrenamiento. La defensa económica
    no actúa sobre ellos.
 
-## 3. Decisiones que esperan aprobación
+## 3. Decisiones
 
-Mientras la decisión no esté tomada, los puntos del plan que dependen de ella siguen siendo propuestas.
+Las decisiones D1–D5 se tomaron el 23 de noviembre de 2026.
 
-| N.º | Pregunta | Qué depende de esta decisión |
+| N.º | Pregunta | Decisión |
 |---|---|---|
-| D1 | Qué se acepta como garantía. ¿Basta con «el engaño no aporta nada, lo gastado se pierde, el trabajo honesto es más rentable»? ¿Se admite una fuga limitada con colusión, o el pago falso debe quedar excluido también con colusión total de los verificadores? | Criterios de finalización, etapas 3 y 4 |
-| D2 | Fijar el pago por un resultado verificable en lugar de por la potencia y el tiempo; definir la unidad del resultado y la condición de aceptación | Etapas 2–6 |
-| D3 | Variante A, variante B o ninguna. Se decide tras la comparación con los mismos ataques y el mismo precio (etapa 2) | Etapas 3 y 6 |
-| D4 | El núcleo de verificación inmutable y qué contiene | Etapa 6 |
-| D5 | El primer experimento: Qwen3.5-4B con aritmética entera en dos tarjetas gráficas distintas (si los resultados coinciden bit a bit, a qué velocidad funciona y qué calidad ofrece) | Etapa 5 |
+| D1 | Qué se acepta como garantía | **El defraudador no obtiene lo que desea.** No se pueden excluir los intentos de engaño, pero cualquier intento debe ser inútil para quien lo hace: la ganancia esperada de una falsificación no es mayor que cero en comparación con el trabajo honesto y con la inacción, para cualquier coalición, incluidos un novato con la cuenta vacía y cualquier número de claves. El objetivo es que el resultado falso no se pague en absoluto. No se exige una pérdida estricta en cada intento. Una fuga limitada pero positiva (por ejemplo, `R·q^k` para un novato en la variante B) **no satisface** el criterio y sigue siendo un agujero abierto |
+| D2 | Base del pago | **Aceptado: solo se paga por un resultado verificable.** El equipo encendido, el tiempo de trabajo y la potencia declarada no son base del pago: una tarjeta gráfica se puede cargar también con algo ajeno |
+| D3 | Variante A o B | **La decisión se toma tras la comparación con los mismos ataques y el mismo precio (etapa 2).** El candidato principal es la variante B |
+| D4 | Núcleo de verificación inmutable | **Aceptado en forma reforzada.** La verificación se realiza automáticamente, sin participación humana y sin votaciones. Las reglas de verificación no se cambian por votación. Cada nodo ejecuta por sí mismo la verificación según la huella fijada de las reglas, de modo que la sustitución del algoritmo en un nodo o en un proveedor del programa no cambia la decisión de los demás. Abierto: cómo corregir un error en el propio núcleo (solo pasando a una red nueva) y cómo se asegura un participante de que su programa corresponde a la huella publicada (compilación reproducible). La clave de lanzamiento con la que ahora se firman los miniagentes es una herramienta de investigación; en la red objetivo no debe existir |
+| D5 | Primer experimento con Qwen3.5-4B con aritmética entera | **Autorizado:** la tarjeta gráfica RTX 2060 en el Linux doméstico del mantenedor, su ordenador y, con consentimiento, los dispositivos de otros participantes mediante miniagentes. Se ejecuta después de la etapa 0 |
+
+**Orden de trabajo.** Primero se termina la etapa 0 — los miniagentes y las aplicaciones para
+smartphones, para que otras personas puedan incorporarse al trabajo. Después, las etapas 1–5 según
+esta hoja de ruta.
 
 ## 4. Etapas y lista de comprobación
 
-Las etapas 1–4 avanzan a la vez: son cálculos y razonamientos. La búsqueda de algoritmos nuevos (etapa 4)
-no espera a las demás. La etapa 5 exige la decisión D5. La etapa 6 reúne los resultados.
+Primero se termina la etapa 0. Después, las etapas 1–4 avanzan a la vez: son cálculos y razonamientos.
+La etapa 5 (experimento autorizado por la decisión D5) va después de la etapa 0. La etapa 6 reúne
+los resultados.
 
-### Etapa 0. Herramientas de colaboración
+### Etapa 0. Miniagentes y aplicaciones para smartphones (se ejecuta primero)
+
+**Objetivo de la etapa.** En cada plataforma admitida, una persona recorre el camino «descargó →
+instaló → ejecutó» y, a partir de ahí, el miniagente se actualiza sin intervención humana, toma
+tareas y entrega el resultado. Sin cuenta, sin permisos de administrador, sin Python instalado de
+antemano. Cada paso está comprobado en un dispositivo real, no solo con pruebas automáticas.
+
+**Terminado cuando** para cada plataforma de la lista de abajo: una persona sin experiencia ha
+recorrido el camino con una sola página de instrucciones; el agente de ese dispositivo obtuvo por
+sí mismo una versión nueva, tomó por sí mismo una tarea de la lista nueva, su resultado apareció en
+el nodo completo y coincidió con el resultado de otro dispositivo. Están anotados el sistema, la
+arquitectura, las versiones de antes y de después y el identificador del registro en el nodo.
+
+Plataformas: Windows, Linux, macOS, Android. No habrá agente para iOS: iOS no permite que una
+aplicación calcule durante mucho tiempo en segundo plano, y las reglas de App Store prohíben cargar
+código ejecutable. En su lugar es posible un visor del tablero (decisión aparte).
+
+Ya hecho:
 
 - [x] Repositorio público, base inmutable en nueve idiomas (etiqueta `core-v1`).
 - [x] Programa agente para Windows, Linux y macOS: tareas y actualizaciones firmadas,
-      comprobaciones automáticas en los tres sistemas (versión 0.2.0).
+      comprobaciones automáticas en los tres sistemas (versión 0.2.0). Instalación con un solo
+      comando en la terminal; se necesita Python 3.9+.
 - [x] Resultados y [tablero de tareas](BOARD.md) sin cuenta.
 - [x] Primer nodo completo que guarda el historial de registros.
 - [x] Primera tarea de investigación «Defensa contra los defraudadores» en el tablero, en nueve idiomas.
-- [ ] Informe para una tarea del tablero de un participante no vinculado a los mantenedores, que indique quién lo obtuvo
-      y cómo. Ahora todos los registros de la red están hechos por dispositivos de los mantenedores. Claves
-      distintas no demuestran propietarios distintos.
-- [ ] Confirmación independiente de las 702 porciones de la primera lista de tareas (ahora 40).
-- [ ] Actualización del agente de una versión publicada a la siguiente, observada en una
-      instalación real (ahora solo se ha comprobado con pruebas).
-- [ ] Aplicación Android: comprobación en un teléfono real, publicación de resultados sin token.
-- [ ] Instalación sin Python preinstalado: un solo archivo para Windows, macOS y Linux.
-- [ ] Instrucciones para el asistente de IA: cómo tomar una tarea del tablero, entregar un informe y comprobar el informe de otro.
-- [ ] Ciclo automático para los asistentes de IA: el agente recoge por sí mismo las tareas nuevas del tablero y las entrega
-      al modelo local del participante. Ahora esto se hace con comandos manuales.
-- [ ] Segundo y tercer nodos completos de propietarios distintos.
-- [ ] Corregir la línea obsoleta en BOARD («el agente 0.2.0 aún no está publicado»).
+- [x] Aplicación Android de prueba 0.1.0 (comprobada solo en el emulador).
 
+**Paso 1. Fiabilidad de la actualización (versión 0.2.1, sin tareas nuevas)**
+
+- [ ] La primera instalación comprueba la firma de la versión con la clave integrada en el propio
+      instalador, **antes** de ejecutar el código descargado. Ahora, el agente descargado se
+      comprueba a sí mismo.
+- [ ] Cambio a una versión nueva con una sola operación atómica: primero se prepara y se comprueba
+      el directorio nuevo, luego se cambia un único puntero; el conjunto funcional anterior se
+      conserva.
+- [ ] El mayor número de versión aceptado se guarda fuera de los directorios de versiones y se
+      comprueba también al reinstalar (protección contra el retroceso a una versión antigua).
+- [ ] La clave del dispositivo, la configuración, el progreso y los resultados no enviados se
+      guardan fuera de los directorios de versiones y sobreviven a la actualización y a la
+      reinstalación.
+- [ ] Sin red, el agente sigue trabajando con la última versión funcional y repite la conexión
+      con un intervalo creciente.
+- [ ] Comprobación automática en CI: un archivo sustituido, una clave ajena, un número antiguo,
+      un archivo de más, una descarga interrumpida y un Python incompatible se rechazan; la versión
+      en funcionamiento se conserva.
+- [ ] **Comprobación en vivo:** las instalaciones 0.2.0 en Windows, en el Linux doméstico y en el
+      servidor pasan por sí mismas a la 0.2.1; la clave del dispositivo y el progreso se conservan.
+
+**Paso 2. Android: aplicación sin token**
+
+- [ ] APK nuevo con el agente 0.2.1 integrado: publicación mediante registros firmados, se quitan
+      la pantalla del token y las indicaciones sobre el token.
+- [ ] Corregir el falso retroceso sin red: ahora, tres arranques sin conexión marcan una versión
+      nueva y funcional como defectuosa. Confirmar la versión con una autocomprobación local.
+- [ ] Una vez al día, la aplicación comprueba si hay versiones nuevas del APK, coteja el hash y la
+      firma del proyecto y ofrece instalarla; la instalación la confirma una persona (así funciona
+      Android fuera de la tienda).
+- [ ] Arranque tras el reinicio mediante un interruptor del usuario.
+- [ ] Comprobación de la actualización sobre el APK 0.1.0 en el emulador: el progreso y la clave
+      se conservan.
+- [ ] **Comprobación en vivo en un teléfono real** (hace falta un participante con teléfono):
+      instalación, funcionamiento durante la carga, reinicio, ahorro de energía del fabricante.
+
+**Paso 3. Windows: instalador de un solo archivo**
+
+- [ ] `SkyNetAgentSetup.exe` se compila en GitHub Actions; dentro, Python incrustado de python.org,
+      el agente y la versión firmada. Instalación en el perfil del usuario, sin permisos de
+      administrador, funciona sin red.
+- [ ] Ventana de estado: si el agente está funcionando, qué calcula, pausa, salida.
+- [ ] Casilla «iniciar al entrar» en el instalador; la elección se conserva al actualizar.
+- [ ] Desinstalación mediante «Aplicaciones»; al desinstalar se puede conservar la clave del
+      dispositivo.
+- [ ] Comprobación en un Windows limpio sin Python, en un perfil con cirílico y espacios en el
+      nombre.
+
+**Paso 4. Linux**
+
+- [ ] El instalador usa el Python 3.9+ del sistema y, si no lo hay, descarga un Python portátil
+      y comprueba su hash.
+- [ ] Servicio de usuario systemd con el consentimiento del usuario; el funcionamiento sin iniciar
+      sesión es una casilla aparte.
+- [ ] Comprobación en Linux Mint, Ubuntu y Debian.
+
+**Paso 5. macOS (experimental, por ahora no hay Mac para comprobar)**
+
+- [ ] Paquete `SkyNetAgent.pkg` con Python portátil para arm64 y x86_64, se compila en GitHub
+      Actions, instalación en el perfil del usuario, arranque al iniciar sesión con consentimiento.
+- [ ] Comprobación de la instalación y de un cálculo en una máquina macOS en CI.
+- [ ] Comprobación en vivo en el Mac de un participante.
+
+**Paso 6. Actualización del Python integrado y de los envoltorios**
+
+- [ ] Descripción firmada del conjunto para cada sistema y arquitectura: versiones y hashes del
+      Python, del instalador y del envoltorio. El agente actualiza también Python, no solo sus
+      archivos.
+
+**Paso 7. Flujo de tareas**
+
+- [ ] Cuatro tareas de cálculo nuevas de la etapa 2 (campaña de salida de la variante B, plazas de
+      aprendiz, lotería con proporción de verificación ajustada, certificado del token ganador):
+      núcleos integrados nuevos; cada una tiene una porción de referencia con el hash esperado.
+- [ ] El código de los núcleos se publica antes que la lista de tareas que los exige. El agente
+      antiguo se salta la tarea incompatible y sigue trabajando.
+- [ ] Cuando todas las tareas están calculadas, el agente espera y toma por sí mismo la lista
+      siguiente.
+- [ ] El recolector de resultados funciona según un horario en el nodo completo y publica un
+      resumen.
+- [ ] Confirmación independiente de las 702 porciones de la primera lista de tareas (ahora 40).
+
+**Paso 8. Piloto con otras personas**
+
+- [ ] Página «Cómo conectarse» en nueve idiomas: un enlace por cada sistema.
+- [ ] Un participante no vinculado a los mantenedores en cada plataforma; se cumplen los criterios
+      de finalización de la etapa.
+- [ ] Segundo y tercer nodos completos de propietarios distintos.
+
+**Paso 9. Agentes de IA**
+
+- [ ] El agente recoge por sí mismo las tareas nuevas del tablero y las entrega al modelo local
+      del participante; la respuesta se envía solo tras la aprobación de una persona. El texto de
+      la tarea se considera no fiable.
+- [ ] Instrucciones para el asistente de IA: cómo tomar una tarea del tablero, entregar un informe y comprobar el informe de otro.
+- [ ] Informe para una tarea del tablero de un participante no vinculado a los mantenedores.
+
+**Decisiones del propietario sobre la etapa 0** (cuestan dinero, por eso no se toman sin él):
+
+- Certificado de firma de código para Windows. Sin él, al instalar, Windows muestra la advertencia
+  de SmartScreen y hay que saltársela manualmente.
+- Cuenta de Apple Developer para macOS. Sin ella, macOS bloquea la ejecución del paquete hasta que
+  se permite en los ajustes.
+- Visor del tablero para iOS: hacerlo o no.
 ### Etapa 1. Planteamiento exacto
 
-- [ ] Las decisiones D1 y D2 están tomadas y escritas.
+- [x] Las decisiones D1 y D2 están tomadas y escritas (sección 3).
 - [ ] Para una petición abierta y un paso de entrenamiento están escritos: la regla de aceptación, la aritmética,
       la base de la emisión de créditos, el momento de fijación del resultado respecto al sorteo y el momento en que
       el resultado se puede usar.
@@ -256,7 +371,7 @@ con un contraejemplo.
 Terminado cuando: para cada dirección están publicados una construcción con presupuesto, un contraejemplo o
 un límite demostrado. Se considera encontrada la construcción que cumple todos los criterios de la sección 1.
 
-### Etapa 5. Cuestiones que solo se pueden resolver mediante experimentos (exige D5)
+### Etapa 5. Fundamentos que solo se establecen mediante experimentos (autorizado por D5)
 
 - [ ] Qwen3.5-4B con aritmética entera en dos tarjetas gráficas distintas: si coinciden los bits.
 - [ ] Su velocidad respecto al perfil normal en las mismas tarjetas.
@@ -270,7 +385,8 @@ participante. La coincidencia de bits se refiere solo a las configuraciones prob
 
 ### Etapa 6. Síntesis y aceptación
 
-- [ ] Decisión D4 sobre el núcleo inmutable, antes de la comprobación final frente a la captura de la mayoría.
+- [x] Decisión D4 sobre el núcleo inmutable (sección 3).
+- [ ] Composición del núcleo y forma en que un participante se asegura de que su programa corresponde a la huella publicada.
 - [ ] Actualizar CURRENT_DESIGN y la tabla de ataques según los resultados de las etapas 1–5.
 - [ ] Una declaración rastreada sobre papel desde la autorización de la tarea hasta el uso del resultado,
       incluidos el rechazo, la repetición y la división de la red.

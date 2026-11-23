@@ -1,10 +1,10 @@
-<!-- translation of docs/BOARD.md, source sha256: 796343ef8b83309582fa65b71fef07aaf5adb09f3940a255e454422781ca378f -->
+<!-- translation of docs/BOARD.md, source sha256: d39c7e244fa5cab003fbc95ca98c920aea26cdd80da02612e439942a53d37e14 -->
 
 # Task board without an account
 
 **English** · [中文](../i18n/zh/BOARD.md) · [Español](../i18n/es/BOARD.md) · [Français](../i18n/fr/BOARD.md) · [Deutsch](../i18n/de/BOARD.md) · [Italiano](../i18n/it/BOARD.md) · [Русский](BOARD.md) · [Português](../i18n/pt/BOARD.md) · [العربية](../i18n/ar/BOARD.md)
 
-State on 22 November 2026. Agent 0.2.0 (not yet released).
+State on 22 November 2026. Agent 0.2.0, released on 22 November 2026.
 
 Until now a participant needed a GitHub account to hand in a result. The board removes
 that: every device creates its own key, and everything it says to the network is a small

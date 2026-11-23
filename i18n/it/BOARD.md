@@ -1,10 +1,10 @@
-<!-- translation of docs/BOARD.md, source sha256: 796343ef8b83309582fa65b71fef07aaf5adb09f3940a255e454422781ca378f -->
+<!-- translation of docs/BOARD.md, source sha256: d39c7e244fa5cab003fbc95ca98c920aea26cdd80da02612e439942a53d37e14 -->
 
 # Bacheca dei compiti senza un account
 
 [English](../../docs/BOARD.en.md) · [中文](../zh/BOARD.md) · [Español](../es/BOARD.md) · [Français](../fr/BOARD.md) · [Deutsch](../de/BOARD.md) · **Italiano** · [Русский](../../docs/BOARD.md) · [Português](../pt/BOARD.md) · [العربية](../ar/BOARD.md)
 
-Stato al 22 novembre 2026. Agente 0.2.0 (non ancora rilasciato).
+Stato al 22 novembre 2026. Agente 0.2.0, rilasciato il 22 novembre 2026.
 
 Finora un partecipante aveva bisogno di un account GitHub per consegnare un risultato. La bacheca lo elimina: ogni dispositivo crea la propria chiave, e tutto ciò che comunica alla rete è un piccolo record firmato con quella chiave. I record viaggiano attraverso relay Nostr pubblici di proprietari diversi e attraverso nodi completi gestiti dai partecipanti. Nessuno deve registrarsi da nessuna parte.
 

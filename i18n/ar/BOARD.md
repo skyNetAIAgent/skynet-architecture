@@ -1,10 +1,10 @@
-<!-- translation of docs/BOARD.md, source sha256: 796343ef8b83309582fa65b71fef07aaf5adb09f3940a255e454422781ca378f -->
+<!-- translation of docs/BOARD.md, source sha256: d39c7e244fa5cab003fbc95ca98c920aea26cdd80da02612e439942a53d37e14 -->
 
 # لوحة مهام بدون حساب
 
 [English](../../docs/BOARD.en.md) · [中文](../zh/BOARD.md) · [Español](../es/BOARD.md) · [Français](../fr/BOARD.md) · [Deutsch](../de/BOARD.md) · [Italiano](../it/BOARD.md) · [Русский](../../docs/BOARD.md) · [Português](../pt/BOARD.md) · **العربية**
 
-الحالة في 22 نوفمبر 2026. الوكيل 0.2.0 (لم يُصدر بعد).
+الحالة في 22 نوفمبر 2026. الوكيل 0.2.0، صدر في 22 نوفمبر 2026.
 
 حتى الآن كان المشارك يحتاج إلى حساب GitHub لتسليم نتيجة. واللوحة تزيل ذلك: كل جهاز
 ينشئ مفتاحه الخاص، وكل ما يقوله للشبكة هو سجل صغير موقّع بهذا المفتاح. وتسير السجلات
