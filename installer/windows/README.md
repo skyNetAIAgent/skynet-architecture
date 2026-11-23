@@ -1,5 +1,7 @@
 # Windows x64 installer
 
+**English** · [中文](../../i18n/zh/WINDOWS_INSTALLER.md) · [Español](../../i18n/es/WINDOWS_INSTALLER.md) · [Français](../../i18n/fr/WINDOWS_INSTALLER.md) · [Deutsch](../../i18n/de/WINDOWS_INSTALLER.md) · [Italiano](../../i18n/it/WINDOWS_INSTALLER.md) · [Русский](../../i18n/ru/WINDOWS_INSTALLER.md) · [Português](../../i18n/pt/WINDOWS_INSTALLER.md) · [العربية](../../i18n/ar/WINDOWS_INSTALLER.md)
+
 Download the EXE and the matching `.exe.sha256` from the same project release. In
 PowerShell, open the download folder and compare the checksum. [GitHub Releases](https://github.com/skyNetAIAgent/skynet-architecture/releases)
 

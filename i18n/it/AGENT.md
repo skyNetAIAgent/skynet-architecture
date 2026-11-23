@@ -14,18 +14,21 @@ Per aiutare a progettare SkyNet non serve un assistente di IA. L'agente di ricer
 | Esegue i calcoli incorporati con la priorità di CPU più bassa, uno alla volta per impostazione predefinita | Lavorare a batteria, a meno che non lo permettiate |
 | Pubblica ogni risultato come un record firmato con la chiave di questo dispositivo, attraverso relay pubblici e nodi completi | Inviare i vostri file, identificativi hardware o altro dal vostro computer |
 | Si aggiorna da solo, ma solo a una versione firmata con la chiave di rilascio del progetto | Installare un aggiornamento con firma errata, impronta di un file errata o numero più vecchio |
-| Tiene tutto in un'unica cartella del vostro profilo | Richiedere diritti di amministratore o avviarsi da solo se non attivate l'avvio automatico |
+| Si installa nel vostro profilo e vi lascia scegliere se avviarsi all'accesso | Richiedere diritti di amministratore |
 
-I primi compiti sono calcoli esatti sulle regole di pagamento di SkyNet. Per esempio: «un partecipante che lascia la rete può guadagnare con una raffica di risultati falsi, e a partire da quale quota di verificatori in collusione?». Ogni dispositivo deve ottenere le stesse cifre, e i risultati di persone diverse vengono confrontati. Vedere [tasks/README.md](../../tasks/README.md).
+I primi compiti sono calcoli esatti sulle regole di pagamento di SkyNet, per esempio: «un partecipante che lascia la rete può guadagnare con una raffica di risultati falsi, e a partire da quale quota di verificatori in collusione?». Ogni dispositivo deve ottenere le stesse cifre, e i risultati di persone diverse vengono confrontati. Vedere [tasks/README.md](../../tasks/README.md).
 
 ## Requisiti
 
-- Python 3.9 o successivo. Nient'altro: l'agente usa solo la libreria standard di Python.
+- Il programma di installazione per Windows x64 include Python. Gli altri metodi richiedono Python 3.9 o successivo.
 - Qualche megabyte di spazio su disco e una connessione a internet.
 
 ## Installazione
 
-**Windows** (PowerShell):
+**Windows x64**
+
+1. Scaricate `SkyNetAgentSetup-<version>.exe` da [Releases](https://github.com/skyNetAIAgent/skynet-architecture/releases) ed eseguitelo. Il programma di installazione propone di avviare l'agente subito e all'accesso a Windows. Entrambe le caselle sono selezionate per impostazione predefinita. Per le istruzioni su checksum e SmartScreen, vedere la [guida del programma di installazione per Windows](../../installer/windows/README.md).
+2. Se avete già Python, potete installare da PowerShell.
 
 ```powershell
 irm https://raw.githubusercontent.com/skyNetAIAgent/skynet-architecture/main/agent/install.ps1 | iex
@@ -50,7 +53,7 @@ Su un telefono l'agente lavora solo mentre il telefono è in carica. Se non ries
 
 Se preferite leggere prima di eseguire: scaricate [`install.py`](../../agent/install.py), leggetelo (è breve) ed eseguite `python3 -I install.py`.
 
-Il programma di installazione mette l'agente in una cartella (`%LOCALAPPDATA%\SkyNetAgent` su Windows, `~/Library/Application Support/SkyNetAgent` su macOS, `~/.local/share/skynet-agent` su Linux e Android) e crea il comando `skynet-agent`. Non avvia nulla.
+Il programma di installazione mette l'agente in una cartella (`%LOCALAPPDATA%\SkyNetAgent` su Windows, `~/Library/Application Support/SkyNetAgent` su macOS, `~/.local/share/skynet-agent` su Linux e Android) e crea il comando `skynet-agent`. Con i programmi di installazione a riga di comando, avviate l'agente voi stessi.
 
 ## Primi passi
 
@@ -61,7 +64,7 @@ skynet-agent run                  # lavorare finché non premete Ctrl+C
 skynet-agent autostart enable     # facoltativo: avviarsi all'accesso
 ```
 
-Su Windows il comando è il file `skynet-agent.cmd` nella cartella dell'agente; il programma di installazione stampa la riga esatta.
+Su Windows eseguite `.\skynet-agent.cmd` dalla cartella dell'agente. Il programma di installazione EXE aggiunge le scorciatoie per stato, pausa, ripresa e arresto sotto **SkyNet Agent** nel menu Start. L'agente aggiorna i propri file dalle versioni firmate. Eseguite un programma di installazione più recente per aggiornare il Python incluso.
 
 ### Pubblicazione dei risultati
 
@@ -144,6 +147,8 @@ L'agente scarica file pubblici da questo repository (GitHub vede il vostro indir
 L'elettricità di un core della CPU occupato per impostazione predefinita, alla priorità più bassa, così gli altri programmi non rallentano. Su un telefono la batteria non viene usata a meno che non lo permettiate; tenete il telefono in carica.
 
 ## Rimozione
+
+Per un'installazione EXE, scegliete **SkyNet Agent → Disinstalla** nel menu Start. Il programma di disinstallazione conserva per impostazione predefinita la chiave del vostro dispositivo e i risultati non inviati. Selezionate la casella di eliminazione dei dati per rimuovere anche questi. Per un'installazione a riga di comando, eseguite il comando seguente.
 
 ```sh
 skynet-agent uninstall --yes

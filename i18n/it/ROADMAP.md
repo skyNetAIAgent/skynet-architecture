@@ -1,10 +1,11 @@
-<!-- translation of docs/ROADMAP.md, source sha256: 3060afa02f0adb73bcb1a9c7822d84ff2efe0f1ce1c8c105af2eda79e7dda071 -->
+<!-- translation of docs/ROADMAP.md, source sha256: 3009fa9bba5e1d6570484a29bf8bf33e5e10c5ff34439f7dee55ff8c53171c7c -->
 
 # Tabella di marcia: difesa dall'inganno
 
 [English](../../docs/ROADMAP.en.md) · [中文](../zh/ROADMAP.md) · [Español](../es/ROADMAP.md) · [Français](../fr/ROADMAP.md) · [Deutsch](../de/ROADMAP.md) · **Italiano** · [Русский](../../docs/ROADMAP.md) · [Português](../pt/ROADMAP.md) · [العربية](../ar/ROADMAP.md)
 
-Stato al 23 novembre 2026. È un **piano di lavoro, non una promessa di risultato**. Il segno `[x]`
+Stato al 23 novembre 2026 (aggiornato dopo il rilascio della v0.2.2). È un **piano di lavoro, non
+una promessa di risultato**. Il segno `[x]`
 significa «fatto, e lo si può verificare nel repository o nelle registrazioni della rete»; `[ ]` significa
 «non fatto». I numeri con la nota [calcolo] sono ottenuti da una formula, non misurati. La tabella di
 marcia viene aggiornata a ogni cambiamento di stato.
@@ -88,10 +89,11 @@ non con l'assenza di idee.
   danno un limite inferiore generale del costo.
 - Irregolarità del reddito nella variante B: con 6.000 compiti al mese, verifica di 1 su 100 e costo pari
   al 95% del prezzo, la probabilità di un mese in perdita è 33,10% [calcolo, FIRST_RUN].
-- La prima esecuzione dei calcoli (702 porzioni) è stata fatta su un computer. Un secondo dispositivo entro
-  il 22 novembre ha ricalcolato 40 porzioni; tutte sono coincise. Le sue registrazioni sono firmate con la
-  chiave `46000d30…` e sono disponibili sul nodo completo. Le restanti 662 porzioni non sono confermate in
-  modo indipendente.
+- La prima esecuzione dei calcoli (702 porzioni) è stata fatta su un solo computer. Un secondo
+  dispositivo, entro il 23 novembre, ha ricalcolato tutte le 702 porzioni; tutte sono coincise. Le
+  sue registrazioni sono firmate con la chiave `46000d30…` e sono disponibili sul nodo completo.
+  Entrambi i dispositivi appartengono ai manutentori, quindi questa non è ancora una conferma da
+  parte di un partecipante indipendente.
 
 **Che cosa non è risolto.**
 
@@ -182,35 +184,43 @@ Già fatto:
 - [x] Verifica automatica in CI: un file sostituito, una chiave altrui, un numero vecchio, un file
       in più, un download interrotto e un Python incompatibile vengono rifiutati, la versione
       funzionante resta.
-- [ ] **Verifica dal vivo:** le installazioni 0.2.0 su Windows, Linux domestico e sul server passano
-      da sole alla 0.2.1, la chiave del dispositivo e il progresso sono conservati.
+- [x] **Verifica dal vivo sul server:** l'installazione 0.2.0 è passata da sola alla 0.2.2 il 23
+      novembre 2026, la chiave del dispositivo e il progresso sono conservati. Sul Linux domestico
+      l'agente è stato installato di nuovo con il nuovo installatore (0.2.2); il suo
+      autoaggiornamento sarà verificato dal rilascio successivo.
+- [ ] Verifica dal vivo dell'autoaggiornamento su Windows (dopo l'installazione da parte del
+      proprietario tramite l'installatore).
 
 **Passo 2. Android: app senza token**
 
-- [ ] Nuovo APK con l'agente 0.2.1 incorporato: pubblicazione con registrazioni firmate, la schermata
-      del token e i suggerimenti sul token sono rimossi.
-- [ ] Correggere il falso ritorno alla versione precedente senza rete: ora tre avvii senza
-      collegamento segnano una versione nuova funzionante come difettosa. Confermare la versione con
-      una autoverifica locale.
-- [ ] L'app verifica una volta al giorno le nuove versioni dell'APK, confronta l'hash e la firma del
+- [x] Nuovo APK 0.2.0 con l'agente 0.2.2 incorporato: pubblicazione con registrazioni firmate, la
+      schermata del token e i suggerimenti sul token sono rimossi.
+- [x] Correggere il falso ritorno alla versione precedente senza rete: prima tre avvii senza
+      collegamento segnavano una versione nuova funzionante come difettosa. Ora la versione è
+      confermata da un'autoverifica locale.
+- [x] L'app verifica una volta al giorno le nuove versioni dell'APK, confronta l'hash e la firma del
       progetto e propone di installare; l'installazione è confermata da una persona (così funziona
       Android fuori dallo store).
-- [ ] Avvio dopo il riavvio tramite l'interruttore dell'utente.
-- [ ] Verifica dell'aggiornamento sopra l'APK 0.1.0 sull'emulatore: progresso e chiave si conservano.
+- [x] Avvio dopo il riavvio tramite l'interruttore dell'utente (verificato sull'emulatore).
+- [x] Verifica dell'aggiornamento sopra l'APK 0.1.0 sull'emulatore Android 14: i dati si conservano.
+- [ ] Verifica della proposta di un nuovo APK da parte dell'app stessa (funzionerà con la versione
+      successiva dell'APK).
 - [ ] **Verifica dal vivo su un telefono reale** (serve un partecipante con un telefono):
       installazione, lavoro durante la ricarica, riavvio, risparmio energetico del produttore.
 
 **Passo 3. Windows: installatore in un solo file**
 
-- [ ] `SkyNetAgentSetup.exe` viene compilato in GitHub Actions, senza firma del codice; dentro,
+- [x] `SkyNetAgentSetup.exe` viene compilato in GitHub Actions, senza firma del codice; dentro,
       Python incorporato da python.org, l'agente e la versione firmata. Accanto vengono pubblicati
       il suo hash e la firma del progetto. Installazione nel profilo utente, senza diritti di
       amministratore, funziona senza rete.
-- [ ] Finestra di stato: se l'agente lavora, che cosa calcola, pausa, uscita.
-- [ ] Casella «avvia all'accesso» nell'installatore; la scelta si conserva all'aggiornamento.
-- [ ] Rimozione tramite «App»; alla rimozione si può conservare la chiave del dispositivo.
-- [ ] Verifica su Windows pulito senza Python, in un profilo con caratteri cirillici e spazi nel
-      nome.
+- [x] Collegamenti nel menu «Start»: stato dell'agente, pausa, ripresa, arresto, rimozione.
+- [x] Casella «avvia all'accesso» nell'installatore; la scelta si conserva all'aggiornamento.
+- [x] Rimozione tramite «App»; alla rimozione si può conservare la chiave del dispositivo.
+- [x] Verifica automatica in CI su un Windows pulito senza Python: installazione, autoverifica,
+      rimozione.
+- [ ] Verifica dal vivo sul computer di una persona: l'esegue per primo il proprietario (versione
+      v0.2.2).
 
 **Passo 4. Linux**
 
@@ -235,7 +245,9 @@ Già fatto:
 - [ ] Quando tutti i compiti sono calcolati, l'agente aspetta e prende da solo l'elenco successivo.
 - [ ] Il raccoglitore dei risultati lavora secondo un programma sul nodo completo e pubblica un
       riepilogo.
-- [ ] Conferma indipendente di tutte le 702 porzioni del primo elenco (ora 40).
+- [ ] Conferma indipendente di tutte le 702 porzioni del primo elenco. Un secondo dispositivo (il
+      server dei manutentori) ha ricalcolato tutte le 702, tutte sono coincise; un partecipante non
+      legato ai manutentori per ora non c'è.
 
 **Passo 7. Pilota con altre persone**
 

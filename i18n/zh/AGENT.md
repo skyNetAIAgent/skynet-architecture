@@ -14,18 +14,21 @@
 | 以最低的 CPU 优先级运行内置计算，默认一次一个 | 在电池供电时工作，除非你允许 |
 | 把每个结果作为一条用本设备自己的密钥签名的记录，通过公开中继和全节点发布 | 发送你的文件、硬件标识或电脑上的任何其他内容 |
 | 自动更新，但只更新到用项目发布密钥签名的版本 | 安装签名错误、文件哈希错误或编号更旧的更新 |
-| 把所有东西放在你个人目录下的一个文件夹里 | 需要管理员权限，或在你没有开启自启动时自行启动 |
+| 安装在你自己的用户配置文件中，并让你选择是否在登录时启动 | 需要管理员权限 |
 
 首批任务是关于 SkyNet 支付规则的精确计算。例如：“一个准备离开网络的参与者，能否靠一批伪造结果获利？合谋验证者的份额达到多少时可以？”每台设备必须得到完全相同的数字，不同人的结果会相互比对。详见 [tasks/README.md](../../tasks/README.md)。
 
 ## 需要什么
 
-- Python 3.9 或更高版本。别无其他：代理程序只使用 Python 标准库。
+- Windows x64 安装程序自带 Python。其他安装方式需要 Python 3.9 或更高版本。
 - 几兆字节的磁盘空间和网络连接。
 
 ## 安装
 
-**Windows**（PowerShell）：
+**Windows x64**
+
+1. 从 [Releases](https://github.com/skyNetAIAgent/skynet-architecture/releases) 下载 `SkyNetAgentSetup-<version>.exe` 并运行。安装程序会询问你是否立即启动代理程序，以及是否在 Windows 登录时启动。两个复选框默认都已勾选。关于校验和与 SmartScreen 的说明，请参见 [Windows 安装程序指南](../../installer/windows/README.md)。
+2. 如果你已经装有 Python，也可以通过 PowerShell 安装。
 
 ```powershell
 irm https://raw.githubusercontent.com/skyNetAIAgent/skynet-architecture/main/agent/install.ps1 | iex
@@ -50,7 +53,7 @@ curl -fsSL https://raw.githubusercontent.com/skyNetAIAgent/skynet-architecture/m
 
 如果你想先看清楚再运行：下载 [`install.py`](../../agent/install.py)，读一读（它很短），然后运行 `python3 -I install.py`。
 
-安装程序把代理程序放进一个文件夹（Windows 为 `%LOCALAPPDATA%\SkyNetAgent`，macOS 为 `~/Library/Application Support/SkyNetAgent`，Linux 和 Android 为 `~/.local/share/skynet-agent`），并创建 `skynet-agent` 命令。它不会启动任何东西。
+安装程序把代理程序放进一个文件夹（Windows 为 `%LOCALAPPDATA%\SkyNetAgent`，macOS 为 `~/Library/Application Support/SkyNetAgent`，Linux 和 Android 为 `~/.local/share/skynet-agent`），并创建 `skynet-agent` 命令。使用命令行安装程序时，请自行启动代理程序。
 
 ## 第一步
 
@@ -61,7 +64,7 @@ skynet-agent run                  # 一直工作，直到你按 Ctrl+C
 skynet-agent autostart enable     # 可选：登录时自动启动
 ```
 
-在 Windows 上，该命令是代理程序文件夹中的 `skynet-agent.cmd` 文件；安装程序会打印出确切的命令行。
+在 Windows 上，请从代理程序文件夹运行 `.\skynet-agent.cmd`。EXE 安装程序会在开始菜单的 **SkyNet Agent** 下添加状态、暂停、恢复和停止的快捷方式。代理程序会从已签名的版本更新自己的文件。要更新其自带的 Python，请运行更新的安装程序。
 
 ### 发布结果
 
@@ -144,6 +147,8 @@ skynet-agent config set ai.enabled true
 默认情况下是一个繁忙 CPU 核心的电费，以最低优先级运行，因此不会拖慢其他程序。在手机上，除非你允许，否则不使用电池；请让手机保持充电。
 
 ## 卸载
+
+如果使用 EXE 安装，请在开始菜单中选择 **SkyNet Agent → Uninstall**。卸载程序默认保留你的设备密钥和尚未发送的结果。勾选删除数据的复选框可以一并删除它们。如果使用命令行安装，请运行以下命令。
 
 ```sh
 skynet-agent uninstall --yes

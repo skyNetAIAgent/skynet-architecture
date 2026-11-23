@@ -1,10 +1,10 @@
-<!-- translation of docs/ROADMAP.md, source sha256: 3060afa02f0adb73bcb1a9c7822d84ff2efe0f1ce1c8c105af2eda79e7dda071 -->
+<!-- translation of docs/ROADMAP.md, source sha256: 3009fa9bba5e1d6570484a29bf8bf33e5e10c5ff34439f7dee55ff8c53171c7c -->
 
 # Feuille de route : protection contre la fraude
 
 [English](../../docs/ROADMAP.en.md) · [中文](../zh/ROADMAP.md) · [Español](../es/ROADMAP.md) · **Français** · [Deutsch](../de/ROADMAP.md) · [Italiano](../it/ROADMAP.md) · [Русский](../../docs/ROADMAP.md) · [Português](../pt/ROADMAP.md) · [العربية](../ar/ROADMAP.md)
 
-État au 23 novembre 2026. Ceci est un **plan de travail, pas une promesse de résultat**. La marque `[x]`
+État au 23 novembre 2026 (mis à jour après la version v0.2.2). Ceci est un **plan de travail, pas une promesse de résultat**. La marque `[x]`
 signifie « fait, et c'est vérifiable dans le dépôt ou dans les enregistrements du réseau » ; `[ ]` signifie
 « pas fait ». Les nombres marqués [calcul] sont obtenus par une formule, pas mesurés. La feuille de route
 est mise à jour à chaque changement de statut.
@@ -86,9 +86,10 @@ vérificateur, et non par l'absence d'idées.
   ne donnent pas de borne inférieure générale du coût.
 - Irrégularité du revenu dans la variante B : à 6 000 tâches par mois, une vérification d'une tâche sur 100
   et un coût de revient de 95% du prix, la probabilité d'un mois déficitaire est de 33,10% [calcul, FIRST_RUN].
-- La première exécution des calculs (702 portions) a été faite sur un seul ordinateur. Au 22 novembre, un second appareil avait recalculé 40 portions ; toutes ont coïncidé. Ses enregistrements sont signés par la
-  clé `46000d30…` et sont accessibles sur un nœud complet. Les 662 autres portions ne sont pas confirmées
-  indépendamment.
+- La première exécution des calculs (702 portions) a été faite sur un seul ordinateur. Au 23 novembre, un
+  second appareil avait recalculé les 702 portions ; toutes ont coïncidé. Ses enregistrements sont signés
+  par la clé `46000d30…` et sont accessibles sur un nœud complet. Les deux appareils appartiennent aux
+  mainteneurs, ce n'est donc pas encore une confirmation par un participant indépendant.
 
 **Ce qui n'est pas résolu.**
 
@@ -173,38 +174,46 @@ Déjà fait :
 - [x] Vérification automatique dans la CI : un fichier substitué, une clé étrangère, un ancien numéro,
       un fichier en trop, un téléchargement interrompu et un Python incompatible sont rejetés, la version
       fonctionnelle reste.
-- [ ] **Vérification en conditions réelles :** les installations 0.2.0 sur Windows, le Linux domestique
-      et le serveur passent elles-mêmes à 0.2.1, la clé de l'appareil et la progression sont conservées.
+- [x] **Vérification en conditions réelles sur le serveur :** l'installation 0.2.0 est passée d'elle-même
+      à 0.2.2 le 23 novembre 2026, la clé de l'appareil et la progression sont conservées. Sur le Linux
+      domestique, l'agent a été réinstallé avec le nouvel installateur (0.2.2) ; sa mise à jour
+      automatique sera vérifiée par la prochaine version.
+- [ ] Vérification en conditions réelles de la mise à jour automatique sous Windows (après installation
+      par le propriétaire au moyen de l'installateur).
 
 **Point 2. Android : application sans jeton**
 
-- [ ] Nouvel APK avec l'agent 0.2.1 intégré : publication par des enregistrements signés, l'écran du
+- [x] Nouvel APK 0.2.0 avec l'agent 0.2.2 intégré : publication par des enregistrements signés, l'écran du
       jeton et les conseils sur le jeton sont supprimés.
-- [ ] Corriger le faux retour en arrière sans réseau : actuellement, trois lancements sans connexion
-      marquent la nouvelle version fonctionnelle comme défaillante. Confirmer la version par une
-      auto-vérification locale.
-- [ ] Une fois par jour, l'application vérifie les nouvelles versions de l'APK, compare l'empreinte et
+- [x] Corriger le faux retour en arrière sans réseau : auparavant, trois lancements sans connexion
+      marquaient la nouvelle version fonctionnelle comme défaillante. Désormais, la version est confirmée
+      par une auto-vérification locale.
+- [x] Une fois par jour, l'application vérifie les nouvelles versions de l'APK, compare l'empreinte et
       la signature du projet et propose l'installation ; l'installation est confirmée par une personne
       (c'est ainsi qu'Android fonctionne hors du magasin).
-- [ ] Lancement après le redémarrage selon l'interrupteur de l'utilisateur.
-- [ ] Vérification de la mise à jour par-dessus l'APK 0.1.0 sur l'émulateur : la progression et la clé
+- [x] Lancement après le redémarrage selon l'interrupteur de l'utilisateur (vérifié sur l'émulateur).
+- [x] Vérification de la mise à jour par-dessus l'APK 0.1.0 sur l'émulateur Android 14 : les données
       sont conservées.
+- [ ] Vérification de la proposition d'un nouvel APK par l'application elle-même (fonctionnera avec la
+      prochaine version de l'APK).
 - [ ] **Vérification en conditions réelles sur un vrai téléphone** (il faut un participant avec un
       téléphone) : installation, fonctionnement pendant la charge, redémarrage, économie d'énergie du
       fabricant.
 
 **Point 3. Windows : installateur en un seul fichier**
 
-- [ ] `SkyNetAgentSetup.exe` est assemblé dans GitHub Actions, sans signature de code ; à l'intérieur,
+- [x] `SkyNetAgentSetup.exe` est assemblé dans GitHub Actions, sans signature de code ; à l'intérieur,
       un Python embarqué de python.org, l'agent et la version signée. À côté sont publiés son empreinte
       et la signature du projet. Installation dans le profil de l'utilisateur, sans droits
       d'administrateur, fonctionne sans réseau.
-- [ ] Fenêtre d'état : si l'agent travaille, ce qu'il calcule, pause, sortie.
-- [ ] Case « lancer à la connexion » dans l'installateur ; le choix est conservé lors de la mise à jour.
-- [ ] Désinstallation via « Applications » ; lors de la désinstallation, on peut conserver la clé de
+- [x] Raccourcis dans le menu « Démarrer » : état de l'agent, pause, reprise, arrêt, désinstallation.
+- [x] Case « lancer à la connexion » dans l'installateur ; le choix est conservé lors de la mise à jour.
+- [x] Désinstallation via « Applications » ; lors de la désinstallation, on peut conserver la clé de
       l'appareil.
-- [ ] Vérification sur un Windows propre sans Python, dans un profil avec des caractères cyrilliques et
-      des espaces dans le nom.
+- [x] Vérification automatique dans la CI sur un Windows propre sans Python : installation,
+      auto-vérification, désinstallation.
+- [ ] Vérification en conditions réelles sur l'ordinateur d'une personne : le propriétaire la passe en
+      premier (version v0.2.2).
 
 **Point 4. Linux**
 
@@ -230,7 +239,9 @@ Déjà fait :
 - [ ] Quand toutes les tâches sont calculées, l'agent attend et reprend lui-même la liste suivante.
 - [ ] Le collecteur de résultats fonctionne selon un planning sur le nœud complet et publie un
       récapitulatif.
-- [ ] Confirmation indépendante des 702 portions de la première liste de tâches (40 actuellement).
+- [ ] Confirmation indépendante de toutes les 702 portions de la première liste. Un second appareil
+      (serveur des mainteneurs) a recalculé les 702, toutes ont coïncidé ; il n'y a pas encore de
+      participant sans lien avec les mainteneurs.
 
 **Point 7. Pilote avec d'autres personnes**
 

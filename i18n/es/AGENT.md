@@ -14,18 +14,21 @@ No hace falta un asistente de IA para ayudar a diseñar SkyNet. El agente de inv
 | Ejecuta cálculos incorporados con la prioridad de CPU más baja, de uno en uno por defecto | Trabajar con batería, salvo que usted lo permita |
 | Publica cada resultado como un registro firmado con la propia clave de este dispositivo, a través de relevos públicos y nodos completos | Enviar sus archivos, identificadores de hardware ni nada más de su ordenador |
 | Se actualiza solo, pero únicamente a una versión firmada con la clave de publicación del proyecto | Instalar una actualización con firma incorrecta, huella de archivo incorrecta o número anterior |
-| Guarda todo en una sola carpeta de su perfil | Necesitar derechos de administrador ni arrancar solo si usted no activa el inicio automático |
+| Se instala en su perfil y le deja elegir si arranca al iniciar sesión | Necesita derechos de administrador |
 
 Las primeras tareas son cálculos exactos sobre las reglas de pago de SkyNet. Por ejemplo: «¿puede un participante que abandona la red ganar con una tanda de resultados falsos, y a partir de qué proporción de verificadores en colusión?». Todos los dispositivos deben obtener las mismas cifras, y los resultados de distintas personas se comparan. Véase [tasks/README.md](../../tasks/README.md).
 
 ## Requisitos
 
-- Python 3.9 o posterior. Nada más: el agente usa solo la biblioteca estándar de Python.
+- El instalador de Windows x64 incluye Python. Los demás métodos requieren Python 3.9 o posterior.
 - Unos pocos megabytes de disco y conexión a internet.
 
 ## Instalación
 
-**Windows** (PowerShell):
+**Windows x64**
+
+1. Descargue `SkyNetAgentSetup-<version>.exe` de [Releases](https://github.com/skyNetAIAgent/skynet-architecture/releases) y ejecútelo. El instalador ofrece iniciar el agente ahora y al iniciar sesión en Windows. Ambas casillas están marcadas por defecto. Para instrucciones sobre la suma de comprobación y SmartScreen, véase la [guía del instalador de Windows](../../installer/windows/README.md).
+2. Si ya tiene Python, puede instalar desde PowerShell.
 
 ```powershell
 irm https://raw.githubusercontent.com/skyNetAIAgent/skynet-architecture/main/agent/install.ps1 | iex
@@ -50,7 +53,7 @@ En un teléfono el agente solo trabaja mientras el teléfono se está cargando. 
 
 Si prefiere leer antes de ejecutar: descargue [`install.py`](../../agent/install.py), léalo (es corto) y ejecute `python3 -I install.py`.
 
-El instalador coloca el agente en una carpeta (`%LOCALAPPDATA%\SkyNetAgent` en Windows, `~/Library/Application Support/SkyNetAgent` en macOS, `~/.local/share/skynet-agent` en Linux y Android) y crea la orden `skynet-agent`. No arranca nada.
+El instalador coloca el agente en una carpeta (`%LOCALAPPDATA%\SkyNetAgent` en Windows, `~/Library/Application Support/SkyNetAgent` en macOS, `~/.local/share/skynet-agent` en Linux y Android) y crea la orden `skynet-agent`. Con los instaladores de línea de órdenes, arranque el agente usted mismo.
 
 ## Primeros pasos
 
@@ -61,7 +64,7 @@ skynet-agent run                  # trabajar hasta que pulse Ctrl+C
 skynet-agent autostart enable     # opcional: arrancar al iniciar sesión
 ```
 
-En Windows la orden es el archivo `skynet-agent.cmd` de la carpeta del agente; el instalador muestra la línea exacta.
+En Windows, ejecute `.\skynet-agent.cmd` desde la carpeta del agente. El instalador EXE añade accesos directos de estado, pausa, reanudación y parada en **SkyNet Agent** del menú Inicio. El agente actualiza sus propios archivos desde versiones firmadas. Ejecute un instalador más reciente para actualizar su Python incluido.
 
 ### Publicación de resultados
 
@@ -143,7 +146,9 @@ El agente descarga archivos públicos de este repositorio (GitHub ve su direcci�
 
 La electricidad de un núcleo de CPU ocupado por defecto, con la prioridad más baja, de modo que los demás programas no se ralentizan. En un teléfono no se usa la batería salvo que usted lo permita; manténgalo enchufado.
 
-## Desinstalar
+## Eliminar
+
+Para una instalación con EXE, elija **SkyNet Agent → Uninstall** en el menú Inicio. El desinstalador conserva por defecto la clave de su dispositivo y los resultados sin enviar. Marque la casilla de eliminación de datos para borrarlos también. Para una instalación desde la línea de órdenes, ejecute la orden siguiente.
 
 ```sh
 skynet-agent uninstall --yes

@@ -1,10 +1,10 @@
-<!-- translation of docs/ROADMAP.md, source sha256: 3060afa02f0adb73bcb1a9c7822d84ff2efe0f1ce1c8c105af2eda79e7dda071 -->
+<!-- translation of docs/ROADMAP.md, source sha256: 3009fa9bba5e1d6570484a29bf8bf33e5e10c5ff34439f7dee55ff8c53171c7c -->
 
 # Roadmap: protection against cheating
 
 **English** · [中文](../i18n/zh/ROADMAP.md) · [Español](../i18n/es/ROADMAP.md) · [Français](../i18n/fr/ROADMAP.md) · [Deutsch](../i18n/de/ROADMAP.md) · [Italiano](../i18n/it/ROADMAP.md) · [Русский](ROADMAP.md) · [Português](../i18n/pt/ROADMAP.md) · [العربية](../i18n/ar/ROADMAP.md)
 
-Status as of 23 November 2026. This is a **work plan, not a promise of a result**. The `[x]` mark
+Status as of 23 November 2026 (updated after the release of v0.2.2). This is a **work plan, not a promise of a result**. The `[x]` mark
 means "done, and this can be verified against the repository or the network's records"; `[ ]` means
 "not done". Numbers marked [calculated] are obtained from a formula, not measured. The map is
 updated on every status change.
@@ -86,9 +86,10 @@ of ideas.
   price.
 - Income unevenness in Variant B: with 6,000 tasks per month, verification of 1 in 100, and a cost of
   95% of the price, the probability of a loss-making month is 33.10% [calculated, FIRST_RUN].
-- The first run of the calculations (702 chunks) was done on one computer. By 22 November a second
-  device had recomputed 40 chunks; all matched. Its records are signed with the key `46000d30…` and
-  are available on the full node. The remaining 662 chunks have not been independently confirmed.
+- The first run of the calculations (702 chunks) was done on one computer. By 23 November a second
+  device had recomputed all 702 chunks; all matched. Its records are signed with the key `46000d30…`
+  and are available on the full node. Both devices belong to the maintainers, so this is not yet
+  confirmation by an independent participant.
 
 **What is not solved.**
 
@@ -153,7 +154,7 @@ Already done:
 **Step 1. Update reliability (release 0.2.1, without new tasks)**
 
 - [x] The first installation checks the release signature with a key embedded in the installer
-      itself, **before** the downloaded code runs. Currently the downloaded agent checks itself.
+      itself, **before** the downloaded code runs (previously the downloaded agent checked itself).
 - [x] Switching to a new version in one atomic operation: first the new directory is prepared and
       checked, then one pointer is changed; the previous healthy bundle is kept.
 - [x] The highest accepted release number is stored outside the version directories and is also
@@ -165,33 +166,39 @@ Already done:
 - [x] An automatic check in CI: a substituted file, a foreign key, an old number, an extra file,
       an interrupted download, and an incompatible Python are rejected, and the working version
       remains.
-- [ ] **Live check:** the 0.2.0 installations on Windows, the home Linux, and the server upgrade
-      to 0.2.1 by themselves, with the device key and progress preserved.
+- [x] **Live check on the server:** the 0.2.0 installation upgraded to 0.2.2 by itself on
+      23 November 2026, with the device key and progress preserved. On the home Linux the agent was
+      installed anew with the new installer (0.2.2); its self-update will be checked by the next
+      release.
+- [ ] Live check of self-update on Windows (after installation by the owner via the installer).
 
 **Step 2. Android: an app without a token**
 
-- [ ] A new APK with the embedded agent 0.2.1: publication by signed records, the token screen
+- [x] A new APK 0.2.0 with the embedded agent 0.2.2: publication by signed records, the token screen
       and the token hints are removed.
-- [ ] Fix the false rollback without the network: currently three launches without a connection
-      mark a healthy new version as failed. Confirm the version by a local self-check.
-- [ ] Once a day the app checks for new APK versions, compares the hash and the project signature,
+- [x] Fix the false rollback without the network: previously three launches without a connection
+      marked a healthy new version as failed. Now the version is confirmed by a local self-check.
+- [x] Once a day the app checks for new APK versions, compares the hash and the project signature,
       and offers to install; installation is confirmed by a person (this is how Android outside the
       store works).
-- [ ] Starting after a reboot by a user toggle.
-- [ ] Checking the update on top of APK 0.1.0 on the emulator: progress and the key are preserved.
+- [x] Starting after a reboot by a user toggle (tested on the emulator).
+- [x] Checking the update on top of APK 0.1.0 on the Android 14 emulator: the data is preserved.
+- [ ] Checking the new-APK offer by the app itself (will work with the next APK version).
 - [ ] **Live check on a real phone** (a participant with a phone is needed): installation,
       working while charging, reboot, the manufacturer's power saving.
 
 **Step 3. Windows: a one-file installer**
 
-- [ ] `SkyNetAgentSetup.exe` is built in GitHub Actions, without code signing; inside are the
+- [x] `SkyNetAgentSetup.exe` is built in GitHub Actions, without code signing; inside are the
       embeddable Python from python.org, the agent, and a signed release. Its hash and the project
       signature are published alongside. Installs into the user profile, without administrator
       rights, works without the network.
-- [ ] A status window: whether the agent is running, what it is computing, pause, exit.
-- [ ] A "start at login" checkbox in the installer; the choice is preserved on update.
-- [ ] Uninstalling via "Apps"; when uninstalling, the device key can be kept.
-- [ ] A check on a clean Windows without Python, in a profile with Cyrillic and spaces in the name.
+- [x] Shortcuts in the "Start" menu: agent status, pause, resume, stop, uninstall.
+- [x] A "start at login" checkbox in the installer; the choice is preserved on update.
+- [x] Uninstalling via "Apps"; when uninstalling, the device key can be kept.
+- [x] An automatic check in CI on a clean Windows without Python: installation, self-check,
+      uninstallation.
+- [ ] Live check on a person's computer: the owner is the first to go through it (release v0.2.2).
 
 **Step 4. Linux**
 
@@ -216,7 +223,9 @@ Already done:
       incompatible task and keeps working.
 - [ ] When all tasks are computed, the agent waits and picks up the next list by itself.
 - [ ] The result collector runs on a schedule on the full node and publishes a summary.
-- [ ] Independent confirmation of all 702 chunks of the first list (currently 40).
+- [ ] Independent confirmation of all 702 chunks of the first list. A second device (the
+      maintainers' server) has recomputed all 702, all matched; there is not yet a participant
+      unconnected with the maintainers.
 
 **Step 7. Pilot with other people**
 

@@ -1,10 +1,10 @@
-<!-- translation of docs/ROADMAP.md, source sha256: 3060afa02f0adb73bcb1a9c7822d84ff2efe0f1ce1c8c105af2eda79e7dda071 -->
+<!-- translation of docs/ROADMAP.md, source sha256: 3009fa9bba5e1d6570484a29bf8bf33e5e10c5ff34439f7dee55ff8c53171c7c -->
 
 # Roteiro: defesa contra fraude
 
 [English](../../docs/ROADMAP.en.md) · [中文](../zh/ROADMAP.md) · [Español](../es/ROADMAP.md) · [Français](../fr/ROADMAP.md) · [Deutsch](../de/ROADMAP.md) · [Italiano](../it/ROADMAP.md) · [Русский](../../docs/ROADMAP.md) · **Português** · [العربية](../ar/ROADMAP.md)
 
-Situação em 23 de novembro de 2026. Este é um **plano de trabalho, não uma promessa de resultado**. A marca `[x]`
+Situação em 23 de novembro de 2026 (atualizado após o lançamento da v0.2.2). Este é um **plano de trabalho, não uma promessa de resultado**. A marca `[x]`
 significa «feito, e isso pode ser conferido no repositório ou nos registros da rede»; `[ ]` significa
 «não feito». Os números marcados com [cálculo] foram obtidos por fórmula, não medidos. O roteiro é atualizado
 a cada mudança de status.
@@ -87,9 +87,10 @@ e não pela ausência de ideias.
   limite inferior geral do preço.
 - Irregularidade da renda na variante B: com 6.000 tarefas por mês, verificação de 1 em 100 e custo de 95%
   do preço, a probabilidade de um mês com prejuízo é 33,10% [cálculo, FIRST_RUN].
-- A primeira execução dos cálculos (702 porções) foi feita em um computador. Até 22 de novembro, o segundo
-  dispositivo recalculou 40 porções; todas coincidiram. Seus registros estão assinados pela chave `46000d30…`
-  e disponíveis no nó completo. As outras 662 porções não foram confirmadas de forma independente.
+- A primeira execução dos cálculos (702 porções) foi feita em um computador. Até 23 de novembro, o segundo
+  dispositivo recalculou todas as 702 porções; todas coincidiram. Seus registros estão assinados pela chave
+  `46000d30…` e disponíveis no nó completo. Os dois dispositivos pertencem aos mantenedores, portanto isso
+  ainda não é uma confirmação por um participante independente.
 
 **O que não está resolvido.**
 
@@ -166,38 +167,49 @@ Já feito:
 - [x] A primeira instalação verifica a assinatura da versão com uma chave embutida no próprio instalador,
       **antes** da execução do código baixado (antes, o agente baixado verificava a si mesmo).
 - [x] Troca para a nova versão em uma única operação atômica: primeiro o novo diretório é preparado e
+      verificado, depois um único ponteiro é alterado; o conjunto funcional anterior é preservado.
 - [x] O maior número de versão aceito fica guardado fora dos diretórios de versão e também é verificado
+      na reinstalação (proteção contra a reversão para uma versão antiga).
 - [x] A chave do dispositivo, as configurações, o progresso e os resultados não enviados ficam guardados
+      fora dos diretórios de versão e sobrevivem à atualização e à reinstalação.
 - [x] Sem rede, o agente continua trabalhando na última versão funcional e repete a conexão com
+      intervalo crescente.
 - [x] Verificação automática no CI: arquivo substituído, chave alheia, número antigo, arquivo a mais,
-- [ ] **Verificação ao vivo:** instalações 0.2.0 no Windows, no Linux doméstico e no servidor migram
-      sozinhas para a 0.2.1; a chave do dispositivo e o progresso são preservados.
+      download interrompido e Python incompatível são rejeitados, e a versão funcional permanece.
+- [x] **Verificação ao vivo no servidor:** a instalação 0.2.0 passou sozinha para a 0.2.2 em 23 de
+      novembro de 2026, e a chave do dispositivo e o progresso foram preservados. No Linux doméstico, o
+      agente foi instalado de novo com o novo instalador (0.2.2); a próxima versão verificará sua
+      autoatualização.
+- [ ] Verificação ao vivo da autoatualização no Windows (após a instalação pelo dono por meio do
+      instalador).
 
 **Passo 2. Android: aplicativo sem token**
 
-- [ ] Novo APK com o agente 0.2.1 embutido: publicação por registros assinados; a tela do token e as
+- [x] Novo APK 0.2.0 com o agente 0.2.2 embutido: publicação por registros assinados; a tela do token e as
       dicas sobre o token são removidas.
-- [ ] Corrigir a falsa reversão sem rede: hoje três execuções sem conexão marcam a nova versão funcional
-      como defeituosa. Confirmar a versão por autoverificação local.
-- [ ] Uma vez por dia, o aplicativo verifica novas versões do APK, confere a impressão digital e a
+- [x] Corrigir a falsa reversão sem rede: antes, três execuções sem conexão marcavam a nova versão
+      funcional como defeituosa. Agora a versão é confirmada por autoverificação local.
+- [x] Uma vez por dia, o aplicativo verifica novas versões do APK, confere a impressão digital e a
       assinatura do projeto e oferece a instalação; a instalação é confirmada pela pessoa (assim funciona
       o Android fora da loja).
-- [ ] Início após a reinicialização segundo o interruptor do usuário.
-- [ ] Verificação da atualização sobre o APK 0.1.0 no emulador: o progresso e a chave são preservados.
+- [x] Início após a reinicialização segundo o interruptor do usuário (verificado no emulador).
+- [x] Verificação da atualização sobre o APK 0.1.0 no emulador Android 14: os dados são preservados.
+- [ ] Verificação da oferta de um novo APK pelo próprio aplicativo (funcionará com a próxima versão do
+      APK).
 - [ ] **Verificação ao vivo em um telefone real** (é preciso um participante com telefone): instalação,
       funcionamento durante o carregamento, reinicialização, economia de energia do fabricante.
 
 **Passo 3. Windows: instalador de um único arquivo**
 
-- [ ] `SkyNetAgentSetup.exe` é montado no GitHub Actions, sem assinatura de código; dentro dele,
+- [x] `SkyNetAgentSetup.exe` é montado no GitHub Actions, sem assinatura de código; dentro dele,
       um Python embutível do python.org, o agente e a versão assinada. Ao lado são publicados a
       impressão digital dele e a assinatura do projeto. Instalação no perfil do usuário, sem direitos
       de administrador, funciona sem rede.
-- [ ] Janela de status: se o agente está trabalhando, o que ele calcula, pausa, saída.
-- [ ] Caixa de seleção «iniciar ao entrar» no instalador; a escolha é preservada na atualização.
-- [ ] Remoção por «Aplicativos»; ao remover, é possível preservar a chave do dispositivo.
-- [ ] Verificação em um Windows limpo, sem Python, em um perfil com caracteres cirílicos e espaços no
-      nome.
+- [x] Atalhos no menu «Iniciar»: estado do agente, pausa, continuação, parada, remoção.
+- [x] Caixa de seleção «iniciar ao entrar» no instalador; a escolha é preservada na atualização.
+- [x] Remoção por «Aplicativos»; ao remover, é possível preservar a chave do dispositivo.
+- [x] Verificação automática no CI em um Windows limpo sem Python: instalação, autoverificação, remoção.
+- [ ] Verificação ao vivo no computador de uma pessoa: o dono é o primeiro a fazê-la (versão v0.2.2).
 
 **Passo 4. Linux**
 
@@ -222,7 +234,9 @@ Já feito:
       tarefa incompatível e continua o trabalho.
 - [ ] Quando todas as tarefas estão calculadas, o agente espera e pega por conta própria a lista seguinte.
 - [ ] O coletor de resultados trabalha por agendamento no nó completo e publica um resumo.
-- [ ] Confirmação independente de todas as 702 porções da primeira lista de tarefas (hoje 40).
+- [ ] Confirmação independente de todas as 702 porções da primeira lista. O segundo dispositivo (servidor
+      dos mantenedores) recalculou todas as 702, todas coincidiram; ainda não há um participante sem
+      vínculo com os mantenedores.
 
 **Passo 7. Piloto com outras pessoas**
 

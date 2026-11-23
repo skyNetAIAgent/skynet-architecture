@@ -14,18 +14,21 @@ Um beim Entwurf von SkyNet zu helfen, braucht man keinen KI-Assistenten. Der For
 | Führt eingebaute Berechnungen mit niedrigster CPU-Priorität aus, standardmäßig eine nach der anderen | Im Akkubetrieb arbeiten, außer Sie erlauben es |
 | Veröffentlicht jedes Ergebnis als einen mit dem eigenen Schlüssel dieses Geräts signierten Datensatz über öffentliche Relays und Vollknoten | Ihre Dateien, Hardwarekennungen oder sonst etwas von Ihrem Computer senden |
 | Aktualisiert sich selbst, aber nur auf eine Version, die mit dem Release-Schlüssel des Projekts signiert ist | Ein Update mit falscher Signatur, falschem Datei-Hash oder älterer Nummer installieren |
-| Hält alles in einem Ordner in Ihrem Profil | Administratorrechte benötigen oder von selbst starten, solange Sie den Autostart nicht einschalten |
+| Installiert im Profil und lässt Sie wählen, ob der Agent bei der Anmeldung startet | Administratorrechte benötigen |
 
 Die ersten Aufgaben sind exakte Berechnungen zu den Zahlungsregeln von SkyNet. Zum Beispiel: „Kann ein Teilnehmer, der das Netz verlässt, mit einem Schwung gefälschter Ergebnisse Gewinn machen, und ab welchem Anteil abgesprochener Prüfer?“ Jedes Gerät muss dieselben Ziffern erhalten, und die Ergebnisse verschiedener Menschen werden verglichen. Siehe [tasks/README.md](../../tasks/README.md).
 
 ## Voraussetzungen
 
-- Python 3.9 oder neuer. Sonst nichts: Der Agent verwendet nur die Standardbibliothek von Python.
+- Das Installationsprogramm für Windows x64 enthält Python. Andere Methoden erfordern Python 3.9 oder neuer.
 - Einige Megabyte Speicherplatz und eine Internetverbindung.
 
 ## Installation
 
-**Windows** (PowerShell):
+**Windows x64**
+
+1. Laden Sie `SkyNetAgentSetup-<version>.exe` von [Releases](https://github.com/skyNetAIAgent/skynet-architecture/releases) herunter und führen Sie die Datei aus. Das Installationsprogramm bietet an, den Agenten jetzt und bei der Anmeldung unter Windows zu starten. Beide Kästchen sind standardmäßig angehakt. Anleitungen zur Prüfsumme und zu SmartScreen finden Sie im [Windows-Installationshandbuch](../../installer/windows/README.md).
+2. Wenn Sie bereits Python haben, können Sie aus PowerShell installieren.
 
 ```powershell
 irm https://raw.githubusercontent.com/skyNetAIAgent/skynet-architecture/main/agent/install.ps1 | iex
@@ -50,7 +53,7 @@ Auf einem Telefon arbeitet der Agent nur, während es geladen wird. Kann er nich
 
 Wenn Sie lieber erst lesen und dann ausführen: Laden Sie [`install.py`](../../agent/install.py) herunter, lesen Sie die Datei (sie ist kurz) und führen Sie `python3 -I install.py` aus.
 
-Das Installationsprogramm legt den Agenten in einen Ordner (`%LOCALAPPDATA%\SkyNetAgent` unter Windows, `~/Library/Application Support/SkyNetAgent` unter macOS, `~/.local/share/skynet-agent` unter Linux und Android) und erstellt den Befehl `skynet-agent`. Es startet nichts.
+Das Installationsprogramm legt den Agenten in einen Ordner (`%LOCALAPPDATA%\SkyNetAgent` unter Windows, `~/Library/Application Support/SkyNetAgent` unter macOS, `~/.local/share/skynet-agent` unter Linux und Android) und erstellt den Befehl `skynet-agent`. Bei den Installationsprogrammen für die Befehlszeile starten Sie den Agenten selbst.
 
 ## Erste Schritte
 
@@ -61,7 +64,7 @@ skynet-agent run                  # arbeiten, bis Sie Strg+C drücken
 skynet-agent autostart enable     # optional: beim Anmelden starten
 ```
 
-Unter Windows ist der Befehl die Datei `skynet-agent.cmd` im Ordner des Agenten; das Installationsprogramm gibt die genaue Zeile aus.
+Unter Windows führen Sie `.\skynet-agent.cmd` im Ordner des Agenten aus. Das EXE-Installationsprogramm fügt Verknüpfungen für Status, Pause, Fortsetzen und Stopp unter **SkyNet Agent** im Startmenü hinzu. Der Agent aktualisiert seine eigenen Dateien aus signierten Versionen. Führen Sie ein neueres Installationsprogramm aus, um das mitgelieferte Python zu aktualisieren.
 
 ### Ergebnisse veröffentlichen
 
@@ -144,6 +147,8 @@ Der Agent lädt öffentliche Dateien dieses Repositorys herunter (GitHub sieht I
 Den Strom für standardmäßig einen ausgelasteten CPU-Kern, bei niedrigster Priorität, sodass andere Programme nicht gebremst werden. Auf einem Telefon wird der Akku nicht genutzt, außer Sie erlauben es; lassen Sie das Telefon am Ladegerät.
 
 ## Entfernen
+
+Bei einer EXE-Installation wählen Sie **SkyNet Agent → Uninstall** im Startmenü. Das Deinstallationsprogramm behält standardmäßig den Schlüssel Ihres Geräts und nicht gesendete Ergebnisse. Wählen Sie das Kästchen zum Löschen der Daten, um auch diese zu entfernen. Bei einer Installation über die Befehlszeile führen Sie den folgenden Befehl aus.
 
 ```sh
 skynet-agent uninstall --yes

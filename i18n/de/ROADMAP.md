@@ -1,14 +1,14 @@
-<!-- translation of docs/ROADMAP.md, source sha256: 3060afa02f0adb73bcb1a9c7822d84ff2efe0f1ce1c8c105af2eda79e7dda071 -->
+<!-- translation of docs/ROADMAP.md, source sha256: 3009fa9bba5e1d6570484a29bf8bf33e5e10c5ff34439f7dee55ff8c53171c7c -->
 
 # Roadmap: Schutz vor Betrug
 
 [English](../../docs/ROADMAP.en.md) · [中文](../zh/ROADMAP.md) · [Español](../es/ROADMAP.md) · [Français](../fr/ROADMAP.md) · **Deutsch** · [Italiano](../it/ROADMAP.md) · [Русский](../../docs/ROADMAP.md) · [Português](../pt/ROADMAP.md) · [العربية](../ar/ROADMAP.md)
 
-Stand vom 23. November 2026. Dies ist ein **Arbeitsplan, kein Versprechen eines Ergebnisses**. Die
-Markierung `[x]` bedeutet „erledigt, und dies lässt sich anhand des Repositoriums oder der
-Aufzeichnungen des Netzes prüfen“; `[ ]` bedeutet „nicht erledigt“. Zahlen mit der Markierung
-[Berechnung] wurden anhand einer Formel ermittelt, nicht gemessen. Die Roadmap wird bei jeder
-Statusänderung aktualisiert.
+Stand vom 23. November 2026 (aktualisiert nach dem Release v0.2.2). Dies ist ein
+**Arbeitsplan, kein Versprechen eines Ergebnisses**. Die Markierung `[x]` bedeutet „erledigt, und
+dies lässt sich anhand des Repositoriums oder der Aufzeichnungen des Netzes prüfen“; `[ ]`
+bedeutet „nicht erledigt“. Zahlen mit der Markierung [Berechnung] wurden anhand einer Formel
+ermittelt, nicht gemessen. Die Roadmap wird bei jeder Statusänderung aktualisiert.
 
 ## 1. Ziel und Fertigstellungskriterien
 
@@ -95,9 +95,10 @@ benannten Daten des Prüfers gezeigt, nicht durch das Fehlen von Ideen.
   aus 100 und Selbstkosten von 95% des Preises beträgt die Wahrscheinlichkeit eines verlustreichen
   Monats 33,10% [Berechnung, FIRST_RUN].
 - Der erste Durchlauf der Berechnungen (702 Portionen) wurde auf einem Computer gemacht. Ein
-  zweites Gerät hat bis zum 22. November 40 Portionen nachgerechnet; alle stimmten überein. Seine
-  Einträge sind mit dem Schlüssel `46000d30…` signiert und auf einem vollständigen Knoten
-  verfügbar. Die übrigen 662 Portionen sind unabhängig nicht bestätigt.
+  zweites Gerät hat bis zum 23. November alle 702 Portionen nachgerechnet; alle stimmten überein.
+  Seine Einträge sind mit dem Schlüssel `46000d30…` signiert und auf einem vollständigen Knoten
+  verfügbar. Beide Geräte gehören den Betreuern, deshalb ist dies noch keine Bestätigung durch
+  einen unabhängigen Teilnehmer.
 
 **Was nicht gelöst ist.**
 
@@ -127,7 +128,7 @@ Die Entscheidungen D1–D5 wurden am 23. November 2026 getroffen.
 
 | Nr. | Frage | Entscheidung |
 |---|---|---|
-| D1 | Was als Garantie angenommen wird | **Der Betrüger bekommt nicht, was er will.** Betrugsversuche lassen sich nicht ausschließen, aber jeder Versuch muss für denjenigen, der ihn unternimmt, nutzlos sein: Der erwartete Gewinn aus einer Fälschung ist nicht größer als null im Vergleich zur ehrlichen Arbeit und zur Untätigkeit, für jede Koalition, einschließlich eines Neulings mit leerem Konto und beliebig vieler Schlüssel. Das Ziel ist, dass ein falsches Ergebnis überhaupt nicht bezahlt wird. Ein Nettoverlust bei jedem Versuch ist nicht erforderlich. Eine begrenzte, aber positive Leckage (zum Beispiel `R·q^k` bei einem Neuling in Variante B) **erfüllt** das Kriterium **nicht** und bleibt ein offenes Loch |
+| D1 | Was als Garantie angenommen wird | **Der Betrüger bekommt nicht, was er will.** Betrugsversuche lassen sich nicht ausschließen, aber jeder Versuch muss für denjenigen, der ihn unternimmt, nutzlos sein: Der erwartete Gewinn aus einer Fälschung ist nicht größer als null im Vergleich zur ehrlichen Arbeit und zur Untätigkeit, für jede Koalition, einschließlich eines Neulings mit leerem Konto und beliebig vieler Schlüssel. Das Ziel ist, dass ein falsches Ergebnis überhaupt nicht bezahlt wird. Ein Nettoverlust bei jedem Versuch ist nicht erforderlich. Eine begrenzte, aber positive Leckage (zum Beispiel `R·q^k` bei einem Neuling in Variante B) **erfüllt das Kriterium nicht** und bleibt ein offenes Loch |
 | D2 | Grundlage der Bezahlung | **Angenommen: Bezahlt wird nur das überprüfbare Ergebnis.** Eingeschaltete Ausrüstung, Arbeitszeit und behauptete Leistung sind keine Grundlage der Bezahlung: Eine Grafikkarte lässt sich auch mit etwas Fremdem belasten |
 | D3 | Variante A oder B | **Die Entscheidung wird nach dem Vergleich bei gleichen Angriffen und gleichem Preis (Phase 2) getroffen.** Hauptkandidat ist Variante B |
 | D4 | Unveränderlicher Prüfkern | **Angenommen in verstärkter Form.** Die Prüfung läuft automatisch, ohne Beteiligung eines Menschen und ohne Abstimmungen. Die Regeln der Prüfung werden nicht per Abstimmung geändert. Jeder Knoten führt die Prüfung selbst nach dem festgeschriebenen Fingerabdruck der Regeln aus, deshalb ändert ein Austausch des Algorithmus auf einem Knoten oder bei einem Anbieter des Programms nichts an den Entscheidungen der anderen. Offen: wie ein Fehler im Kern selbst behoben wird (nur durch den Übergang zu einem neuen Netz) und wie ein Teilnehmer sich vergewissert, dass sein Programm dem veröffentlichten Fingerabdruck entspricht (reproduzierbarer Build). Der Release-Schlüssel, mit dem derzeit die Mini-Agenten signiert werden, ist ein Werkzeug der Forschung; im Zielnetz darf es ihn nicht geben |
@@ -190,39 +191,45 @@ Bereits erledigt:
 - [x] Automatische Prüfung in CI: eine ausgetauschte Datei, ein fremder Schlüssel, eine alte
       Nummer, eine überzählige Datei, ein abgebrochener Download und ein inkompatibles Python
       werden verworfen, die funktionsfähige Version bleibt erhalten.
-- [ ] **Prüfung an einer laufenden Installation:** Die Installationen von 0.2.0 auf Windows,
-      heimischem Linux und einem Server wechseln selbst auf 0.2.1; Geräteschlüssel und Fortschritt
-      sind erhalten.
+- [x] **Live-Prüfung auf einem Server:** Die Installation von 0.2.0 ist am 23. November 2026 selbst auf
+      0.2.2 übergegangen, Geräteschlüssel und Fortschritt sind erhalten. Auf dem heimischen Linux
+      wurde der Agent mit dem neuen Installer (0.2.2) neu installiert; seine Selbstaktualisierung
+      wird der nächste Release prüfen.
+- [ ] Live-Prüfung der Selbstaktualisierung unter Windows (nach der Installation durch den
+      Eigentümer mit dem Installer).
 
 **Schritt 2. Android: Anwendung ohne Token**
 
-- [ ] Neue APK mit eingebettetem Agenten 0.2.1: Veröffentlichung durch signierte Einträge, der
-      Token-Bildschirm und die Hinweise zum Token sind entfernt.
-- [ ] Den fälschlichen Rückstieg ohne Netz beheben: Derzeit markieren drei Starts ohne Verbindung
-      die funktionsfähige neue Version als fehlerhaft. Die Version per lokaler Selbstprüfung
-      bestätigen.
-- [ ] Die Anwendung prüft einmal täglich neue APK-Versionen, gleicht Hash und Signatur des
+- [x] Neue APK 0.2.0 mit eingebettetem Agenten 0.2.2: Veröffentlichung durch signierte Einträge,
+      der Token-Bildschirm und die Hinweise zum Token sind entfernt.
+- [x] Den fälschlichen Rückstieg ohne Netz beheben: Früher markierten drei Starts ohne Verbindung
+      die funktionsfähige neue Version als fehlerhaft. Jetzt wird die Version durch eine lokale
+      Selbstprüfung bestätigt.
+- [x] Die Anwendung prüft einmal täglich neue APK-Versionen, gleicht Hash und Signatur des
       Projekts ab und bietet die Installation an; die Installation bestätigt der Mensch (so ist
       Android außerhalb des Stores aufgebaut).
-- [ ] Start nach dem Neustart über einen Schalter des Nutzers.
-- [ ] Prüfung der Aktualisierung über APK 0.1.0 im Emulator: Fortschritt und Schlüssel bleiben
-      erhalten.
+- [x] Start nach dem Neustart über einen Schalter des Nutzers (auf dem Emulator geprüft).
+- [x] Prüfung der Aktualisierung über APK 0.1.0 im Emulator Android 14: die Daten bleiben erhalten.
+- [ ] Prüfung des Angebots einer neuen APK durch die Anwendung selbst (greift mit der nächsten
+      APK-Version).
 - [ ] **Prüfung auf einem echten Telefon** (ein Teilnehmer mit einem Telefon ist nötig):
       Installation, Arbeit beim Laden, Neustart, Energiesparen des Herstellers.
 
 **Schritt 3. Windows: Installer als eine Datei**
 
-- [ ] `SkyNetAgentSetup.exe` wird in GitHub Actions gebaut, ohne Codesignatur; darin ein
+- [x] `SkyNetAgentSetup.exe` wird in GitHub Actions gebaut, ohne Codesignatur; darin ein
       eingebettetes Python von python.org, der Agent und ein signierter Release. Daneben werden
       sein Hash und die Signatur des Projekts veröffentlicht. Installation ins Profil des
       Nutzers, ohne Administratorrechte, funktioniert ohne Netz.
-- [ ] Statusfenster: ob der Agent arbeitet, was er rechnet, Pause, Beenden.
-- [ ] Ein Häkchen „beim Anmelden starten“ im Installer; die Wahl bleibt bei der Aktualisierung
+- [x] Verknüpfungen im Startmenü: Status des Agenten, Pause, Fortsetzen, Beenden, Deinstallation.
+- [x] Ein Häkchen „beim Anmelden starten“ im Installer; die Wahl bleibt bei der Aktualisierung
       erhalten.
-- [ ] Deinstallation über „Apps“; bei der Deinstallation kann der Geräteschlüssel behalten
+- [x] Deinstallation über „Apps“; bei der Deinstallation kann der Geräteschlüssel behalten
       werden.
-- [ ] Prüfung auf einem sauberen Windows ohne Python, in einem Profil mit kyrillischen Zeichen
-      und Leerzeichen im Namen.
+- [x] Automatische Prüfung in CI auf einem sauberen Windows ohne Python: Installation,
+      Selbstprüfung, Deinstallation.
+- [ ] Live-Prüfung auf dem Computer einer Person: Als Erster durchläuft sie der Eigentümer
+      (Release v0.2.2).
 
 **Schritt 4. Linux**
 
@@ -248,7 +255,9 @@ Bereits erledigt:
 - [ ] Wenn alle Aufgaben gerechnet sind, wartet der Agent und nimmt selbst die nächste Liste auf.
 - [ ] Der Ergebnissammler arbeitet nach Zeitplan auf dem vollständigen Knoten und veröffentlicht
       eine Übersicht.
-- [ ] Unabhängige Bestätigung aller 702 Portionen der ersten Liste (derzeit 40).
+- [ ] Unabhängige Bestätigung aller 702 Portionen der ersten Liste. Ein zweites Gerät (der Server
+      der Betreuer) hat alle 702 nachgerechnet, alle stimmten überein; einen Teilnehmer, der nicht
+      mit den Betreuern verbunden ist, gibt es noch nicht.
 
 **Schritt 7. Pilot mit anderen Menschen**
 

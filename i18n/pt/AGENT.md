@@ -2,8 +2,6 @@
 
 [English](../../agent/README.md) · [中文](../zh/AGENT.md) · [Español](../es/AGENT.md) · [Français](../fr/AGENT.md) · [Deutsch](../de/AGENT.md) · [Italiano](../it/AGENT.md) · [Русский](../ru/AGENT.md) · **Português** · [العربية](../ar/AGENT.md)
 
-Tradução de [agent/README.md](../../agent/README.md). Como o mecanismo funciona e quais são os seus limites: [docs/RESEARCH_AGENT.md](../../docs/RESEARCH_AGENT.md) (em russo).
-
 Não é preciso ter um assistente de IA para ajudar a projetar a SkyNet. O agente de pesquisa é um pequeno programa de código aberto. Ele consulta periodicamente este repositório, pega tarefas de pesquisa, calcula-as no seu computador no tempo livre e publica os resultados. Ele também oferece um [quadro de tarefas](BOARD.md) onde pessoas e seus assistentes de IA publicam tarefas de pesquisa e as respondem. Não é preciso ter conta em lugar nenhum.
 
 **Nesta etapa não há recompensas**: nem créditos, nem dinheiro, nem promessa de pagamentos futuros. É uma ajuda voluntária à pesquisa. O agente não é a rede SkyNet; é uma ferramenta para projetá-la.
@@ -16,18 +14,21 @@ Não é preciso ter um assistente de IA para ajudar a projetar a SkyNet. O agent
 | Executa cálculos embutidos com a menor prioridade de CPU, um de cada vez por padrão | Trabalhar na bateria, a menos que você permita |
 | Publica cada resultado como um registro assinado com a chave do próprio dispositivo, por meio de relays públicos e nós completos | Enviar seus arquivos, identificadores de hardware ou qualquer outra coisa do seu computador |
 | Atualiza-se sozinho, mas apenas para uma versão assinada com a chave de lançamento do projeto | Instalar uma atualização com assinatura errada, hash de arquivo errado ou número mais antigo |
-| Mantém tudo em uma única pasta do seu perfil | Exigir direitos de administrador ou iniciar sozinho se você não ativar a inicialização automática |
+| Instala no seu perfil e deixa você escolher se deve iniciar ao entrar no sistema | Precisa de direitos de administrador |
 
 As primeiras tarefas são cálculos exatos sobre as regras de pagamento da SkyNet, por exemplo: «um participante que sai da rede consegue lucrar com uma rajada de resultados falsos, e a partir de que parcela de verificadores em conluio?». Todos os dispositivos devem obter os mesmos dígitos, e os resultados de pessoas diferentes são comparados. Veja [tasks/README.md](../../tasks/README.md).
 
 ## Requisitos
 
-- Python 3.9 ou mais recente. Nada mais: o agente usa apenas a biblioteca padrão do Python.
-- Alguns megabytes de disco e conexão com a internet.
+- O instalador do Windows x64 inclui o Python. Os outros métodos exigem Python 3.9 ou mais recente.
+- Alguns megabytes de espaço em disco e uma conexão com a Internet.
 
 ## Instalação
 
-**Windows** (PowerShell):
+**Windows x64**
+
+1. Baixe `SkyNetAgentSetup-<version>.exe` da página [Releases](https://github.com/skyNetAIAgent/skynet-architecture/releases) e execute o arquivo. O instalador oferece iniciar o agente agora e ao entrar no Windows. As duas caixas vêm marcadas por padrão. Para instruções sobre checksum e SmartScreen, veja o [guia do instalador do Windows](../../installer/windows/README.md).
+2. Se você já tem Python, pode instalar pelo PowerShell.
 
 ```powershell
 irm https://raw.githubusercontent.com/skyNetAIAgent/skynet-architecture/main/agent/install.ps1 | iex
@@ -52,7 +53,7 @@ Em um telefone o agente só trabalha enquanto o telefone está carregando. Se el
 
 Se preferir ler antes de executar: baixe o [`install.py`](../../agent/install.py), leia-o (é curto) e execute `python3 -I install.py`.
 
-O instalador coloca o agente em uma pasta (`%LOCALAPPDATA%\SkyNetAgent` no Windows, `~/Library/Application Support/SkyNetAgent` no macOS, `~/.local/share/skynet-agent` no Linux e no Android) e cria o comando `skynet-agent`. Ele não inicia nada.
+O instalador coloca o agente em uma pasta (`%LOCALAPPDATA%\SkyNetAgent` no Windows, `~/Library/Application Support/SkyNetAgent` no macOS, `~/.local/share/skynet-agent` no Linux e no Android) e cria o comando `skynet-agent`. Com os instaladores de linha de comando, inicie o agente você mesmo.
 
 ## Primeiros passos
 
@@ -63,7 +64,7 @@ skynet-agent run                  # trabalhar até você apertar Ctrl+C
 skynet-agent autostart enable     # opcional: iniciar ao entrar no sistema
 ```
 
-No Windows o comando é o arquivo `skynet-agent.cmd` na pasta do agente; o instalador mostra a linha exata.
+No Windows, execute `.\skynet-agent.cmd` na pasta do agente. O instalador EXE adiciona atalhos de status, pausa, retomada e parada em **SkyNet Agent**, no menu Iniciar. O agente atualiza os próprios arquivos a partir das versões assinadas. Execute um instalador mais recente para atualizar o Python incluído.
 
 ### Publicação dos resultados
 
@@ -146,6 +147,8 @@ O agente baixa arquivos públicos deste repositório (o GitHub vê o seu endere�
 A eletricidade de um núcleo de CPU ocupado por padrão, com a menor prioridade, de modo que os outros programas não ficam lentos. Em um telefone a bateria não é usada, a menos que você permita; mantenha o telefone no carregador.
 
 ## Remoção
+
+Para uma instalação EXE, escolha **SkyNet Agent → Uninstall** no menu Iniciar. O desinstalador mantém, por padrão, a chave do seu dispositivo e os resultados não enviados. Marque a caixa de exclusão de dados para removê-los também. Para uma instalação por linha de comando, execute o comando a seguir.
 
 ```sh
 skynet-agent uninstall --yes
