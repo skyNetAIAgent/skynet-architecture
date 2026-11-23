@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: 191cff633e617eaad62a24c76710c67b4bc4307248d04a984ba3e3c863a678ff -->
+<!-- translation of docs/ROADMAP.md, source sha256: 3060afa02f0adb73bcb1a9c7822d84ff2efe0f1ce1c8c105af2eda79e7dda071 -->
 
 # Tabella di marcia: difesa dall'inganno
 
@@ -147,15 +147,17 @@ solo un nuovo rilascio, ha preso da solo un compito del nuovo elenco, il suo ris
 nodo completo ed è coinciso con il risultato di un altro dispositivo. Sono registrati il sistema,
 l'architettura, le versioni prima e dopo e l'identificatore della registrazione sul nodo.
 
-Piattaforme: Windows, Linux, macOS, Android. Non ci sarà un agente per iOS: iOS non consente a
-un'app di calcolare a lungo in background, e le regole dell'App Store vietano di caricare codice
-eseguibile. In alternativa è possibile un visualizzatore della bacheca (decisione separata).
+Piattaforme: Windows, Linux, Android (decisione del 23 novembre 2026). Per macOS e iOS i mini-agenti
+non vengono realizzati e non vengono verificati. Il comando di installazione per Linux forse funziona
+anche su macOS, ma questo non è supportato. La versione Windows viene rilasciata senza firma del
+codice: all'installazione Windows mostra un avviso SmartScreen, che va confermato manualmente;
+l'autenticità del file si verifica tramite l'hash pubblicato e la firma del progetto.
 
 Già fatto:
 
 - [x] Repository pubblico, base immutabile in nove lingue (etichetta `core-v1`).
-- [x] Programma-agente per Windows, Linux e macOS: compiti e aggiornamenti firmati,
-      verifiche automatiche su tre sistemi (versione 0.2.0). Installazione con un solo comando
+- [x] Programma-agente per Windows e Linux: compiti e aggiornamenti firmati,
+      verifiche automatiche in CI (versione 0.2.0). Installazione con un solo comando
       nel terminale; serve Python 3.9+.
 - [x] Risultati e [bacheca dei compiti](BOARD.md) senza account.
 - [x] Primo nodo completo, che conserva la cronologia delle registrazioni.
@@ -164,20 +166,20 @@ Già fatto:
 
 **Passo 1. Affidabilità dell'aggiornamento (versione 0.2.1, senza nuovi compiti)**
 
-- [ ] La prima installazione verifica la firma della versione con la chiave incorporata nello stesso
-      installatore, **prima** di eseguire il codice scaricato. Ora l'agente scaricato verifica se
-      stesso.
-- [ ] Passaggio alla nuova versione con una sola operazione atomica: prima si prepara e si verifica
+- [x] La prima installazione verifica la firma della versione con la chiave incorporata nello stesso
+      installatore, **prima** di eseguire il codice scaricato (in precedenza l'agente scaricato
+      verificava se stesso).
+- [x] Passaggio alla nuova versione con una sola operazione atomica: prima si prepara e si verifica
       il nuovo catalogo, poi si cambia un solo puntatore; il precedente insieme funzionante viene
       conservato.
-- [ ] Il numero di versione più alto accettato è conservato fuori dai cataloghi delle versioni e
+- [x] Il numero di versione più alto accettato è conservato fuori dai cataloghi delle versioni e
       viene verificato anche alla reinstallazione (difesa dal ritorno a una versione vecchia).
-- [ ] La chiave del dispositivo, le impostazioni, il progresso e i risultati non inviati sono
+- [x] La chiave del dispositivo, le impostazioni, il progresso e i risultati non inviati sono
       conservati fuori dai cataloghi delle versioni e sopravvivono all'aggiornamento e alla
       reinstallazione.
-- [ ] Senza rete l'agente continua a lavorare sull'ultima versione funzionante e ripete il
+- [x] Senza rete l'agente continua a lavorare sull'ultima versione funzionante e ripete il
       collegamento con un intervallo crescente.
-- [ ] Verifica automatica in CI: un file sostituito, una chiave altrui, un numero vecchio, un file
+- [x] Verifica automatica in CI: un file sostituito, una chiave altrui, un numero vecchio, un file
       in più, un download interrotto e un Python incompatibile vengono rifiutati, la versione
       funzionante resta.
 - [ ] **Verifica dal vivo:** le installazioni 0.2.0 su Windows, Linux domestico e sul server passano
@@ -200,8 +202,9 @@ Già fatto:
 
 **Passo 3. Windows: installatore in un solo file**
 
-- [ ] `SkyNetAgentSetup.exe` viene compilato in GitHub Actions; dentro, Python incorporato da
-      python.org, l'agente e la versione firmata. Installazione nel profilo utente, senza diritti di
+- [ ] `SkyNetAgentSetup.exe` viene compilato in GitHub Actions, senza firma del codice; dentro,
+      Python incorporato da python.org, l'agente e la versione firmata. Accanto vengono pubblicati
+      il suo hash e la firma del progetto. Installazione nel profilo utente, senza diritti di
       amministratore, funziona senza rete.
 - [ ] Finestra di stato: se l'agente lavora, che cosa calcola, pausa, uscita.
 - [ ] Casella «avvia all'accesso» nell'installatore; la scelta si conserva all'aggiornamento.
@@ -217,19 +220,12 @@ Già fatto:
       casella separata.
 - [ ] Verifica su Linux Mint, Ubuntu e Debian.
 
-**Passo 5. macOS (sperimentale, finché non c'è un Mac per la verifica)**
-
-- [ ] Pacchetto `SkyNetAgent.pkg` con Python portatile per arm64 e x86_64, compilato in GitHub
-      Actions, installazione nel profilo utente, avvio all'accesso con il consenso.
-- [ ] Verifica dell'installazione e di un calcolo su una macchina macOS in CI.
-- [ ] Verifica dal vivo sul Mac di un partecipante.
-
-**Passo 6. Aggiornamento del Python incorporato e delle shell**
+**Passo 5. Aggiornamento del Python incorporato e delle shell**
 
 - [ ] Descrizione firmata del kit per ogni sistema e architettura: versioni e hash di Python,
       dell'installatore e della shell. L'agente aggiorna anche Python, non solo i suoi file.
 
-**Passo 7. Flusso dei compiti**
+**Passo 6. Flusso dei compiti**
 
 - [ ] Quattro nuovi compiti di calcolo della fase 2 (campagna di uscita della variante B, posti da
       apprendista, lotteria con quota di verifica scelta, certificato del token vincente) — nuovi
@@ -241,14 +237,14 @@ Già fatto:
       riepilogo.
 - [ ] Conferma indipendente di tutte le 702 porzioni del primo elenco (ora 40).
 
-**Passo 8. Pilota con altre persone**
+**Passo 7. Pilota con altre persone**
 
 - [ ] Pagina «Come collegarsi» in nove lingue: un collegamento per ogni sistema.
 - [ ] Un partecipante per piattaforma, non legato ai manutentori; i segni di completamento della fase
       sono soddisfatti.
 - [ ] Secondo e terzo nodo completo presso proprietari diversi.
 
-**Passo 9. Agenti IA**
+**Passo 8. Agenti IA**
 
 - [ ] L'agente prende da solo i nuovi compiti della bacheca e li passa al modello locale del
       partecipante; la risposta viene inviata solo dopo l'approvazione di una persona. Il testo del
@@ -257,13 +253,8 @@ Già fatto:
       relazione e verificare quella altrui.
 - [ ] Relazione su un compito della bacheca da parte di un partecipante non legato ai manutentori.
 
-**Decisioni del proprietario sulla fase 0** (costano denaro, quindi non si prendono senza di lui):
-
-- Certificato di firma del codice per Windows. Senza di esso, all'installazione Windows mostra un
-  avviso SmartScreen, che va aggirato a mano.
-- Account Apple Developer per macOS. Senza di esso, macOS blocca l'avvio del pacchetto fino
-  all'autorizzazione nelle impostazioni.
-- Visualizzatore della bacheca per iOS: farlo o no.
+**Decisioni del proprietario sulla fase 0** (23 novembre 2026): macOS e iOS non vengono realizzati;
+la versione Windows viene rilasciata senza firma del codice.
 
 ### Fase 1. Formulazione precisa
 

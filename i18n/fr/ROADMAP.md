@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: 191cff633e617eaad62a24c76710c67b4bc4307248d04a984ba3e3c863a678ff -->
+<!-- translation of docs/ROADMAP.md, source sha256: 3060afa02f0adb73bcb1a9c7822d84ff2efe0f1ce1c8c105af2eda79e7dda071 -->
 
 # Feuille de route : protection contre la fraude
 
@@ -139,15 +139,17 @@ version, a pris lui-même une tâche de la nouvelle liste, son résultat est app
 coïncidé avec le résultat d'un autre appareil. Sont consignés le système, l'architecture, les versions
 avant et après et l'identifiant de l'enregistrement sur le nœud.
 
-Plateformes : Windows, Linux, macOS, Android. Il n'y aura pas d'agent pour iOS : iOS ne permet pas à une
-application de calculer longtemps en arrière-plan, et les règles de l'App Store interdisent de charger du
-code exécutable. À la place, un visualiseur du tableau est possible (décision séparée).
+Plateformes : Windows, Linux, Android (décision du 23 novembre 2026). Pour macOS et iOS, les mini-agents
+ne sont pas faits et ne sont pas vérifiés. La commande d'installation pour Linux fonctionne peut-être
+aussi sur macOS, mais ce n'est pas pris en charge. La version Windows est publiée sans signature de
+code : à l'installation, Windows affiche l'avertissement SmartScreen, qu'il faut confirmer manuellement ;
+l'authenticité du fichier est vérifiée par l'empreinte publiée et la signature du projet.
 
 Déjà fait :
 
 - [x] Dépôt public, base immuable en neuf langues (étiquette `core-v1`).
-- [x] Programme agent pour Windows, Linux et macOS : tâches et mises à jour signées, vérifications
-      automatiques sur trois systèmes (version 0.2.0). Installation par une seule commande dans le
+- [x] Programme agent pour Windows et Linux : tâches et mises à jour signées, vérifications
+      automatiques dans la CI (version 0.2.0). Installation par une seule commande dans le
       terminal ; Python 3.9+ est requis.
 - [x] Résultats et [tableau des tâches](BOARD.md) sans compte utilisateur.
 - [x] Premier nœud complet, conservant l'historique des enregistrements.
@@ -156,19 +158,19 @@ Déjà fait :
 
 **Point 1. Fiabilité de la mise à jour (version 0.2.1, sans nouvelles tâches)**
 
-- [ ] La première installation vérifie la signature de la version avec la clé intégrée dans
-      l'installateur lui-même, **avant** l'exécution du code téléchargé. Actuellement, l'agent téléchargé
-      se vérifie lui-même.
-- [ ] Le passage à la nouvelle version en une seule opération atomique : d'abord le nouveau répertoire
+- [x] La première installation vérifie la signature de la version avec la clé intégrée dans
+      l'installateur lui-même, **avant** l'exécution du code téléchargé (précédemment, l'agent téléchargé
+      se vérifiait lui-même).
+- [x] Le passage à la nouvelle version en une seule opération atomique : d'abord le nouveau répertoire
       est préparé et vérifié, puis un seul pointeur est changé ; l'ensemble fonctionnel précédent est
       conservé.
-- [ ] Le plus grand numéro de version accepté est stocké hors des répertoires de versions et est aussi
+- [x] Le plus grand numéro de version accepté est stocké hors des répertoires de versions et est aussi
       vérifié lors de la réinstallation (protection contre le retour à une ancienne version).
-- [ ] La clé de l'appareil, les réglages, la progression et les résultats non envoyés sont stockés hors
+- [x] La clé de l'appareil, les réglages, la progression et les résultats non envoyés sont stockés hors
       des répertoires de versions et survivent à la mise à jour et à la réinstallation.
-- [ ] Sans réseau, l'agent continue de travailler sur la dernière version fonctionnelle et réessaie la
+- [x] Sans réseau, l'agent continue de travailler sur la dernière version fonctionnelle et réessaie la
       connexion avec un intervalle croissant.
-- [ ] Vérification automatique dans la CI : un fichier substitué, une clé étrangère, un ancien numéro,
+- [x] Vérification automatique dans la CI : un fichier substitué, une clé étrangère, un ancien numéro,
       un fichier en trop, un téléchargement interrompu et un Python incompatible sont rejetés, la version
       fonctionnelle reste.
 - [ ] **Vérification en conditions réelles :** les installations 0.2.0 sur Windows, le Linux domestique
@@ -193,8 +195,9 @@ Déjà fait :
 
 **Point 3. Windows : installateur en un seul fichier**
 
-- [ ] `SkyNetAgentSetup.exe` est assemblé dans GitHub Actions ; à l'intérieur, un Python embarqué de
-      python.org, l'agent et la version signée. Installation dans le profil de l'utilisateur, sans droits
+- [ ] `SkyNetAgentSetup.exe` est assemblé dans GitHub Actions, sans signature de code ; à l'intérieur,
+      un Python embarqué de python.org, l'agent et la version signée. À côté sont publiés son empreinte
+      et la signature du projet. Installation dans le profil de l'utilisateur, sans droits
       d'administrateur, fonctionne sans réseau.
 - [ ] Fenêtre d'état : si l'agent travaille, ce qu'il calcule, pause, sortie.
 - [ ] Case « lancer à la connexion » dans l'installateur ; le choix est conservé lors de la mise à jour.
@@ -211,21 +214,13 @@ Déjà fait :
       session est une case séparée.
 - [ ] Vérification sur Linux Mint, Ubuntu et Debian.
 
-**Point 5. macOS (expérimental, en attendant un Mac pour la vérification)**
-
-- [ ] Paquet `SkyNetAgent.pkg` avec un Python portable pour arm64 et x86_64, assemblé dans GitHub
-      Actions, installation dans le profil de l'utilisateur, lancement à l'ouverture de session avec
-      l'accord.
-- [ ] Vérification de l'installation et d'un calcul sur une machine macOS dans la CI.
-- [ ] Vérification en conditions réelles sur le Mac d'un participant.
-
-**Point 6. Mise à jour du Python embarqué et des shells**
+**Point 5. Mise à jour du Python embarqué et des shells**
 
 - [ ] Description signée de l'ensemble pour chaque système et architecture : versions et empreintes de
       Python, de l'installateur et des shells. L'agent met à jour aussi Python, et pas seulement ses
       propres fichiers.
 
-**Point 7. Flux des tâches**
+**Point 6. Flux des tâches**
 
 - [ ] Quatre nouvelles tâches de calcul de l'étape 2 (la campagne de sortie de la variante B, les places
       d'apprenti, la loterie avec une part de vérification choisie, le certificat du jeton gagnant) — de
@@ -237,14 +232,14 @@ Déjà fait :
       récapitulatif.
 - [ ] Confirmation indépendante des 702 portions de la première liste de tâches (40 actuellement).
 
-**Point 8. Pilote avec d'autres personnes**
+**Point 7. Pilote avec d'autres personnes**
 
 - [ ] Page « Comment se connecter » en neuf langues : un lien pour chaque système.
 - [ ] Un participant sans lien avec les mainteneurs sur chaque plateforme ; les critères d'achèvement de
       l'étape sont remplis.
 - [ ] Deuxième et troisième nœuds complets chez des propriétaires différents.
 
-**Point 9. Agents IA**
+**Point 8. Agents IA**
 
 - [ ] L'agent récupère lui-même les nouvelles tâches du tableau et les transmet au modèle local du
       participant ; la réponse n'est envoyée qu'après l'approbation d'une personne. Le texte de la tâche
@@ -253,14 +248,8 @@ Déjà fait :
       vérifier celui d'un autre.
 - [ ] Rapport sur une tâche du tableau remis par un participant sans lien avec les mainteneurs.
 
-**Décisions du propriétaire sur l'étape 0** (elles coûtent de l'argent, donc ne sont pas prises sans
-lui) :
-
-- Certificat de signature de code pour Windows. Sans lui, à l'installation Windows affiche
-  l'avertissement SmartScreen, et il faut le contourner manuellement.
-- Compte Apple Developer pour macOS. Sans lui, macOS bloque le lancement du paquet jusqu'à l'autorisation
-  dans les réglages.
-- Visualiseur du tableau pour iOS : le faire ou non.
+**Décisions du propriétaire sur l'étape 0** (23 novembre 2026) : macOS et iOS ne sont pas faits ; la
+version Windows est publiée sans signature de code.
 
 ### Étape 1. Formulation précise
 

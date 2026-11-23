@@ -69,6 +69,24 @@ def version_dir(h, entry):
 
 def rollback(h, cur):
     """Return to the previous version and remember that this release is bad here."""
+    with open(os.path.join(h, "update.lock"), "a+b") as lock:
+        try:
+            if os.name == "nt":
+                import msvcrt
+                lock.seek(0)
+                msvcrt.locking(lock.fileno(), msvcrt.LK_NBLCK, 1)
+            else:
+                import fcntl
+                fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except OSError:
+            time.sleep(1)
+            return True  # an installer is switching versions; re-read the pointer
+        if read_json(os.path.join(h, "current.json")) != cur:
+            return True
+        return _restore(h, cur)
+
+
+def _restore(h, cur):
     prev = cur.get("previous")
     if version_dir(h, prev) is None:
         return False
@@ -111,7 +129,7 @@ def main():
         env["SKYNET_AGENT_HOME"] = h
         started = time.time()
         try:
-            code = subprocess.call([sys.executable, "-I", "-c", STUB, path] + args, env=env)
+            code = subprocess.call([sys.executable, "-IB", "-c", STUB, path] + args, env=env)
         except KeyboardInterrupt:
             return 130
         if code == EXIT_RESTART:

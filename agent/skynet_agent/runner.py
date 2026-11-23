@@ -19,7 +19,7 @@ def version_root():
 
 
 def agent_command(*args):
-    return [sys.executable, "-I", "-c", STUB, version_root()] + list(args)
+    return [sys.executable, "-IB", "-c", STUB, version_root()] + list(args)
 
 
 _running = set()

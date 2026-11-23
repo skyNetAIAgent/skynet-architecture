@@ -31,7 +31,6 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(HERE, "..", "agent"))
 
-import keytool  # noqa: E402
 from skynet_agent import ed25519, signed, updater  # noqa: E402
 
 
@@ -79,20 +78,23 @@ def main(argv=None):
     parser.add_argument("--date", help="issue date YYYY-MM-DD (default: today, UTC)")
     args = parser.parse_args(argv)
 
-    root = os.path.abspath(args.root)
-    agent_dir = os.path.join(root, "agent")
-    if not re.match(r"^\d{1,4}\.\d{1,4}\.\d{1,4}$", args.version) or args.seq < 1:
-        raise SystemExit("--version must look like 1.2.3 and --seq must be positive")
+    import keytool
+    return build_release(args.root, args.seq, args.version, keytool.load_seed(args.key),
+                         args.set_trust, args.date, args.halt_through, args.halt_reason)
 
-    seed = keytool.load_seed(args.key)
+
+def build_release(root, seq, version, seed, set_trust=False, date=None, halt_through=None, halt_reason=""):
+    agent_dir = os.path.join(os.path.abspath(root), "agent")
+    if not re.fullmatch(r"\d{1,4}\.\d{1,4}\.\d{1,4}", version) or not 1 <= seq <= 999999999:
+        raise SystemExit("invalid release number or version")
     public = ed25519.public_key(seed)
-
     init_py = os.path.join(agent_dir, "skynet_agent", "__init__.py")
-    _replace_line(init_py, r'^__version__ = "[^"]*"$', '__version__ = "%s"' % args.version)
-    _replace_line(init_py, r"^RELEASE_SEQ = \d+$", "RELEASE_SEQ = %d" % args.seq)
+    _replace_line(init_py, r'^__version__ = "[^"]*"$', '__version__ = "%s"' % version)
+    _replace_line(init_py, r"^RELEASE_SEQ = \d+$", "RELEASE_SEQ = %d" % seq)
     trust_py = os.path.join(agent_dir, "skynet_agent", "trust.py")
-    if args.set_trust:
-        _replace_line(trust_py, r"^RELEASE_KEYS = \[[^\]]*\]$", 'RELEASE_KEYS = ["%s"]' % public.hex())
+    if set_trust:
+        for path in (trust_py, os.path.join(agent_dir, "install.py")):
+            _replace_line(path, r"^RELEASE_KEYS = \[[^\]]*\]$", 'RELEASE_KEYS = ["%s"]' % public.hex())
     with open(trust_py, "r", encoding="utf-8") as f:
         if public.hex() not in f.read():
             print("WARNING: trust.py of this release does not list the signing key.")
@@ -100,14 +102,14 @@ def main(argv=None):
 
     release = {
         "format": 1,
-        "seq": args.seq,
-        "version": args.version,
+        "seq": seq,
+        "version": version,
         "min_python": [3, 9],
-        "issued": args.date or datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d"),
+        "issued": date or datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d"),
         "files": collect_files(agent_dir),
     }
-    if args.halt_through is not None:
-        release["halt"] = {"through_seq": args.halt_through, "reason": args.halt_reason}
+    if halt_through is not None:
+        release["halt"] = {"through_seq": halt_through, "reason": halt_reason}
     updater.validate_release(release)
 
     raw = (json.dumps(release, indent=1, sort_keys=True) + "\n").encode("utf-8")
@@ -118,7 +120,7 @@ def main(argv=None):
     with open(os.path.join(agent_dir, "release.json.sig"), "wb") as f:
         f.write(sig_line)
     print("Release %d (version %s): %d files, signed with %s" % (
-        args.seq, args.version, len(release["files"]), public.hex()))
+        seq, version, len(release["files"]), public.hex()))
     return 0
 
 

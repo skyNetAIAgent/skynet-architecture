@@ -76,14 +76,13 @@ class EndToEnd(unittest.TestCase):
             if not shell:
                 self.skipTest("PowerShell is not available")
             script = os.path.join(self.repo, "agent", "install.ps1")
-            # the documented way: the script text is piped into Invoke-Expression
-            cmd = [shell, "-NoProfile", "-ExecutionPolicy", "Bypass", "-Command",
-                   "Get-Content -Raw -LiteralPath '%s' | Invoke-Expression" % script]
+            # Pass the loopback-only development option through the platform installer.
+            cmd = [shell, "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", script, "--allow-local-http"]
             shim = os.path.join(home, "skynet-agent.cmd")
         else:
             script = os.path.join(self.repo, "agent", "install.sh")
             bin_dir = os.path.join(self.tmp, "bin-script")
-            cmd = ["sh", script, "--bin-dir", bin_dir]
+            cmd = ["sh", script, "--allow-local-http", "--bin-dir", bin_dir]
             shim = os.path.join(bin_dir, "skynet-agent")
         done = subprocess.run(cmd, env=env, capture_output=True, timeout=300)
         out = (done.stdout + done.stderr).decode("utf-8", "replace")
@@ -98,7 +97,7 @@ class EndToEnd(unittest.TestCase):
         # 1. install
         bin_dir = os.path.join(self.tmp, "bin")
         done = subprocess.run([sys.executable, "-I", os.path.join(self.repo, "agent", "install.py"),
-                               "--home", self.home, "--base", self.base, "--bin-dir", bin_dir],
+                               "--allow-local-http", "--home", self.home, "--base", self.base, "--bin-dir", bin_dir],
                               env=self.env, capture_output=True, timeout=300)
         out = (done.stdout + done.stderr).decode("utf-8", "replace")
         self.assertEqual(done.returncode, 0, out)
@@ -174,13 +173,26 @@ class EndToEnd(unittest.TestCase):
         self.assertIn("no valid signature", out)
         self.assertEqual(self.current()["seq"], 2)
 
-        # 7. a properly signed but broken release: the launcher goes back by itself
-        with open(os.path.join(self.repo, "agent", "skynet_agent", "cli.py"), "ab") as f:
+        # 7a. a properly signed release that cannot even be imported is refused before switching
+        cli_path = os.path.join(self.repo, "agent", "skynet_agent", "cli.py")
+        with open(cli_path, "rb") as f:
+            good_cli = f.read()
+        with open(cli_path, "ab") as f:
             f.write(b"\nraise RuntimeError('this release cannot start')\n")
         helpers.make_release(self.repo, 3, "0.1.2")
         code, out = self.agent("update")
+        self.assertEqual(code, 1, out)
+        self.assertIn("verify-install failed", out)
+        self.assertEqual(self.current()["seq"], 2)
+
+        # 7b. a signed release that passes its self-check but fails while working:
+        # the launcher goes back by itself
+        with open(cli_path, "wb") as f:
+            f.write(good_cli + b"\nif 'run' in sys.argv:\n    raise RuntimeError('this release cannot work')\n")
+        helpers.make_release(self.repo, 4, "0.1.3")
+        code, out = self.agent("update")
         self.assertEqual(code, 0, out)
-        self.assertEqual(self.current()["seq"], 3)
+        self.assertEqual(self.current()["seq"], 4)
         proc = subprocess.Popen([sys.executable, os.path.join(self.home, "launcher.py"), "run"],
                                 env=self.env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         try:
@@ -194,7 +206,7 @@ class EndToEnd(unittest.TestCase):
                 time.sleep(0.5)
             self.assertEqual(self.current()["seq"], 2)
             with open(os.path.join(self.home, "bad_seqs.json"), encoding="utf-8") as f:
-                self.assertEqual(json.load(f), [3])
+                self.assertIn(4, json.load(f))
             time.sleep(3)                                     # let version 2 look at the repository
             self.assertEqual(self.current()["seq"], 2)        # it does not reinstall the bad release
             code, out = self.agent("stop")

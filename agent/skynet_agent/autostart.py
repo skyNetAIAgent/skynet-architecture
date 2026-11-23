@@ -196,6 +196,8 @@ def status():
             return "on: %s" % value
         except FileNotFoundError:
             return "off"
+        except PermissionError:
+            return "unknown (access to the startup registry key was denied)"
     if sys.platform == "darwin":
         return "on" if os.path.exists(mac_plist_path()) else "off"
     if is_termux():

@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: 191cff633e617eaad62a24c76710c67b4bc4307248d04a984ba3e3c863a678ff -->
+<!-- translation of docs/ROADMAP.md, source sha256: 3060afa02f0adb73bcb1a9c7822d84ff2efe0f1ce1c8c105af2eda79e7dda071 -->
 
 # Roteiro: defesa contra fraude
 
@@ -144,16 +144,18 @@ pegou por conta própria uma tarefa da nova lista, seu resultado apareceu no nó
 o resultado de outro dispositivo. Estão registrados o sistema, a arquitetura, as versões antes e depois
 e o identificador do registro no nó.
 
-Plataformas: Windows, Linux, macOS, Android. Não haverá agente para iOS: o iOS não deixa o aplicativo
-calcular por muito tempo em segundo plano, e as regras da App Store proíbem carregar código executável.
-Em vez disso, é possível um visualizador do quadro (decisão separada).
+Plataformas: Windows, Linux, Android (decisão de 23 de novembro de 2026). Para macOS e iOS, os
+miniagentes não são feitos nem verificados. O comando de instalação para Linux possivelmente funciona
+também no macOS, mas isso não é suportado. A versão para Windows é lançada sem assinatura de código:
+na instalação, o Windows mostra o aviso do SmartScreen, que é preciso confirmar manualmente; a
+autenticidade do arquivo é verificada pela impressão digital publicada e pela assinatura do projeto.
 
 Já feito:
 
 - [x] Repositório público, base imutável em nove idiomas (etiqueta `core-v1`).
-- [x] Programa agente para Windows, Linux e macOS: tarefas e atualizações assinadas,
-      verificações automáticas em três sistemas (versão 0.2.0). Instalação com um único comando
-      no terminal; é preciso Python 3.9+.
+- [x] Programa agente para Windows e Linux: tarefas e atualizações assinadas, verificações
+      automáticas no CI (versão 0.2.0). Instalação com um único comando no terminal; é preciso
+      Python 3.9+.
 - [x] Resultados e [quadro de tarefas](BOARD.md) sem conta.
 - [x] Primeiro nó completo, que guarda o histórico de registros.
 - [x] Primeira tarefa de pesquisa «Defesa contra fraudadores» no quadro, em nove idiomas.
@@ -161,18 +163,13 @@ Já feito:
 
 **Passo 1. Confiabilidade da atualização (versão 0.2.1, sem novas tarefas)**
 
-- [ ] A primeira instalação verifica a assinatura da versão com uma chave embutida no próprio instalador,
-      **antes** da execução do código baixado. Hoje o agente baixado verifica a si mesmo.
-- [ ] Troca para a nova versão em uma única operação atômica: primeiro o novo diretório é preparado e
-      verificado, depois um único ponteiro é alterado; o conjunto funcional anterior é preservado.
-- [ ] O maior número de versão aceito fica guardado fora dos diretórios de versão e também é verificado
-      na reinstalação (proteção contra a reversão para uma versão antiga).
-- [ ] A chave do dispositivo, as configurações, o progresso e os resultados não enviados ficam guardados
-      fora dos diretórios de versão e sobrevivem à atualização e à reinstalação.
-- [ ] Sem rede, o agente continua trabalhando na última versão funcional e repete a conexão com
-      intervalo crescente.
-- [ ] Verificação automática no CI: arquivo substituído, chave alheia, número antigo, arquivo a mais,
-      download interrompido e Python incompatível são rejeitados; a versão funcional permanece.
+- [x] A primeira instalação verifica a assinatura da versão com uma chave embutida no próprio instalador,
+      **antes** da execução do código baixado (antes, o agente baixado verificava a si mesmo).
+- [x] Troca para a nova versão em uma única operação atômica: primeiro o novo diretório é preparado e
+- [x] O maior número de versão aceito fica guardado fora dos diretórios de versão e também é verificado
+- [x] A chave do dispositivo, as configurações, o progresso e os resultados não enviados ficam guardados
+- [x] Sem rede, o agente continua trabalhando na última versão funcional e repete a conexão com
+- [x] Verificação automática no CI: arquivo substituído, chave alheia, número antigo, arquivo a mais,
 - [ ] **Verificação ao vivo:** instalações 0.2.0 no Windows, no Linux doméstico e no servidor migram
       sozinhas para a 0.2.1; a chave do dispositivo e o progresso são preservados.
 
@@ -192,9 +189,10 @@ Já feito:
 
 **Passo 3. Windows: instalador de um único arquivo**
 
-- [ ] `SkyNetAgentSetup.exe` é montado no GitHub Actions; dentro dele, um Python embutível do python.org,
-      o agente e a versão assinada. Instalação no perfil do usuário, sem direitos de administrador,
-      funciona sem rede.
+- [ ] `SkyNetAgentSetup.exe` é montado no GitHub Actions, sem assinatura de código; dentro dele,
+      um Python embutível do python.org, o agente e a versão assinada. Ao lado são publicados a
+      impressão digital dele e a assinatura do projeto. Instalação no perfil do usuário, sem direitos
+      de administrador, funciona sem rede.
 - [ ] Janela de status: se o agente está trabalhando, o que ele calcula, pausa, saída.
 - [ ] Caixa de seleção «iniciar ao entrar» no instalador; a escolha é preservada na atualização.
 - [ ] Remoção por «Aplicativos»; ao remover, é possível preservar a chave do dispositivo.
@@ -209,20 +207,13 @@ Já feito:
       uma caixa de seleção à parte.
 - [ ] Verificação no Linux Mint, Ubuntu e Debian.
 
-**Passo 5. macOS (experimental, enquanto não há Mac para verificar)**
-
-- [ ] Pacote `SkyNetAgent.pkg` com Python portátil para arm64 e x86_64, montado no GitHub Actions;
-      instalação no perfil do usuário, início ao entrar com consentimento.
-- [ ] Verificação da instalação e de um cálculo em uma máquina macOS no CI.
-- [ ] Verificação ao vivo no Mac de um participante.
-
-**Passo 6. Atualização do Python embutido e dos invólucros**
+**Passo 5. Atualização do Python embutido e dos invólucros**
 
 - [ ] Descrição assinada do conjunto para cada sistema e arquitetura: versões e impressões digitais do
       Python, do instalador e do invólucro. O agente atualiza também o Python, e não apenas os próprios
       arquivos.
 
-**Passo 7. Fluxo de tarefas**
+**Passo 6. Fluxo de tarefas**
 
 - [ ] Quatro novas tarefas de cálculo da etapa 2 (campanha de saída na variante B, vagas de aprendiz,
       loteria com parcela de verificação ajustada, certificado do token vencedor) — novos núcleos
@@ -233,14 +224,14 @@ Já feito:
 - [ ] O coletor de resultados trabalha por agendamento no nó completo e publica um resumo.
 - [ ] Confirmação independente de todas as 702 porções da primeira lista de tarefas (hoje 40).
 
-**Passo 8. Piloto com outras pessoas**
+**Passo 7. Piloto com outras pessoas**
 
 - [ ] Página «Como se conectar» em nove idiomas: um link para cada sistema.
 - [ ] Um participante sem vínculo com os mantenedores em cada plataforma; os critérios de prontidão da
       etapa estão cumpridos.
 - [ ] Segundo e terceiro nós completos com donos diferentes.
 
-**Passo 9. Agentes de IA**
+**Passo 8. Agentes de IA**
 
 - [ ] O agente retira sozinho as novas tarefas do quadro e as repassa ao modelo local do participante; a
       resposta é enviada apenas depois da aprovação por uma pessoa. O texto da tarefa é tratado como não
@@ -249,13 +240,8 @@ Já feito:
       o de outra pessoa.
 - [ ] Relatório para uma tarefa do quadro feito por um participante sem vínculo com os mantenedores.
 
-**Decisões do dono sobre a etapa 0** (custam dinheiro, por isso não são tomadas sem ele):
-
-- Certificado de assinatura de código para Windows. Sem ele, na instalação o Windows mostra o aviso do
-  SmartScreen, e é preciso contorná-lo manualmente.
-- Conta Apple Developer para macOS. Sem ela, o macOS bloqueia a execução do pacote até a permissão nas
-  configurações.
-- Visualizador do quadro para iOS: fazer ou não.
+**Decisões do dono sobre a etapa 0** (23 de novembro de 2026): macOS e iOS não são feitos; a versão
+para Windows é lançada sem assinatura de código.
 
 ### Etapa 1. Formulação precisa
 

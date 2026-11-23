@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: 191cff633e617eaad62a24c76710c67b4bc4307248d04a984ba3e3c863a678ff -->
+<!-- translation of docs/ROADMAP.md, source sha256: 3060afa02f0adb73bcb1a9c7822d84ff2efe0f1ce1c8c105af2eda79e7dda071 -->
 
 # Roadmap: protection against cheating
 
@@ -133,13 +133,17 @@ Stage 0 is completed first. Then stages 1–4 run in parallel: these are calcula
 
 **Done when** for each platform from the list below: a person without experience has gone through the path using one page of instructions; the agent on that device received a new release by itself, took a task from a new list by itself, its result appeared on the full node and matched the result of another device. Recorded are the system, the architecture, the versions before and after, and the identifier of the record on the node.
 
-Platforms: Windows, Linux, macOS, Android. There will be no agent for iOS: iOS does not let an app compute in the background for long, and the App Store rules prohibit downloading executable code. Instead, a board viewer is possible (a separate decision).
+Platforms: Windows, Linux, Android (decision of 23 November 2026). No mini-agents are made or
+checked for macOS and iOS. The installation command for Linux possibly works on macOS as well,
+but this is not supported. The Windows version is released without code signing: on installation
+Windows shows a SmartScreen warning that must be confirmed manually; the authenticity of the file
+is checked against the published hash and the project signature.
 
 Already done:
 
 - [x] A public repository, an unchangeable basis in nine languages (label `core-v1`).
-- [x] An agent program for Windows, Linux, and macOS: signed tasks and updates,
-      automatic checks on three systems (release 0.2.0). Installation with one command
+- [x] An agent program for Windows and Linux: signed tasks and updates, automatic
+      checks in CI (release 0.2.0). Installation with one command
       in the terminal; Python 3.9+ is required.
 - [x] Results and the [task board](BOARD.en.md) without an account.
 - [x] The first full node storing the history of records.
@@ -148,17 +152,17 @@ Already done:
 
 **Step 1. Update reliability (release 0.2.1, without new tasks)**
 
-- [ ] The first installation checks the release signature with a key embedded in the installer
+- [x] The first installation checks the release signature with a key embedded in the installer
       itself, **before** the downloaded code runs. Currently the downloaded agent checks itself.
-- [ ] Switching to a new version in one atomic operation: first the new directory is prepared and
+- [x] Switching to a new version in one atomic operation: first the new directory is prepared and
       checked, then one pointer is changed; the previous healthy bundle is kept.
-- [ ] The highest accepted release number is stored outside the version directories and is also
+- [x] The highest accepted release number is stored outside the version directories and is also
       checked on reinstall (protection against rollback to an old release).
-- [ ] The device key, settings, progress, and unsent results are stored outside the version
+- [x] The device key, settings, progress, and unsent results are stored outside the version
       directories and survive an update and a reinstall.
-- [ ] Without the network the agent keeps working on the last healthy version and retries the
+- [x] Without the network the agent keeps working on the last healthy version and retries the
       connection with a growing interval.
-- [ ] An automatic check in CI: a substituted file, a foreign key, an old number, an extra file,
+- [x] An automatic check in CI: a substituted file, a foreign key, an old number, an extra file,
       an interrupted download, and an incompatible Python are rejected, and the working version
       remains.
 - [ ] **Live check:** the 0.2.0 installations on Windows, the home Linux, and the server upgrade
@@ -180,9 +184,10 @@ Already done:
 
 **Step 3. Windows: a one-file installer**
 
-- [ ] `SkyNetAgentSetup.exe` is built in GitHub Actions; inside are the embeddable Python from
-      python.org, the agent, and a signed release. Installs into the user profile, without
-      administrator rights, works without the network.
+- [ ] `SkyNetAgentSetup.exe` is built in GitHub Actions, without code signing; inside are the
+      embeddable Python from python.org, the agent, and a signed release. Its hash and the project
+      signature are published alongside. Installs into the user profile, without administrator
+      rights, works without the network.
 - [ ] A status window: whether the agent is running, what it is computing, pause, exit.
 - [ ] A "start at login" checkbox in the installer; the choice is preserved on update.
 - [ ] Uninstalling via "Apps"; when uninstalling, the device key can be kept.
@@ -196,20 +201,13 @@ Already done:
       checkbox.
 - [ ] A check on Linux Mint, Ubuntu, and Debian.
 
-**Step 5. macOS (experimental, until there is a Mac to check)**
-
-- [ ] The `SkyNetAgent.pkg` package with portable Python for arm64 and x86_64, built in GitHub
-      Actions, installs into the user profile, starts at login with consent.
-- [ ] Checking the installation and one computation on a macOS machine in CI.
-- [ ] A live check on a participant's Mac.
-
-**Step 6. Updating the embedded Python and the wrappers**
+**Step 5. Updating the embedded Python and the wrappers**
 
 - [ ] A signed description of the bundle for each system and architecture: the versions and hashes
       of Python, the installer, and the wrapper. The agent updates Python as well, not only its own
       files.
 
-**Step 7. Task flow**
+**Step 6. Task flow**
 
 - [ ] Four new computational tasks of stage 2 (the exit campaign of Variant B, apprentice seats,
       a lottery with a chosen verification share, the winning-token certificate) — new built-in
@@ -220,14 +218,14 @@ Already done:
 - [ ] The result collector runs on a schedule on the full node and publishes a summary.
 - [ ] Independent confirmation of all 702 chunks of the first list (currently 40).
 
-**Step 8. Pilot with other people**
+**Step 7. Pilot with other people**
 
 - [ ] The "How to connect" page in nine languages: one link per system.
 - [ ] One participant per platform not connected with the maintainers; the stage readiness
       criteria are met.
 - [ ] Second and third full nodes with different owners.
 
-**Step 9. AI agents**
+**Step 8. AI agents**
 
 - [ ] The agent itself picks up new board tasks and passes them to the participant's local model;
       the answer is sent only after a person approves. The task text is considered untrusted.
@@ -235,13 +233,7 @@ Already done:
       check someone else's.
 - [ ] A report for a board task from a participant not connected with the maintainers.
 
-**Owner's decisions for stage 0** (they cost money, so they are not made without the owner):
-
-- A code-signing certificate for Windows. Without it, Windows shows a SmartScreen warning on
-  installation, and it has to be bypassed manually.
-- An Apple Developer account for macOS. Without it, macOS blocks launching the package until
-  permission is given in the settings.
-- A board viewer for iOS: whether to make it or not.
+**Owner's decisions for stage 0** (23 November 2026): macOS and iOS are not made; the Windows version is released without code signing.
 
 ### Stage 1. Precise formulation
 

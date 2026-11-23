@@ -13,14 +13,12 @@ The new version goes to its own directory; the previous one is kept, and the
 launcher returns to it if the new one cannot start.
 """
 
-import hashlib
 import os
 import re
-import shutil
 import sys
-import time
 
-from . import RELEASE_SEQ, config, net, signed, trust
+from . import RELEASE_SEQ, __version__, config, deployment, net, signed, trust
+from .deployment import ReleaseError
 
 RELEASE_PATH = "agent/release.json"
 MAX_RELEASE_BYTES = 256 * 1024
@@ -33,19 +31,15 @@ _VERSION_RE = re.compile(r"^\d{1,4}\.\d{1,4}\.\d{1,4}$")
 _REQUIRED = ("skynet_agent/__init__.py", "skynet_agent/cli.py", "launcher.py")
 
 
-class ReleaseError(Exception):
-    pass
-
-
 def _is_int(x):
     return isinstance(x, int) and not isinstance(x, bool)
 
 
 def safe_path(path):
     """True if a release may contain this file path (relative to agent/)."""
-    if not isinstance(path, str) or not _PATH_RE.match(path):
+    if not isinstance(path, str) or not _PATH_RE.fullmatch(path):
         return False
-    if ".." in path or "//" in path or path.endswith("/"):
+    if "/./" in path or ".." in path or "//" in path or path.endswith("/"):
         return False
     if path == "launcher.py":
         return True
@@ -55,9 +49,9 @@ def safe_path(path):
 def validate_release(rel):
     if not isinstance(rel, dict) or rel.get("format") != 1:
         raise ReleaseError("unknown release format")
-    if not _is_int(rel.get("seq")) or rel["seq"] < 1:
+    if not _is_int(rel.get("seq")) or not 1 <= rel["seq"] <= 999999999:
         raise ReleaseError("seq must be a positive integer")
-    if not isinstance(rel.get("version"), str) or not _VERSION_RE.match(rel["version"]):
+    if not isinstance(rel.get("version"), str) or not _VERSION_RE.fullmatch(rel["version"]):
         raise ReleaseError("version must look like 1.2.3")
     minpy = rel.get("min_python", [3, 9])
     if (not isinstance(minpy, list) or len(minpy) != 2
@@ -109,36 +103,12 @@ def version_dir_name(rel):
 
 def download_release(home, base_url, rel, raw, sig):
     """Download and check every file. Returns the directory relative to home."""
-    name = version_dir_name(rel)
-    final = os.path.join(home, "versions", name)
-    tmp = final + ".tmp"
-    shutil.rmtree(tmp, ignore_errors=True)
     agent_base = base_url.rstrip("/") + "/agent/"
-    try:
-        for path in sorted(rel["files"]):
-            meta = rel["files"][path]
-            data = net.get(agent_base + path, max_bytes=MAX_FILE_BYTES)
-            if len(data) != meta["size"] or hashlib.sha256(data).hexdigest() != meta["sha256"]:
-                raise ReleaseError("downloaded %s does not match the signed release" % path)
-            target = os.path.join(tmp, *path.split("/"))
-            os.makedirs(os.path.dirname(target), exist_ok=True)
-            with open(target, "wb") as f:
-                f.write(data)
-        with open(os.path.join(tmp, "release.json"), "wb") as f:
-            f.write(raw)
-        with open(os.path.join(tmp, "release.json.sig"), "wb") as f:
-            f.write(sig)
-        shutil.rmtree(final, ignore_errors=True)
-        os.replace(tmp, final)
-    except BaseException:
-        shutil.rmtree(tmp, ignore_errors=True)
-        raise
-    return "versions/" + name
+    return deployment.prepare(home, rel, raw, sig, lambda p: net.get(agent_base + p, max_bytes=MAX_FILE_BYTES))
 
 
-def verify_installed(version_dir, keys=None):
-    """Check an installed version against its own signed release. Returns a list of problems."""
-    problems = []
+def verify_installed(version_dir, keys=None, *, expected=None, exact=True):
+    """Verify the signed manifest and its tree. A source checkout also contains development files."""
     try:
         with open(os.path.join(version_dir, "release.json"), "rb") as f:
             raw = f.read()
@@ -152,16 +122,12 @@ def verify_installed(version_dir, keys=None):
         validate_release(rel)
     except (signed.SignatureError, ReleaseError, ValueError) as e:
         return ["release description: %s" % e]
-    for path, meta in sorted(rel["files"].items()):
-        try:
-            with open(os.path.join(version_dir, *path.split("/")), "rb") as f:
-                data = f.read()
-        except OSError:
-            problems.append("missing file: %s" % path)
-            continue
-        if len(data) != meta["size"] or hashlib.sha256(data).hexdigest() != meta["sha256"]:
-            problems.append("changed file: %s" % path)
-    return problems
+    if expected is not None and rel != expected:
+        return ["installed manifest does not match the selected release"]
+    try:
+        return deployment.tree_problems(version_dir, rel["files"], exact)
+    except OSError as e:
+        return ["cannot inspect the version directory: %s" % e]
 
 
 def read_current(home):
@@ -169,33 +135,20 @@ def read_current(home):
     return cur if isinstance(cur, dict) else None
 
 
-def activate(home, rel, rel_dir):
-    """Point current.json at the new version and refresh the launcher."""
-    cur = read_current(home)
-    previous = None
-    if cur and cur.get("dir") != rel_dir:
-        previous = {"seq": cur.get("seq"), "version": cur.get("version"), "dir": cur.get("dir")}
-    elif cur and isinstance(cur.get("previous"), dict):
-        previous = cur["previous"]      # activated twice: keep the version to go back to
-    new = {"seq": rel["seq"], "version": rel["version"], "dir": rel_dir,
-           "previous": previous, "activated": int(time.time())}
-    src = os.path.join(home, *rel_dir.split("/"), "launcher.py")
-    if os.path.exists(src):
-        tmp = os.path.join(home, "launcher.py.tmp")
-        shutil.copyfile(src, tmp)
-        os.replace(tmp, os.path.join(home, "launcher.py"))
-    config.write_json_atomic(os.path.join(home, "current.json"), new)
-    keep = {rel_dir.split("/")[-1]}
-    if previous and previous.get("dir"):
-        keep.add(str(previous["dir"]).split("/")[-1])
-    versions = os.path.join(home, "versions")
-    try:
-        for name in os.listdir(versions):
-            if name not in keep:
-                shutil.rmtree(os.path.join(versions, name), ignore_errors=True)
-    except OSError:
-        pass
-    return new
+def activate(home, rel, rel_dir, *, local_check=None, allow_downgrade=False):
+    """Verify before committing the pointer. The caller holds the installation lock."""
+    validate_release(rel)
+    if rel_dir != "versions/" + version_dir_name(rel):
+        raise ReleaseError("unexpected version directory")
+    if not allow_downgrade and rel["seq"] < deployment.sequence_floor(home):
+        raise ReleaseError("release is below the local maximum")
+    directory = os.path.join(home, *rel_dir.split("/"))
+    problems = verify_installed(directory, expected=rel)
+    if problems:
+        raise ReleaseError(", ".join(problems))
+    check = local_check or deployment.check_candidate
+    check(home, directory, rel)
+    return deployment.switch_version(home, rel, rel_dir, confirmed=local_check is None)
 
 
 def running_dir():
@@ -212,6 +165,25 @@ def is_installed_layout(home):
         return False
 
 
+def confirm_legacy_install(home):
+    """An older updater can start this release without having written its high-water mark."""
+    rel = {"seq": RELEASE_SEQ, "version": __version__}
+    relative = "versions/" + version_dir_name(rel)
+    if running_dir() != os.path.realpath(os.path.join(home, *relative.split("/"))):
+        return
+    path = os.path.join(home, "max_seq.json")
+    highest = deployment.read_local(path, 0)
+    if type(highest) is not int or highest < 0:
+        raise ReleaseError("invalid local release number")
+    if highest >= RELEASE_SEQ:
+        return
+    with deployment.update_lock(home):
+        cur = read_current(home) or {}
+        if cur.get("dir") == relative and deployment.read_local(path, 0) < RELEASE_SEQ:
+            deployment.check_candidate(home, running_dir(), rel)
+            deployment.write_local(home, "max_seq.json", deployment.sequence_floor(home))
+
+
 class UpdateResult:
     def __init__(self):
         self.halt = ""          # non-empty: stop taking tasks
@@ -226,7 +198,7 @@ def bad_seqs(home):
     return [x for x in data if _is_int(x)] if isinstance(data, list) else []
 
 
-def check_and_apply(home, base_url, cfg):
+def check_and_apply(home, base_url, cfg, *, allow_downgrade=False):
     """Look for a newer signed release and, in "auto" mode, install it.
 
     The release description is read in every update mode, because it also carries the
@@ -236,7 +208,16 @@ def check_and_apply(home, base_url, cfg):
     result = UpdateResult()
     rel, raw, sig = fetch_release(base_url)
     result.halt = halt_reason(rel)
-    if cfg.get("update") == "off" or rel["seq"] <= RELEASE_SEQ:
+    if cfg.get("update") == "off" or result.halt:
+        return result
+    if rel.get("halt") and rel["seq"] <= rel["halt"]["through_seq"]:
+        result.available = (rel["seq"], rel["version"])
+        result.note = "release paused by the maintainers"
+        return result
+    floor = max(RELEASE_SEQ, deployment.sequence_floor(home))
+    if rel["seq"] < floor and not allow_downgrade:
+        raise ReleaseError("release %d is older than %d" % (rel["seq"], floor))
+    if rel["seq"] == RELEASE_SEQ and (read_current(home) or {}).get("seq", RELEASE_SEQ) == RELEASE_SEQ:
         return result
     result.available = (rel["seq"], rel["version"])
     if rel["seq"] in bad_seqs(home):
@@ -252,20 +233,26 @@ def check_and_apply(home, base_url, cfg):
     if not is_installed_layout(home):
         result.note = "not an installed copy (development run), not installing"
         return result
-    target = "versions/" + version_dir_name(rel)
-    cur = read_current(home)
-    if cur and cur.get("seq") == rel["seq"] and cur.get("dir") == target:
-        # Already in place, for example installed by "skynet-agent update" while this copy
-        # was running. Downloading it again would also drop the version to go back to.
-        if running_dir() == os.path.realpath(os.path.join(home, *target.split("/"))):
-            # This very copy claims an older number than its description: never loop on it.
-            result.note = "release %d is already running, not installing it again" % rel["seq"]
-            return result
+    with deployment.update_lock(home):
+        floor = max(RELEASE_SEQ, deployment.sequence_floor(home))
+        if rel["seq"] < floor:
+            if not allow_downgrade:
+                raise ReleaseError("release %d is older than %d" % (rel["seq"], floor))
+            print("WARNING: installing release %d below %d" % (rel["seq"], floor), file=sys.stderr)
+        target = "versions/" + version_dir_name(rel)
+        cur = read_current(home)
+        if cur and cur.get("seq") == rel["seq"] and cur.get("dir") == target:
+            directory = os.path.realpath(os.path.join(home, *target.split("/")))
+            problems = verify_installed(directory, expected=rel)
+            if problems:
+                raise ReleaseError(", ".join(problems))
+            if running_dir() == directory:
+                result.note = "release %d is already running, not installing it again" % rel["seq"]
+                return result
+        else:
+            rel_dir = download_release(home, base_url, rel, raw, sig)
+            activate(home, rel, rel_dir, allow_downgrade=allow_downgrade)
         result.installed = True
-        return result
-    rel_dir = download_release(home, base_url, rel, raw, sig)
-    activate(home, rel, rel_dir)
-    result.installed = True
     return result
 
 

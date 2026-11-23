@@ -13,9 +13,10 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from pathlib import Path
 
 import helpers
-from skynet_agent import submit
+from skynet_agent import ed25519, signed, submit, updater
 
 GLUE_DIR = os.path.join(helpers.REPO_ROOT, "android", "app", "src", "main", "python")
 
@@ -146,20 +147,15 @@ class AndroidGlue(unittest.TestCase):
             self.assertEqual(json.load(f), [2, 3])   # 2: its files were changed on the device
 
     def test_files_not_in_the_signed_release_are_found(self):
-        sys.path.insert(0, GLUE_DIR)
-        try:
-            import skynet_android
-        finally:
-            sys.path.remove(GLUE_DIR)
         vdir = os.path.join(self.tmp, "vcheck")
         shutil.copytree(os.path.join(self.repo, "agent"), vdir,
                         ignore=shutil.ignore_patterns("install.*", "README.md", "LICENSE", "__pycache__"))
-        self.assertEqual(skynet_android.unlisted_files(vdir), [])
+        self.assertEqual(updater.verify_installed(vdir, keys=[helpers.TEST_PUBLIC_HEX]), [])
         with open(os.path.join(vdir, "skynet_agent", "json.py"), "w") as f:        # a planted module
             f.write("raise SystemExit\n")
         os.makedirs(os.path.join(vdir, "skynet_agent", "__pycache__"))
-        self.assertEqual(skynet_android.unlisted_files(vdir),
-                         ["skynet_agent/__pycache__", "skynet_agent/json.py"])
+        self.assertEqual(updater.verify_installed(vdir, keys=[helpers.TEST_PUBLIC_HEX]),
+                         ["unexpected entry: skynet_agent/__pycache__", "unexpected entry: skynet_agent/json.py"])
 
     def test_a_unit_that_ran_too_long_is_left_to_others(self):
         home = os.path.join(self.tmp, "home-slow")
@@ -175,6 +171,70 @@ class AndroidGlue(unittest.TestCase):
         with open(os.path.join(home, "state.json"), encoding="utf-8") as f:
             self.assertIn("exit-a-tiny", json.load(f)["skip"])
         self.assertFalse(os.path.exists(os.path.join(home, "timed_out.json")))
+
+class OfflineStartup(unittest.TestCase):
+    def test_four_cold_starts_confirm_the_download_without_a_token(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = helpers.copy_repo(os.path.join(tmp, "repo"))
+            helpers.build_test_release(repo, 1, "0.1.0")
+            builtin = shutil.copytree(os.path.join(repo, "agent"), os.path.join(tmp, "builtin"))
+            helpers.build_test_release(repo, 2, "0.2.0")
+            home = Path(tmp, "home")
+            install_driver = """import logging, os, sys
+from pathlib import Path
+builtin, glue, repo, home, expected = sys.argv[1:]
+sys.path[:0] = [builtin, glue]
+os.environ["SKYNET_AGENT_BASE_URL"] = "https://test.invalid"
+os.environ["SKYNET_AGENT_HOME"] = home
+import skynet_android
+built = skynet_android._load_builtin()
+def get(url, **kwargs):
+    assert url.startswith("https://test.invalid/")
+    return Path(repo, *url.split("/")[3:]).read_bytes()
+built["net"].get = get
+assert skynet_android._update(home, logging.getLogger()) == (expected == "yes")
+"""
+            def update(expected):
+                result = subprocess.run([sys.executable, "-IB", "-c", install_driver, builtin, GLUE_DIR,
+                                         repo, str(home), expected], capture_output=True, timeout=15)
+                self.assertEqual(result.returncode, 0, result.stderr)
+            update("yes")
+            self.assertEqual(json.loads((home / "max_seq.json").read_bytes()), 0)
+            env = dict(os.environ, SKYNET_AGENT_BASE_URL="offline://invalid", SKYNET_AGENT_SUBMIT_VIA="net")
+            driver = DRIVER.replace("import skynet_android", """import skynet_android
+def offline(event, args):
+    if event.startswith("socket."):
+        raise AssertionError("unexpected network access")
+sys.addaudithook(offline)""")
+            raw = json.dumps(INDEX).encode()
+            seed = bytes.fromhex(helpers.TEST_SEED_HEX)
+            sig = signed.format_sig_line(ed25519.public_key(seed), ed25519.sign(seed, raw))
+            (home / "task-list.json").write_text(json.dumps({"raw": raw.decode(), "signature": sig}))
+            (home / "config.json").write_text(json.dumps({"submit": "manual"}))
+            (home / "outbox").mkdir(exist_ok=True)
+            for n in range(submit.MAX_OUTBOX):
+                (home / "outbox" / ("%d.json" % n)).touch()
+            for _ in range(4):
+                status_file = home / "status.json"
+                status_file.unlink(missing_ok=True)
+                done = subprocess.run([sys.executable, "-IB", "-c", driver, builtin, GLUE_DIR, str(home),
+                                       "results are waiting", "1", "2"], capture_output=True, env=env, timeout=15)
+                self.assertEqual(done.returncode, 0, done.stderr)
+                self.assertNotIn(b"GitHub token", done.stderr)
+                status = json.loads(status_file.read_bytes())
+                self.assertTrue(status["downloaded"])
+                self.assertNotIn("login", status)
+                self.assertNotIn("token", status["last_error"])
+                self.assertEqual(json.loads((home / "max_seq.json").read_bytes()), 2)
+                self.assertFalse((home / "trial.json").exists())
+                self.assertFalse((home / "bad_seqs.json").exists())
+            cli = Path(repo, "agent", "skynet_agent", "cli.py")
+            cli.write_bytes(cli.read_bytes() + b"\nraise RuntimeError('broken release')\n")
+            helpers.build_test_release(repo, 3, "0.3.0")
+            pointer = (home / "current.json").read_bytes()
+            update("no")
+            self.assertEqual((home / "current.json").read_bytes(), pointer)
+            self.assertEqual(json.loads((home / "bad_seqs.json").read_bytes()), [3])
 
 
 if __name__ == "__main__":

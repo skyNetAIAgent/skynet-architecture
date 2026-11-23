@@ -35,6 +35,7 @@ public class MainActivity extends Activity {
 
     private final Handler handler = new Handler(Looper.getMainLooper());
     private TextView status;
+    private LinearLayout tokenSettings;
     private SharedPreferences prefs;
 
     private final Runnable refresh = new Runnable() {
@@ -90,8 +91,11 @@ public class MainActivity extends Activity {
     }
 
     /** The agent reports its state as a code; the words come from this app's language files. */
-    private String stateText(JSONObject s) {
+    private String stateText(JSONObject s, boolean github) {
         String code = s.optString("code", "");
+        if ("outbox_full".equals(code) && !github) {
+            return getString(R.string.label_published, s.optInt("published", 0), s.optInt("outbox", 0));
+        }
         int id = getResources().getIdentifier("state_" + code, "string", getPackageName());
         if (id == 0 || code.isEmpty()) {
             return s.optString("note", "");
@@ -99,8 +103,14 @@ public class MainActivity extends Activity {
         return "error".equals(code) ? getString(id) + " (" + s.optString("note", "") + ")" : getString(id);
     }
 
+    private boolean usesGitHub() {
+        return "github".equals(config().optString("submit_via", "net"));
+    }
+
     private void showStatus() {
         boolean wanted = prefs.getBoolean("running", false);
+        boolean github = usesGitHub();
+        tokenSettings.setVisibility(github ? View.VISIBLE : View.GONE);
         StringBuilder text = new StringBuilder();
         try {
             JSONObject s = new JSONObject(read(new File(home(), "status.json")));
@@ -110,7 +120,7 @@ public class MainActivity extends Activity {
             } else if (age > 120) {
                 text.append(getString(R.string.starting)).append('\n');
             } else {
-                text.append(getString(R.string.label_state, stateText(s))).append('\n');
+                text.append(getString(R.string.label_state, stateText(s, github))).append('\n');
                 if (!s.optString("current", "").isEmpty()) {
                     text.append(getString(R.string.label_now, s.optString("current"))).append('\n');
                 }
@@ -118,9 +128,13 @@ public class MainActivity extends Activity {
             text.append(getString(R.string.label_version, s.optString("version", "?"), s.optInt("release", 0))).append('\n');
             text.append(getString(R.string.label_units, s.optInt("units_done", 0), s.optInt("units_failed", 0))).append('\n');
             text.append(getString(R.string.label_published, s.optInt("published", 0), s.optInt("outbox", 0))).append('\n');
-            text.append(getString(s.optBoolean("login", false) ? R.string.label_token_set : R.string.label_token_missing)).append('\n');
-            String problem = "no_token".equals(s.optString("problem_code", ""))
-                    ? getString(R.string.problem_no_token) : s.optString("last_error", "");
+            if (github && s.has("login")) {
+                text.append(getString(s.optBoolean("login") ? R.string.label_token_set : R.string.label_token_missing)).append('\n');
+            }
+            String problem = s.optString("last_error", "");
+            if ("no_token".equals(s.optString("problem_code", ""))) {
+                problem = github ? getString(R.string.problem_no_token) : "";
+            }
             if (!problem.isEmpty()) {
                 text.append(getString(R.string.label_problem, problem)).append('\n');
             }
@@ -204,6 +218,25 @@ public class MainActivity extends Activity {
         });
         page.addView(battery);
 
+        tokenSettings = new LinearLayout(this);
+        tokenSettings.setOrientation(LinearLayout.VERTICAL);
+        tokenSettings.setVisibility(usesGitHub() ? View.VISIBLE : View.GONE);
+        addTokenSettings(tokenSettings);
+        page.addView(tokenSettings);
+
+        page.addView(button(getString(R.string.about), new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.about_url))));
+            }
+        }));
+
+        ScrollView scroll = new ScrollView(this);
+        scroll.addView(page);
+        setContentView(scroll);
+    }
+
+    private void addTokenSettings(LinearLayout page) {
         page.addView(label(getString(R.string.token_help), 14));
         final EditText token = new EditText(this);
         token.setHint(R.string.token_hint);
@@ -228,17 +261,6 @@ public class MainActivity extends Activity {
                 }
             }
         }));
-
-        page.addView(button(getString(R.string.about), new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.about_url))));
-            }
-        }));
-
-        ScrollView scroll = new ScrollView(this);
-        scroll.addView(page);
-        setContentView(scroll);
     }
 
     @Override

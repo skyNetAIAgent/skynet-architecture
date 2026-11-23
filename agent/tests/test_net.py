@@ -101,15 +101,15 @@ class CertificateFallback(unittest.TestCase):
         system = object()
         calls = []
 
-        def fake_urlopen(req, timeout=None, context=None):
+        def fake_open(req, context, allow_local_http):
             calls.append(context)
             if context is None:
                 raise _certificate_error()
             return _Response(b"data")
 
-        saved = (urllib.request.urlopen, install.system_ca_context, install._fallback["context"])
+        saved = (install._open, install.system_ca_context, install._fallback["context"])
         install._fallback["context"] = None
-        urllib.request.urlopen = fake_urlopen
+        install._open = fake_open
         install.system_ca_context = lambda: system
         try:
             self.assertEqual(install.fetch("https://example.invalid/x"), b"data")
@@ -119,7 +119,7 @@ class CertificateFallback(unittest.TestCase):
             with self.assertRaises(install.InstallError):
                 install.fetch("https://example.invalid/x")
         finally:
-            urllib.request.urlopen, install.system_ca_context, install._fallback["context"] = saved
+            install._open, install.system_ca_context, install._fallback["context"] = saved
 
 
 class _Handler(http.server.BaseHTTPRequestHandler):

@@ -5,6 +5,8 @@ import functools
 import http.server
 import json
 import os
+from pathlib import Path
+import runpy
 import shutil
 import subprocess
 import sys
@@ -60,6 +62,31 @@ def run_tool(repo, name, *args):
 
 def make_release(repo, seq, version, *extra):
     return run_tool(repo, "make_release.py", "--seq", str(seq), "--version", version, "--set-trust", *extra)
+
+
+def build_test_release(repo, seq, version, **options):
+    """Use the release builder with the public test seed, without the maintainer's key store."""
+    old_path = sys.path[:]
+    try:
+        builder = runpy.run_path(os.path.join(repo, "tools", "make_release.py"))["build_release"]
+        builder(repo, seq, version, bytes.fromhex(TEST_SEED_HEX), set_trust=True, **options)
+    finally:
+        sys.path[:] = old_path
+
+
+def file_fetch(repo):
+    """Stand in for the HTTP transport with files from the temporary repository."""
+    from skynet_agent import net
+
+    def get(url, *args, **kwargs):
+        base = "https://test.invalid/"
+        if not url.startswith(base):
+            raise AssertionError("unexpected URL: " + url)
+        try:
+            return Path(repo, *url[len(base):].split("/")).read_bytes()
+        except FileNotFoundError as e:
+            raise net.NetError("file unavailable") from e
+    return get
 
 
 def write_index(repo, index):

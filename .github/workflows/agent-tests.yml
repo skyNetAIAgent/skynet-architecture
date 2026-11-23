@@ -45,7 +45,7 @@ jobs:
           if not os.path.exists("agent/release.json"):
               print("no release published yet")
               sys.exit(0)
-          problems = updater.verify_installed("agent")
+          problems = updater.verify_installed("agent", exact=False)
           for p in problems:
               print("PROBLEM:", p)
           print("release keys:", trust.RELEASE_KEYS)

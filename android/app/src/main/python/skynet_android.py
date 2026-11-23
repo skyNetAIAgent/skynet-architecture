@@ -11,8 +11,8 @@ replaces the desktop launcher and the worker processes:
     INTO THE APK accepts it: its signature with the built-in release key, every
     file against the signed list, no file that is not on the list, and a release
     number not lower than the highest one that already worked here;
-  * a new version gets three tries to start; if it does not reach the
-    repository within them, it is marked bad and the built-in code runs again.
+  * a new version gets three tries to start; if it does not complete a
+    local self-check and one loop step within them, it is marked bad and the built-in code runs again.
 
 The app itself (this file and the Java part) changes only with a new APK.
 
@@ -90,22 +90,22 @@ def _load_builtin():
     return _builtin
 
 
-def unlisted_files(vdir):
-    """Files and folders in a version folder that its signed release does not list (and links)."""
-    rel = _read_json(os.path.join(vdir, "release.json"), {})
-    allowed = set((rel.get("files") or {}).keys()) | {"release.json", "release.json.sig"}
-    extra = []
-    for folder, dirs, names in os.walk(vdir):
-        for name in dirs + names:
-            full = os.path.join(folder, name)
-            rel_path = os.path.relpath(full, vdir).replace(os.sep, "/")
-            if os.path.islink(full):
-                extra.append(rel_path)
-            elif os.path.isfile(full) and rel_path not in allowed:
-                extra.append(rel_path)
-            elif os.path.isdir(full) and not any(a.startswith(rel_path + "/") for a in allowed):
-                extra.append(rel_path)
-    return sorted(extra)
+def _check_candidate(home, directory, rel):
+    """Android has one interpreter. Restore the running package after the staged self-test."""
+    saved = {k: v for k, v in sys.modules.items() if k == "skynet_agent" or k.startswith("skynet_agent.")}
+    _purge()
+    sys.path.insert(0, directory)
+    try:
+        from skynet_agent import RELEASE_SEQ, __version__, cli
+        if (RELEASE_SEQ, __version__) != (rel["seq"], rel["version"]) or cli.cmd_verify_install(None):
+            raise ValueError("verify-install failed")
+    except Exception as e:
+        _mark_bad(home, rel["seq"])
+        raise _builtin["updater"].ReleaseError("candidate self-check failed: %s" % e) from e
+    finally:
+        sys.path.remove(directory)
+        _purge()
+        sys.modules.update(saved)
 
 
 def select_code(home):
@@ -133,7 +133,7 @@ def select_code(home):
         return None
     vdir = os.path.join(home, *rel_dir.split("/"))
     # Checked by the code built into the APK: signature with its release key, every file, nothing extra.
-    if updater.verify_installed(vdir) or unlisted_files(vdir):
+    if updater.verify_installed(vdir):
         _mark_bad(home, seq)
         import skynet_agent  # noqa: F401
         return None
@@ -151,6 +151,8 @@ def select_code(home):
         from skynet_agent import cli, worker, submit, tasks  # noqa: F401  (must all import)
         if newer.RELEASE_SEQ != seq:
             raise ImportError("the version reports another release number")
+        if cli.cmd_verify_install(None):
+            raise ImportError("verify-install failed")
     except Exception:
         sys.path.remove(vdir)
         _purge()
@@ -162,7 +164,7 @@ def select_code(home):
 
 
 def confirm(home, seq):
-    """A downloaded version has worked here (it reached the repository): it is no longer on trial."""
+    """A downloaded version has worked here: it is no longer on trial."""
     if seq is None:
         return
     if seq > _max_seq(home):
@@ -224,22 +226,28 @@ def _loop(home, host, downloaded_seq, hooks):
     def status(note, current="", code=""):
         counters = state["counters"]
         problem, problem_code = state.get("last_error", ""), ""
+        github = config.submit_via(cfg) == "github"
         if "GitHub CLI" in problem or "gh auth login" in problem:
-            # the desktop hint fits no phone; the app shows its own words for it, in its language
-            problem, problem_code = "no GitHub token yet: paste one below to publish the results", "no_token"
-        _write_json(status_path, {
+            problem = ""
+            if github:
+                problem, problem_code = "a GitHub token is needed to publish results", "no_token"
+        report = {
             "time": int(time.time()), "note": note, "code": code, "current": current,
             "version": __version__, "release": RELEASE_SEQ, "downloaded": downloaded_seq is not None,
             "units_done": counters.get("units_done", 0), "units_failed": counters.get("units_failed", 0),
             "published": counters.get("published", 0), "outbox": submit.outbox_count(),
-            "last_error": problem, "problem_code": problem_code,
-            "login": bool(submit.find_token()[0])})
+            "last_error": problem or state["poll_error"], "problem_code": problem_code,
+            "retry_at": state["retry_at"]}
+        if github:
+            report["login"] = bool(submit.find_token()[0])
+        _write_json(status_path, report)
 
     log.info("SkyNet research agent %s (release %d) in the Android app, home %s", __version__, RELEASE_SEQ, home)
     index = coverage = None
-    halt = ""
+    halt = state["halt"] if state["halt_seq"] == RELEASE_SEQ else ""
     next_poll = 0.0
     waiting = None
+    trial = downloaded_seq
     while not host.stopRequested():
         now = time.time()
         if now >= next_poll:
@@ -248,16 +256,15 @@ def _loop(home, host, downloaded_seq, hooks):
             index, coverage, new_halt, _ = cli._poll(args, cfg, state, index)
             if new_halt is not None:                     # None: the repository could not be read
                 halt = new_halt
-                confirm(home, downloaded_seq)
             if halt:
                 log.warning("the maintainers paused this version: %s", halt)
-            if cfg["update"] == "auto" and _update(home, log):
+            if new_halt == "" and cfg["update"] == "auto" and _update(home, log):
                 config.save_state(state)
                 return "restart"
             submit.flush_outbox(cfg, state, log, issues=cli._issues(index))
             state["last_poll"] = int(now)
+            next_poll = cli._next_poll(time.time(), cfg, state)
             config.save_state(state)
-            next_poll = now + cfg["poll_minutes"] * 60
         else:
             cfg = config.load_config()                   # a switch changed on the screen applies at once
             cfg["ai"]["enabled"] = False
@@ -272,7 +279,9 @@ def _loop(home, host, downloaded_seq, hooks):
         elif cfg["paused"]:
             note, code = "paused", "paused"
         elif submit.outbox_count() >= submit.MAX_OUTBOX:
-            note = "%d results are waiting to be published; add a GitHub token" % submit.MAX_OUTBOX
+            note = "%d results are waiting to be published" % submit.MAX_OUTBOX
+            if config.submit_via(cfg) == "github":
+                note += "; check your GitHub token"
             code = "outbox_full"
         elif not cfg["run_on_battery"] and not host.isCharging():
             note, code = "not charging, waiting for the charger", "not_charging"
@@ -284,6 +293,9 @@ def _loop(home, host, downloaded_seq, hooks):
                 log.info("waiting: %s", note)
             waiting = note
             status(note, code=code)
+            if trial is not None:
+                confirm(home, trial)
+                trial = None
             time.sleep(hooks.get("idle_sleep", 5))
             continue
 
@@ -310,6 +322,9 @@ def _loop(home, host, downloaded_seq, hooks):
             submit.flush_outbox(cfg, state, log, issues=cli._issues(index))
             config.save_state(state)
         status("working", code="working")
+        if trial is not None:
+            confirm(home, trial)
+            trial = None
     config.save_state(state)
     status("stopped", code="stopped")
     return "stop"
@@ -323,10 +338,11 @@ def _update(home, log):
     try:
         rel, raw, sig = updater.fetch_release(updater.base_url())     # checked with the APK's release key
         if (rel["seq"] <= max(RELEASE_SEQ, _max_seq(home)) or rel["seq"] in updater.bad_seqs(home)
-                or not updater.python_ok(rel)):
+                or not updater.python_ok(rel) or (rel.get("halt") and rel["seq"] <= rel["halt"]["through_seq"])):
             return False
-        rel_dir = updater.download_release(home, updater.base_url(), rel, raw, sig)
-        updater.activate(home, rel, rel_dir)
+        with updater.deployment.update_lock(home):
+            rel_dir = updater.download_release(home, updater.base_url(), rel, raw, sig)
+            updater.activate(home, rel, rel_dir, local_check=_check_candidate)
         log.info("installed version %s (release %d)", rel["version"], rel["seq"])
         return True
     except (net.NetError, signed.SignatureError, updater.ReleaseError, OSError) as e:

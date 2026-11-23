@@ -10,7 +10,7 @@ intended: equal answers from different people are how results are checked.
 import random
 import re
 
-from . import RELEASE_SEQ, signed
+from . import RELEASE_SEQ, config, signed
 from .kernels import REGISTRY
 
 INDEX_PATH = "tasks/index.json"
@@ -84,11 +84,28 @@ def is_expired(index, today):
     return bool(expires) and today > expires
 
 
-def fetch_index(base_url):
-    """Fetch, verify the signature and validate. Returns the index object."""
-    index, _, _ = signed.fetch_signed_json(base_url, INDEX_PATH, max_bytes=MAX_INDEX_BYTES)
+def fetch_index(base_url, *, cache_from=None):
+    """Verify the index and optionally save its signed bytes in the agent home."""
+    index, raw, sig = signed.fetch_signed_json(base_url, INDEX_PATH, max_bytes=MAX_INDEX_BYTES)
     validate_index(index)
+    if cache_from is not None and index["seq"] >= cache_from:
+        config.write_json_atomic(config.path("task-list.json"),
+                                 {"raw": raw.decode("utf-8"), "signature": sig.decode("ascii")})
     return index
+
+
+def cached_index(min_seq):
+    cached = config.read_json(config.path("task-list.json"))
+    if not isinstance(cached, dict):
+        return None
+    try:
+        raw = cached["raw"].encode("utf-8")
+        signed.verify_detached(raw, cached["signature"].encode("ascii"))
+        index = signed.strict_json_loads(raw)
+        validate_index(index)
+    except (AttributeError, KeyError, ValueError, signed.SignatureError, IndexError_):
+        return None
+    return index if index["seq"] >= min_seq else None
 
 
 def usable(task, cfg):

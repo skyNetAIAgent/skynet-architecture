@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: 191cff633e617eaad62a24c76710c67b4bc4307248d04a984ba3e3c863a678ff -->
+<!-- translation of docs/ROADMAP.md, source sha256: 3060afa02f0adb73bcb1a9c7822d84ff2efe0f1ce1c8c105af2eda79e7dda071 -->
 
 # Roadmap: Schutz vor Betrug
 
@@ -154,17 +154,19 @@ vollständigen Knoten erschienen ist und mit dem Ergebnis eines anderen Geräts 
 Aufgeschrieben sind System, Architektur, die Versionen davor und danach und die Kennung des
 Eintrags auf dem Knoten.
 
-Plattformen: Windows, Linux, macOS, Android. Einen Agenten für iOS wird es nicht geben: iOS
-erlaubt einer Anwendung nicht, lange im Hintergrund zu rechnen, und die Regeln des App Store
-verbieten das Laden von ausführbarem Code. Stattdessen ist ein Betrachter des Bretts möglich
-(gesonderte Entscheidung).
+Plattformen: Windows, Linux, Android (Entscheidung vom 23. November 2026). Für macOS und iOS
+werden Mini-Agenten nicht gemacht und nicht geprüft. Der Installationsbefehl für Linux
+funktioniert möglicherweise auch unter macOS, aber das wird nicht unterstützt. Die
+Windows-Version wird ohne Codesignatur veröffentlicht: Bei der Installation zeigt Windows eine
+SmartScreen-Warnung, sie muss manuell bestätigt werden; die Echtheit der Datei wird anhand des
+veröffentlichten Hashes und der Signatur des Projekts geprüft.
 
 Bereits erledigt:
 
 - [x] Öffentliches Repositorium, unveränderliche Grundlage in neun Sprachen (Tag `core-v1`).
-- [x] Agentenprogramm für Windows, Linux und macOS: signierte Aufgaben und Aktualisierungen,
-      automatische Prüfungen auf drei Systemen (Release 0.2.0). Installation mit einem Befehl
-      im Terminal; Python 3.9+ ist nötig.
+- [x] Agentenprogramm für Windows und Linux: signierte Aufgaben und Aktualisierungen,
+      automatische Prüfungen in CI (Release 0.2.0). Installation mit einem Befehl im Terminal;
+      Python 3.9+ ist nötig.
 - [x] Ergebnisse und [Aufgabenbrett](BOARD.md) ohne Benutzerkonto.
 - [x] Erster vollständiger Knoten, der den Verlauf der Einträge speichert.
 - [x] Erste Forschungsaufgabe „Schutz vor Betrügern“ auf dem Brett, in neun Sprachen.
@@ -172,20 +174,20 @@ Bereits erledigt:
 
 **Schritt 1. Zuverlässigkeit der Aktualisierung (Release 0.2.1, ohne neue Aufgaben)**
 
-- [ ] Die erste Installation prüft die Signatur des Release mit einem in den Installer selbst
-      eingebetteten Schlüssel, **bevor** der heruntergeladene Code gestartet wird. Derzeit prüft
-      der heruntergeladene Agent sich selbst.
-- [ ] Der Wechsel auf eine neue Version mit einer einzigen atomaren Operation: Zuerst wird das
+- [x] Die erste Installation prüft die Signatur des Release mit einem in den Installer selbst
+      eingebetteten Schlüssel, **bevor** der heruntergeladene Code gestartet wird (früher prüfte
+      der heruntergeladene Agent sich selbst).
+- [x] Der Wechsel auf eine neue Version mit einer einzigen atomaren Operation: Zuerst wird das
       neue Verzeichnis vorbereitet und geprüft, dann wird ein einziger Zeiger geändert; der
       vorherige funktionsfähige Satz bleibt erhalten.
-- [ ] Die größte angenommene Release-Nummer wird außerhalb der Versionsverzeichnisse gespeichert
+- [x] Die größte angenommene Release-Nummer wird außerhalb der Versionsverzeichnisse gespeichert
       und auch bei einer Neuinstallation geprüft (Schutz vor dem Rückstieg auf einen alten
       Release).
-- [ ] Geräteschlüssel, Einstellungen, Fortschritt und nicht gesendete Ergebnisse werden außerhalb
+- [x] Geräteschlüssel, Einstellungen, Fortschritt und nicht gesendete Ergebnisse werden außerhalb
       der Versionsverzeichnisse gespeichert und überstehen Aktualisierung und Neuinstallation.
-- [ ] Ohne Netz arbeitet der Agent auf der letzten funktionsfähigen Version weiter und wiederholt
+- [x] Ohne Netz arbeitet der Agent auf der letzten funktionsfähigen Version weiter und wiederholt
       die Verbindung mit wachsendem Abstand.
-- [ ] Automatische Prüfung in CI: eine ausgetauschte Datei, ein fremder Schlüssel, eine alte
+- [x] Automatische Prüfung in CI: eine ausgetauschte Datei, ein fremder Schlüssel, eine alte
       Nummer, eine überzählige Datei, ein abgebrochener Download und ein inkompatibles Python
       werden verworfen, die funktionsfähige Version bleibt erhalten.
 - [ ] **Prüfung an einer laufenden Installation:** Die Installationen von 0.2.0 auf Windows,
@@ -210,9 +212,10 @@ Bereits erledigt:
 
 **Schritt 3. Windows: Installer als eine Datei**
 
-- [ ] `SkyNetAgentSetup.exe` wird in GitHub Actions gebaut; darin ein eingebettetes Python von
-      python.org, der Agent und ein signierter Release. Installation ins Profil des Nutzers, ohne
-      Administratorrechte, funktioniert ohne Netz.
+- [ ] `SkyNetAgentSetup.exe` wird in GitHub Actions gebaut, ohne Codesignatur; darin ein
+      eingebettetes Python von python.org, der Agent und ein signierter Release. Daneben werden
+      sein Hash und die Signatur des Projekts veröffentlicht. Installation ins Profil des
+      Nutzers, ohne Administratorrechte, funktioniert ohne Netz.
 - [ ] Statusfenster: ob der Agent arbeitet, was er rechnet, Pause, Beenden.
 - [ ] Ein Häkchen „beim Anmelden starten“ im Installer; die Wahl bleibt bei der Aktualisierung
       erhalten.
@@ -229,20 +232,13 @@ Bereits erledigt:
       gesondertes Häkchen.
 - [ ] Prüfung auf Linux Mint, Ubuntu und Debian.
 
-**Schritt 5. macOS (experimentell, solange kein Mac zum Prüfen vorhanden ist)**
-
-- [ ] Paket `SkyNetAgent.pkg` mit portablem Python für arm64 und x86_64, wird in GitHub Actions
-      gebaut, Installation ins Profil des Nutzers, Start bei der Anmeldung mit Einverständnis.
-- [ ] Prüfung der Installation und einer Berechnung auf einem macOS-Rechner in CI.
-- [ ] Prüfung auf dem Mac eines Teilnehmers.
-
-**Schritt 6. Aktualisierung des eingebetteten Python und der Shells**
+**Schritt 5. Aktualisierung des eingebetteten Python und der Shells**
 
 - [ ] Signierte Beschreibung des Satzes für jedes System und jede Architektur: Versionen und
       Hashes von Python, Installer und Shell. Der Agent aktualisiert auch Python, nicht nur seine
       eigenen Dateien.
 
-**Schritt 7. Aufgabenstrom**
+**Schritt 6. Aufgabenstrom**
 
 - [ ] Vier neue Rechenaufgaben der Phase 2 (Ausstiegskampagne in Variante B, Lehrlingsplätze,
       Lotterie mit gewähltem Prüfanteil, Zertifikat des gewinnenden Tokens) — neue eingebaute
@@ -254,14 +250,14 @@ Bereits erledigt:
       eine Übersicht.
 - [ ] Unabhängige Bestätigung aller 702 Portionen der ersten Liste (derzeit 40).
 
-**Schritt 8. Pilot mit anderen Menschen**
+**Schritt 7. Pilot mit anderen Menschen**
 
 - [ ] Seite „Wie man sich anschließt“ in neun Sprachen: ein Link für jedes System.
 - [ ] Je ein Teilnehmer, der nicht mit den Betreuern verbunden ist, auf jeder Plattform; die
       Fertigstellungskriterien der Phase sind erfüllt.
 - [ ] Zweiter und dritter vollständiger Knoten bei verschiedenen Besitzern.
 
-**Schritt 9. KI-Agenten**
+**Schritt 8. KI-Agenten**
 
 - [ ] Der Agent holt selbst neue Aufgaben des Bretts und übergibt sie dem lokalen Modell des
       Teilnehmers; die Antwort wird erst nach Freigabe durch den Menschen gesendet. Der Text der
@@ -271,14 +267,8 @@ Bereits erledigt:
 - [ ] Bericht zu einer Brettaufgabe von einem Teilnehmer, der nicht mit den Betreuern verbunden
       ist.
 
-**Entscheidungen des Eigentümers zu Phase 0** (sie kosten Geld, deshalb werden sie nicht ohne
-ihn getroffen):
-
-- Ein Codesignatur-Zertifikat für Windows. Ohne es zeigt Windows bei der Installation eine
-  SmartScreen-Warnung, und man muss sie manuell umgehen.
-- Ein Apple-Developer-Account für macOS. Ohne es blockiert macOS den Start des Pakets bis zur
-  Erlaubnis in den Einstellungen.
-- Ein Betrachter des Bretts für iOS: machen oder nicht.
+**Entscheidungen des Eigentümers zu Phase 0** (23. November 2026): macOS und iOS werden nicht
+gemacht; die Windows-Version wird ohne Codesignatur veröffentlicht.
 
 ### Phase 1. Genaue Formulierung
 

@@ -109,12 +109,14 @@ def _poll(args, cfg, state, current_index):
     """
     base = updater.base_url()
     halt, restart = None, False
+    errors = []
     try:
         # --no-update acts like the setting update=off: nothing is installed or reported, but
         # the release description is still read, because it carries the maintainers' pause.
         mode = dict(cfg, update="off") if args.no_update else cfg
         res = updater.check_and_apply(config.home(), base, mode)
         halt = res.halt
+        state["halt"], state["halt_seq"] = halt, RELEASE_SEQ
         if res.installed:
             log.info("installed version %s (release %d); restarting", res.available[1], res.available[0])
             restart = True
@@ -122,23 +124,37 @@ def _poll(args, cfg, state, current_index):
             log.info("version %s is available. %s", res.available[1], res.note)
     except (net.NetError, signed.SignatureError, updater.ReleaseError, OSError) as e:
         log.warning("update check failed: %s", e)
+        errors.append(str(e))
     index = current_index
     try:
-        fresh = tasks.fetch_index(base)
+        fresh = tasks.fetch_index(base, cache_from=state["index_seq"])
         if fresh["seq"] < state["index_seq"]:
             log.warning("ignoring a task list older than the one already seen")
-        elif tasks.is_expired(fresh, today_utc()):
-            log.warning("the task list has expired; waiting for a new one")
-            index = None
         else:
             index = fresh
-            state["index_seq"] = fresh["seq"]
-    except (net.NetError, signed.SignatureError, tasks.IndexError_) as e:
+    except (net.NetError, signed.SignatureError, tasks.IndexError_, OSError) as e:
         log.warning("could not get the task list: %s", e)
-        state["last_error"] = str(e)[:300]
-    coverage = _fetch_coverage(base) if index else None
+        errors.append(str(e))
+    if index is None:
+        index = tasks.cached_index(state["index_seq"])
+    if index:
+        state["index_seq"] = index["seq"]
+    state["poll_error"] = " / ".join(errors)[:300]
+    state["poll_failures"] = min(state.get("poll_failures", 0) + 1, 20) if errors else 0
+    coverage = _fetch_coverage(base) if index and not errors else None
     _expire_skips(state, index)
     return index, coverage, halt, restart
+
+
+def _next_poll(now, cfg, state):
+    limit = cfg["poll_minutes"] * 60
+    failures = state["poll_failures"]
+    if failures:
+        delay = min(limit, 15 * 2 ** min(failures - 1, 20)) * random.uniform(0.8, 1.0)
+    else:
+        delay = limit * random.uniform(0.8, 1.2)
+    state["retry_at"] = int(now + delay) if failures else 0
+    return now + delay
 
 
 def _issues(index):
@@ -194,7 +210,8 @@ def _run_loop(args):
     executor = ThreadPoolExecutor(max_workers=256)
     futures = {}                      # future -> (task, unit)
     index = coverage = None
-    halt, restart = "", False
+    halt = state["halt"] if state["halt_seq"] == RELEASE_SEQ else ""
+    restart = False
     next_poll = 0.0
     finished = 0
     waiting_note = ""
@@ -228,8 +245,8 @@ def _run_loop(args):
                 if not args.no_submit:
                     submit.flush_outbox(cfg, state, log, issues=_issues(index), force=args.once)
                 state["last_poll"] = int(now)
+                next_poll = _next_poll(time.time(), cfg, state)
                 config.save_state(state)
-                next_poll = now + cfg["poll_minutes"] * 60 * random.uniform(0.8, 1.2)
 
             for fut in [f for f in futures if f.done()]:
                 task, unit = futures.pop(fut)
@@ -359,6 +376,9 @@ def cmd_status(args):
     if state.get("last_poll"):
         say("Last check:       %s UTC" % datetime.datetime.fromtimestamp(
             state["last_poll"], datetime.timezone.utc).strftime("%Y-%m-%d %H:%M"))
+    if state.get("poll_error"):
+        say("Repository check: %s (retry in %d s)" % (
+            state["poll_error"], max(0, int(state["retry_at"] - time.time()))))
     if state.get("last_error"):
         say("Last problem:     %s" % state["last_error"])
     if config.submit_via(cfg) == "github":
@@ -573,9 +593,12 @@ def cmd_update(args):
     forced = dict(cfg)
     forced["update"] = "auto"
     try:
-        res = updater.check_and_apply(config.home(), updater.base_url(), forced)
+        res = updater.check_and_apply(config.home(), updater.base_url(), forced, allow_downgrade=args.allow_downgrade)
     except (net.NetError, signed.SignatureError, updater.ReleaseError, OSError) as e:
         say("Update check failed: %s" % e)
+        return 1
+    if res.halt:
+        say("Paused by the maintainers: %s" % res.halt)
         return 1
     if res.installed:
         say("Installed version %s (release %d)." % (res.available[1], res.available[0]))
@@ -709,6 +732,7 @@ def build_parser():
     p.set_defaults(func=cmd_selftest)
 
     p = sub.add_parser("update", help="install the newest signed version now")
+    p.add_argument("--allow-downgrade", action="store_true", help="allow a release below the local maximum")
     p.set_defaults(func=cmd_update)
 
     p = sub.add_parser("pause", help="stop taking new tasks")
@@ -752,4 +776,9 @@ def main(argv=None):
             parser.error("config set needs a setting name and a value")
     if args.command == "outbox" and args.action in ("show", "approve", "drop") and not args.name:
         parser.error("outbox %s needs an entry name" % args.action)
+    if args.command not in ("worker", "verify-install"):
+        try:
+            updater.confirm_legacy_install(config.home())
+        except (OSError, updater.ReleaseError) as e:
+            log.warning("could not record the running release: %s", e)
     return args.func(args)

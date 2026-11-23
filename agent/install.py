@@ -4,28 +4,25 @@
     python3 -I install.py            install into the default folder
     python3 -I install.py --home DIR install somewhere else
 
-What it does, and nothing more:
-  1. downloads the release description (agent/release.json) and the files it lists;
-  2. checks every file against the size and SHA-256 in the release description;
-  3. asks the downloaded agent to verify the release signature and to run a self-test;
-  4. writes the launcher, current.json and a small "skynet-agent" start script.
-
-It does not start the agent, does not turn autostart on and does not need
-administrator rights. Honest note: the very first installation trusts the
-HTTPS connection to GitHub; every later update is checked against the release
-key that is built into the installed agent.
+The installer authenticates release.json with its pinned public key before it
+downloads any code. It checks the files and runs verify-install locally before
+switching versions. Download the installer itself from a trusted source.
 """
 
+from contextlib import contextmanager
 import argparse
 import hashlib
 import json
 import os
 import re
 import shutil
-import ssl
+import stat
 import subprocess
 import sys
+import tempfile
 import time
+import ssl
+import urllib.parse
 import urllib.error
 import urllib.request
 
@@ -33,16 +30,305 @@ REPO_RAW = "https://raw.githubusercontent.com/skyNetAIAgent/skynet-architecture/
 MIN_PYTHON = (3, 9)
 MAX_FILE_BYTES = 2 << 20
 
-STUB = ("import sys; sys.path.insert(0, sys.argv[1]); "
-        "sys.argv = [sys.argv[0]] + sys.argv[2:]; "
-        "from skynet_agent.cli import main; sys.exit(main())")
-
 _PATH_RE = re.compile(r"^[A-Za-z0-9_][A-Za-z0-9_./-]{0,159}$")
 _VERSION_RE = re.compile(r"^\d{1,4}\.\d{1,4}\.\d{1,4}$")
 
 
-class InstallError(Exception):
+# Shared with skynet_agent/deployment.py; CI checks the standalone copy.
+class ReleaseError(Exception):
     pass
+
+
+@contextmanager
+def update_lock(home):
+    os.makedirs(home, exist_ok=True)
+    with open(os.path.join(home, "update.lock"), "a+b") as lock:
+        try:
+            if os.name == "nt":
+                import msvcrt
+                lock.seek(0)
+                msvcrt.locking(lock.fileno(), msvcrt.LK_NBLCK, 1)
+            else:
+                import fcntl
+                fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except OSError as e:
+            raise ReleaseError("another installation is in progress") from e
+        yield
+
+
+def read_local(path, default=None):
+    try:
+        with open(path, encoding="utf-8") as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return default
+    except ValueError as e:
+        raise ReleaseError("invalid JSON in %s" % path) from e
+
+
+def sequence_floor(home):
+    highest = read_local(os.path.join(home, "max_seq.json"), 0)
+    cur = read_local(os.path.join(home, "current.json"), {})
+    if type(highest) is not int or highest < 0 or not isinstance(cur, dict):
+        raise ReleaseError("invalid local release state")
+    for entry in (cur, cur.get("previous")):
+        if entry:
+            if not isinstance(entry, dict) or type(entry.get("seq")) is not int:
+                raise ReleaseError("invalid local release number")
+            highest = max(highest, entry["seq"])
+    return highest
+
+
+def write_local(home, name, value):
+    path = os.path.join(home, name)
+    with open(path + ".tmp", "w", encoding="utf-8") as f:
+        json.dump(value, f, sort_keys=True)
+        f.write("\n")
+        f.flush()
+        os.fsync(f.fileno())
+    os.replace(path + ".tmp", path)
+
+
+def tree_problems(root, files, exact=True):
+    root_info = os.lstat(root)
+    if (not stat.S_ISDIR(root_info.st_mode) or stat.S_ISLNK(root_info.st_mode)
+            or getattr(root_info, "st_file_attributes", 0) & stat.FILE_ATTRIBUTE_REPARSE_POINT):
+        return ["unexpected version directory"]
+    problems = []
+    allowed = set(files) | {"release.json", "release.json.sig"}
+    if exact:
+        def walk_error(error):
+            raise error
+        for base, dirs, names in os.walk(root, onerror=walk_error):
+            for name in dirs + names:
+                path = os.path.join(base, name)
+                rel = os.path.relpath(path, root).replace(os.sep, "/")
+                info = os.lstat(path)
+                linked = (stat.S_ISLNK(info.st_mode) or
+                          getattr(info, "st_file_attributes", 0) & stat.FILE_ATTRIBUTE_REPARSE_POINT)
+                if linked or (name in dirs and not any(f.startswith(rel + "/") for f in files)):
+                    problems.append("unexpected entry: " + rel)
+                    if name in dirs:
+                        dirs.remove(name)
+                elif name in names and (rel not in allowed or not stat.S_ISREG(info.st_mode)):
+                    problems.append("unexpected entry: " + rel)
+        if problems:
+            return sorted(problems)
+    for path, meta in sorted(files.items()):
+        try:
+            with open(os.path.join(root, *path.split("/")), "rb") as f:
+                data = f.read(meta["size"] + 1)
+        except OSError:
+            problems.append("missing file: " + path)
+            continue
+        if len(data) != meta["size"] or hashlib.sha256(data).hexdigest() != meta["sha256"]:
+            problems.append("changed file: " + path)
+    return problems
+
+
+def prepare(home, rel, raw, sig, fetch_file):
+    """Call under update_lock, after authenticating the manifest and validating its paths."""
+    name = "%d-%s" % (rel["seq"], rel["version"])
+    relative = "versions/" + name
+    versions = os.path.join(home, "versions")
+    os.makedirs(versions, exist_ok=True)
+    final = os.path.join(versions, name)
+    if os.path.lexists(final):
+        problems = tree_problems(final, rel["files"])
+        if problems:
+            raise ReleaseError(", ".join(problems))
+        for filename, expected in (("release.json", raw), ("release.json.sig", sig)):
+            with open(os.path.join(final, filename), "rb") as f:
+                if f.read(len(expected) + 1) != expected:
+                    raise ReleaseError("changed file: " + filename)
+        return relative
+    stage = tempfile.mkdtemp(prefix=".stage-", dir=versions)
+    try:
+        for path, meta in sorted(rel["files"].items()):
+            data = fetch_file(path)
+            if len(data) != meta["size"] or hashlib.sha256(data).hexdigest() != meta["sha256"]:
+                raise ReleaseError("downloaded %s does not match the signed release" % path)
+            target = os.path.join(stage, *path.split("/"))
+            os.makedirs(os.path.dirname(target), exist_ok=True)
+            with open(target, "wb") as f:
+                f.write(data)
+        for name, data in (("release.json", raw), ("release.json.sig", sig)):
+            with open(os.path.join(stage, name), "wb") as f:
+                f.write(data)
+        problems = tree_problems(stage, rel["files"])
+        if problems:
+            raise ReleaseError(", ".join(problems))
+        os.rename(stage, final)
+    finally:
+        shutil.rmtree(stage, ignore_errors=True)
+    return relative
+
+
+def check_candidate(home, directory, rel):
+    stub = """import sys
+sys.path.insert(0, sys.argv[1])
+from skynet_agent import RELEASE_SEQ, __version__
+if (RELEASE_SEQ, __version__) != (int(sys.argv[2]), sys.argv[3]):
+    sys.exit("candidate reports a different release")
+from skynet_agent.cli import main
+sys.exit(main(["verify-install"]))
+"""
+    try:
+        result = subprocess.run([sys.executable, "-IB", "-c", stub, directory,
+                                 str(rel["seq"]), rel["version"]], timeout=300, capture_output=True,
+                                env=dict(os.environ, SKYNET_AGENT_HOME=home))
+    except subprocess.SubprocessError as e:
+        raise ReleaseError("verify-install failed: %s" % e) from e
+    if result.returncode:
+        detail = (result.stdout + result.stderr).decode("utf-8", "replace").strip()
+        raise ReleaseError("verify-install failed: %s" % detail)
+
+
+def switch_version(home, rel, relative, confirmed=True):
+    """Commit a prepared version under update_lock. Either launcher accepts either pointer."""
+    cur = read_local(os.path.join(home, "current.json"), {})
+    previous = cur.get("previous")
+    if cur and cur["dir"] != relative:
+        previous = {k: cur[k] for k in ("seq", "version", "dir")}
+    new = dict(seq=rel["seq"], version=rel["version"], dir=relative,
+               previous=previous, activated=int(time.time()))
+    highest = sequence_floor(home)
+    if confirmed:
+        highest = max(highest, rel["seq"])
+    write_local(home, "max_seq.json", highest)
+    tmp = os.path.join(home, "launcher.py.tmp")
+    shutil.copyfile(os.path.join(home, *relative.split("/"), "launcher.py"), tmp)
+    write_local(home, "current.json", new)
+    os.replace(tmp, os.path.join(home, "launcher.py"))
+    obsolete = cur.get("previous") or {}
+    old_dir = obsolete.get("dir", "")
+    if (re.fullmatch(r"versions/[0-9]{1,9}-[0-9.]{1,20}", old_dir)
+            and old_dir not in (relative, (previous or {}).get("dir"))):
+        shutil.rmtree(os.path.join(home, *old_dir.split("/")), ignore_errors=True)
+    return new
+
+
+InstallError = ReleaseError
+
+RELEASE_KEYS = ["33deadd767eddfb05d5646caa1b32727a73e261a071d8d4ca8530b7355d2ded9"]
+
+# Verify-only subset of skynet_agent/ed25519.py (RFC 8032).
+_p = 2 ** 255 - 19
+_q = 2 ** 252 + 27742317777372353535851937790883648493
+
+
+def _sha512(data):
+    return hashlib.sha512(data).digest()
+
+
+def _inv(x):
+    return pow(x, _p - 2, _p)
+
+
+_d = -121665 * _inv(121666) % _p
+_sqrt_m1 = pow(2, (_p - 1) // 4, _p)
+
+
+def _sha512_modq(data):
+    return int.from_bytes(_sha512(data), "little") % _q
+
+
+# Points are (X, Y, Z, T) in extended coordinates: x = X/Z, y = Y/Z, x*y = T/Z.
+def _add(P, Q):
+    A = (P[1] - P[0]) * (Q[1] - Q[0]) % _p
+    B = (P[1] + P[0]) * (Q[1] + Q[0]) % _p
+    C = 2 * P[3] * Q[3] * _d % _p
+    D = 2 * P[2] * Q[2] % _p
+    E, F, G, H = B - A, D - C, D + C, B + A
+    return (E * F % _p, G * H % _p, F * G % _p, E * H % _p)
+
+
+def _mul(s, P):
+    Q = (0, 1, 1, 0)
+    while s > 0:
+        if s & 1:
+            Q = _add(Q, P)
+        P = _add(P, P)
+        s >>= 1
+    return Q
+
+
+def _equal(P, Q):
+    if (P[0] * Q[2] - Q[0] * P[2]) % _p != 0:
+        return False
+    if (P[1] * Q[2] - Q[1] * P[2]) % _p != 0:
+        return False
+    return True
+
+
+def _recover_x(y, sign):
+    if y >= _p:
+        return None
+    x2 = (y * y - 1) * _inv(_d * y * y + 1) % _p
+    if x2 == 0:
+        return None if sign else 0
+    x = pow(x2, (_p + 3) // 8, _p)
+    if (x * x - x2) % _p != 0:
+        x = x * _sqrt_m1 % _p
+    if (x * x - x2) % _p != 0:
+        return None
+    if (x & 1) != sign:
+        x = _p - x
+    return x
+
+
+_g_y = 4 * _inv(5) % _p
+_g_x = _recover_x(_g_y, 0)
+_G = (_g_x, _g_y, 1, _g_x * _g_y % _p)
+
+
+def _decompress(s):
+    if len(s) != 32:
+        return None
+    y = int.from_bytes(s, "little")
+    sign = y >> 255
+    y &= (1 << 255) - 1
+    x = _recover_x(y, sign)
+    if x is None:
+        return None
+    return (x, y, 1, x * y % _p)
+
+
+def verify(public, msg, signature):
+    """Return True only if signature is a valid Ed25519 signature of msg."""
+    if not isinstance(public, (bytes, bytearray)) or len(public) != 32:
+        return False
+    if not isinstance(signature, (bytes, bytearray)) or len(signature) != 64:
+        return False
+    A = _decompress(bytes(public))
+    if A is None:
+        return False
+    Rs = bytes(signature[:32])
+    R = _decompress(Rs)
+    if R is None:
+        return False
+    s = int.from_bytes(signature[32:], "little")
+    if s >= _q:
+        return False
+    h = _sha512_modq(Rs + bytes(public) + bytes(msg))
+    sB = _mul(s, _G)
+    hA = _mul(h, A)
+    return _equal(sB, _add(R, hA))
+
+def verify_manifest(raw, signature, test_key=None):
+    keys = RELEASE_KEYS or ([test_key] if test_key else [])
+    for line in signature.splitlines():
+        fields = line.strip().split(b":")
+        if len(fields) != 3 or fields[0] != b"ed25519":
+            continue
+        try:
+            public, sig = (bytes.fromhex(x.decode("ascii")) for x in fields[1:])
+        except ValueError:
+            continue
+        if public.hex() in keys and verify(public, raw, sig):
+            return
+    raise InstallError("no valid signature from a trusted release key")
+
 
 
 def is_store_python():
@@ -93,14 +379,34 @@ def system_ca_context():
 _fallback = {"context": None}   # set once Python's own certificates have failed
 
 
-def fetch(url, max_bytes=MAX_FILE_BYTES):
-    if not (url.startswith("https://") or url.startswith("http://")):
+def check_url(url, allow_local_http):
+    parts = urllib.parse.urlsplit(url)
+    local = parts.scheme == "http" and parts.hostname in ("localhost", "127.0.0.1", "::1")
+    if not parts.hostname or not (parts.scheme == "https" or (allow_local_http and local)):
         raise InstallError("unsupported address: %s" % url)
+
+
+class _Redirect(urllib.request.HTTPRedirectHandler):
+    def __init__(self, allow_local_http):
+        self.allow_local_http = allow_local_http
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        check_url(newurl, self.allow_local_http)
+        return super().redirect_request(req, fp, code, msg, headers, newurl)
+
+
+def _open(req, context, allow_local_http):
+    opener = urllib.request.build_opener(_Redirect(allow_local_http), urllib.request.HTTPSHandler(context=context))
+    return opener.open(req, timeout=60)
+
+
+def fetch(url, max_bytes=MAX_FILE_BYTES, *, allow_local_http=False):
+    check_url(url, allow_local_http)
     req = urllib.request.Request(url, headers={"User-Agent": "skynet-agent-installer"})
     context = _fallback["context"]
     while True:
         try:
-            with urllib.request.urlopen(req, timeout=60, context=context) as resp:
+            with _open(req, context, allow_local_http) as resp:
                 data = resp.read(max_bytes + 1)
             break
         except (urllib.error.URLError, OSError) as e:
@@ -118,9 +424,9 @@ def fetch(url, max_bytes=MAX_FILE_BYTES):
 
 
 def safe_path(path):
-    if not isinstance(path, str) or not _PATH_RE.match(path):
+    if not isinstance(path, str) or not _PATH_RE.fullmatch(path):
         return False
-    if ".." in path or "//" in path or path.endswith("/"):
+    if "/./" in path or ".." in path or "//" in path or path.endswith("/"):
         return False
     return path == "launcher.py" or (path.startswith("skynet_agent/") and path.endswith(".py"))
 
@@ -157,16 +463,22 @@ def write_shim(home, bin_dir=None):
     return shim, hint
 
 
-def install(home, base):
+def install(home, base, *, allow_local_http=False, allow_downgrade=False, test_key=None):
     base = base.rstrip("/")
-    raw = fetch(base + "/agent/release.json", 256 * 1024)
-    sig = fetch(base + "/agent/release.json.sig", 16384)
+
+    def get(url, limit=MAX_FILE_BYTES):
+        return fetch(url, limit, allow_local_http=allow_local_http)
+
+    raw = get(base + "/agent/release.json", 256 * 1024)
+    sig = get(base + "/agent/release.json.sig", 16384)
+    verify_manifest(raw, sig, test_key)
     try:
         rel = json.loads(raw.decode("utf-8"))
     except (ValueError, UnicodeDecodeError) as e:
         raise InstallError("the release description is not valid JSON: %s" % e)
-    if (not isinstance(rel, dict) or not isinstance(rel.get("seq"), int)
-            or not isinstance(rel.get("version"), str) or not _VERSION_RE.match(rel["version"])
+    if (not isinstance(rel, dict) or type(rel.get("seq")) is not int or not 1 <= rel["seq"] <= 999999999
+            or rel.get("format") != 1
+            or not isinstance(rel.get("version"), str) or not _VERSION_RE.fullmatch(rel["version"])
             or not isinstance(rel.get("files"), dict) or not rel["files"]):
         raise InstallError("the release description has an unexpected shape")
     minpy = rel.get("min_python", [3, 9])
@@ -176,48 +488,29 @@ def install(home, base):
     if sys.version_info[:2] < tuple(minpy):
         raise InstallError("this release needs Python %d.%d or newer" % tuple(minpy))
 
-    name = "%d-%s" % (rel["seq"], rel["version"])
-    final = os.path.join(home, "versions", name)
-    tmp = final + ".tmp"
-    os.makedirs(os.path.join(home, "versions"), exist_ok=True)
-    shutil.rmtree(tmp, ignore_errors=True)
-    try:
-        for path in sorted(rel["files"]):
-            meta = rel["files"][path]
-            if not safe_path(path) or not isinstance(meta, dict):
-                raise InstallError("the release lists a file it must not contain: %r" % (path,))
-            data = fetch(base + "/agent/" + path)
-            if len(data) != meta.get("size") or hashlib.sha256(data).hexdigest() != meta.get("sha256"):
-                raise InstallError("downloaded %s does not match the release description" % path)
-            target = os.path.join(tmp, *path.split("/"))
-            os.makedirs(os.path.dirname(target), exist_ok=True)
-            with open(target, "wb") as f:
-                f.write(data)
-        with open(os.path.join(tmp, "release.json"), "wb") as f:
-            f.write(raw)
-        with open(os.path.join(tmp, "release.json.sig"), "wb") as f:
-            f.write(sig)
-        env = dict(os.environ)
-        env["SKYNET_AGENT_HOME"] = home
-        check = subprocess.run([sys.executable, "-I", "-c", STUB, tmp, "verify-install"],
-                               env=env, capture_output=True, timeout=300)
-        if check.returncode != 0:
-            detail = (check.stdout + check.stderr).decode("utf-8", "replace").strip()
-            raise InstallError("the downloaded agent did not pass its own check: %s" % detail)
-        shutil.rmtree(final, ignore_errors=True)
-        os.replace(tmp, final)
-    except BaseException:
-        shutil.rmtree(tmp, ignore_errors=True)
-        raise
-
-    shutil.copyfile(os.path.join(final, "launcher.py"), os.path.join(home, "launcher.py.tmp"))
-    os.replace(os.path.join(home, "launcher.py.tmp"), os.path.join(home, "launcher.py"))
-    current = {"seq": rel["seq"], "version": rel["version"], "dir": "versions/" + name,
-               "previous": None, "activated": int(time.time())}
-    with open(os.path.join(home, "current.json.tmp"), "w", encoding="utf-8") as f:
-        json.dump(current, f, indent=2, sort_keys=True)
-        f.write("\n")
-    os.replace(os.path.join(home, "current.json.tmp"), os.path.join(home, "current.json"))
+    files = rel["files"]
+    required = {"launcher.py", "skynet_agent/cli.py", "skynet_agent/__init__.py"}
+    if len(files) > 200 or not required.issubset(files):
+        raise InstallError("unexpected release file list")
+    for path, meta in files.items():
+        if (not safe_path(path) or not isinstance(meta, dict) or type(meta.get("size")) is not int
+                or not 0 <= meta["size"] <= MAX_FILE_BYTES
+                or not isinstance(meta.get("sha256"), str) or not re.fullmatch(r"[0-9a-f]{64}", meta["sha256"])):
+            raise InstallError("invalid file description: %r" % path)
+    halt = rel.get("halt")
+    if halt is not None and (not isinstance(halt, dict) or type(halt.get("through_seq")) is not int):
+        raise InstallError("invalid halt description")
+    if halt and rel["seq"] <= halt["through_seq"]:
+        raise InstallError("this release is paused by the maintainers")
+    with update_lock(home):
+        floor = sequence_floor(home)
+        if rel["seq"] < floor:
+            if not allow_downgrade:
+                raise InstallError("release %d is older than %d" % (rel["seq"], floor))
+            print("WARNING: installing release %d below %d" % (rel["seq"], floor), file=sys.stderr)
+        relative = prepare(home, rel, raw, sig, lambda path: get(base + "/agent/" + path))
+        check_candidate(home, os.path.join(home, *relative.split("/")), rel)
+        switch_version(home, rel, relative)
     return rel
 
 
@@ -227,6 +520,9 @@ def main(argv=None):
     parser.add_argument("--base", help="address of the repository files (for mirrors and tests)")
     parser.add_argument("--bin-dir", help="folder for the skynet-agent start script")
     parser.add_argument("--no-shim", action="store_true", help="do not create a start script")
+    parser.add_argument("--allow-local-http", action="store_true", help="allow HTTP on loopback for tests")
+    parser.add_argument("--test-release-key", help="test public key for a development installer with empty pins")
+    parser.add_argument("--allow-downgrade", action="store_true", help="allow a release below the local maximum")
     args = parser.parse_args(argv)
     if sys.version_info[:2] < MIN_PYTHON:
         print("Python %d.%d or newer is needed; this is %d.%d." % (MIN_PYTHON + tuple(sys.version_info[:2])))
@@ -236,7 +532,8 @@ def main(argv=None):
     print("Installing the SkyNet research agent into %s" % home)
     try:
         os.makedirs(home, exist_ok=True)
-        rel = install(home, base)
+        rel = install(home, base, allow_local_http=args.allow_local_http, allow_downgrade=args.allow_downgrade,
+                      test_key=args.test_release_key)
         if args.no_shim:
             hint = 'Run it as:  "%s" "%s" status' % (sys.executable, os.path.join(home, "launcher.py"))
         else:
@@ -249,9 +546,8 @@ def main(argv=None):
     print("")
     print("Next steps:")
     print("  1. skynet-agent selftest --online    check that everything works")
-    print("  2. skynet-agent github               check the GitHub login used to publish results")
-    print("  3. skynet-agent run                  start working (Ctrl+C stops it)")
-    print("  4. skynet-agent autostart enable     optional: start when you log in")
+    print("  2. skynet-agent run                  start working (Ctrl+C stops it)")
+    print("  3. skynet-agent autostart enable     optional: start when you log in")
     print("Nothing runs until you start it. No rewards are provided at this stage.")
     return 0
 

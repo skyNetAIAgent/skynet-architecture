@@ -241,6 +241,11 @@ DEFAULT_STATE = {
     "counters": {"units_done": 0, "units_failed": 0, "published": 0},
     "last_error": "",
     "last_poll": 0,
+    "poll_error": "",
+    "poll_failures": 0,
+    "retry_at": 0,
+    "halt": "",
+    "halt_seq": 0,
 }
 
 

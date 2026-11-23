@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: 191cff633e617eaad62a24c76710c67b4bc4307248d04a984ba3e3c863a678ff -->
+<!-- translation of docs/ROADMAP.md, source sha256: 3060afa02f0adb73bcb1a9c7822d84ff2efe0f1ce1c8c105af2eda79e7dda071 -->
 
 # Hoja de ruta: defensa contra el engaño
 
@@ -140,15 +140,17 @@ sí mismo una versión nueva, tomó por sí mismo una tarea de la lista nueva, s
 el nodo completo y coincidió con el resultado de otro dispositivo. Están anotados el sistema, la
 arquitectura, las versiones de antes y de después y el identificador del registro en el nodo.
 
-Plataformas: Windows, Linux, macOS, Android. No habrá agente para iOS: iOS no permite que una
-aplicación calcule durante mucho tiempo en segundo plano, y las reglas de App Store prohíben cargar
-código ejecutable. En su lugar es posible un visor del tablero (decisión aparte).
+Plataformas: Windows, Linux, Android (decisión del 23 de noviembre de 2026). Para macOS e iOS los
+miniagentes no se hacen ni se comprueban. El comando de instalación para Linux quizá funcione también
+en macOS, pero esto no está soportado. La versión para Windows se publica sin firma de código:
+al instalar, Windows muestra la advertencia de SmartScreen y hay que confirmarla manualmente;
+la autenticidad del archivo se comprueba mediante el hash publicado y la firma del proyecto.
 
 Ya hecho:
 
 - [x] Repositorio público, base inmutable en nueve idiomas (etiqueta `core-v1`).
-- [x] Programa agente para Windows, Linux y macOS: tareas y actualizaciones firmadas,
-      comprobaciones automáticas en los tres sistemas (versión 0.2.0). Instalación con un solo
+- [x] Programa agente para Windows y Linux: tareas y actualizaciones firmadas,
+      comprobaciones automáticas en CI (versión 0.2.0). Instalación con un solo
       comando en la terminal; se necesita Python 3.9+.
 - [x] Resultados y [tablero de tareas](BOARD.md) sin cuenta.
 - [x] Primer nodo completo que guarda el historial de registros.
@@ -157,20 +159,20 @@ Ya hecho:
 
 **Paso 1. Fiabilidad de la actualización (versión 0.2.1, sin tareas nuevas)**
 
-- [ ] La primera instalación comprueba la firma de la versión con la clave integrada en el propio
-      instalador, **antes** de ejecutar el código descargado. Ahora, el agente descargado se
-      comprueba a sí mismo.
-- [ ] Cambio a una versión nueva con una sola operación atómica: primero se prepara y se comprueba
+- [x] La primera instalación comprueba la firma de la versión con la clave integrada en el propio
+      instalador, **antes** de ejecutar el código descargado (antes, el agente descargado se
+      comprobaba a sí mismo).
+- [x] Cambio a una versión nueva con una sola operación atómica: primero se prepara y se comprueba
       el directorio nuevo, luego se cambia un único puntero; el conjunto funcional anterior se
       conserva.
-- [ ] El mayor número de versión aceptado se guarda fuera de los directorios de versiones y se
+- [x] El mayor número de versión aceptado se guarda fuera de los directorios de versiones y se
       comprueba también al reinstalar (protección contra el retroceso a una versión antigua).
-- [ ] La clave del dispositivo, la configuración, el progreso y los resultados no enviados se
+- [x] La clave del dispositivo, la configuración, el progreso y los resultados no enviados se
       guardan fuera de los directorios de versiones y sobreviven a la actualización y a la
       reinstalación.
-- [ ] Sin red, el agente sigue trabajando con la última versión funcional y repite la conexión
+- [x] Sin red, el agente sigue trabajando con la última versión funcional y repite la conexión
       con un intervalo creciente.
-- [ ] Comprobación automática en CI: un archivo sustituido, una clave ajena, un número antiguo,
+- [x] Comprobación automática en CI: un archivo sustituido, una clave ajena, un número antiguo,
       un archivo de más, una descarga interrumpida y un Python incompatible se rechazan; la versión
       en funcionamiento se conserva.
 - [ ] **Comprobación en vivo:** las instalaciones 0.2.0 en Windows, en el Linux doméstico y en el
@@ -193,8 +195,9 @@ Ya hecho:
 
 **Paso 3. Windows: instalador de un solo archivo**
 
-- [ ] `SkyNetAgentSetup.exe` se compila en GitHub Actions; dentro, Python incrustado de python.org,
-      el agente y la versión firmada. Instalación en el perfil del usuario, sin permisos de
+- [ ] `SkyNetAgentSetup.exe` se compila en GitHub Actions, sin firma de código; dentro, Python
+      incrustado de python.org, el agente y la versión firmada. Junto a él se publican su hash
+      y la firma del proyecto. Instalación en el perfil del usuario, sin permisos de
       administrador, funciona sin red.
 - [ ] Ventana de estado: si el agente está funcionando, qué calcula, pausa, salida.
 - [ ] Casilla «iniciar al entrar» en el instalador; la elección se conserva al actualizar.
@@ -211,20 +214,13 @@ Ya hecho:
       sesión es una casilla aparte.
 - [ ] Comprobación en Linux Mint, Ubuntu y Debian.
 
-**Paso 5. macOS (experimental, por ahora no hay Mac para comprobar)**
-
-- [ ] Paquete `SkyNetAgent.pkg` con Python portátil para arm64 y x86_64, se compila en GitHub
-      Actions, instalación en el perfil del usuario, arranque al iniciar sesión con consentimiento.
-- [ ] Comprobación de la instalación y de un cálculo en una máquina macOS en CI.
-- [ ] Comprobación en vivo en el Mac de un participante.
-
-**Paso 6. Actualización del Python integrado y de los envoltorios**
+**Paso 5. Actualización del Python integrado y de los envoltorios**
 
 - [ ] Descripción firmada del conjunto para cada sistema y arquitectura: versiones y hashes del
       Python, del instalador y del envoltorio. El agente actualiza también Python, no solo sus
       archivos.
 
-**Paso 7. Flujo de tareas**
+**Paso 6. Flujo de tareas**
 
 - [ ] Cuatro tareas de cálculo nuevas de la etapa 2 (campaña de salida de la variante B, plazas de
       aprendiz, lotería con proporción de verificación ajustada, certificado del token ganador):
@@ -237,14 +233,14 @@ Ya hecho:
       resumen.
 - [ ] Confirmación independiente de las 702 porciones de la primera lista de tareas (ahora 40).
 
-**Paso 8. Piloto con otras personas**
+**Paso 7. Piloto con otras personas**
 
 - [ ] Página «Cómo conectarse» en nueve idiomas: un enlace por cada sistema.
 - [ ] Un participante no vinculado a los mantenedores en cada plataforma; se cumplen los criterios
       de finalización de la etapa.
 - [ ] Segundo y tercer nodos completos de propietarios distintos.
 
-**Paso 9. Agentes de IA**
+**Paso 8. Agentes de IA**
 
 - [ ] El agente recoge por sí mismo las tareas nuevas del tablero y las entrega al modelo local
       del participante; la respuesta se envía solo tras la aprobación de una persona. El texto de
@@ -252,13 +248,9 @@ Ya hecho:
 - [ ] Instrucciones para el asistente de IA: cómo tomar una tarea del tablero, entregar un informe y comprobar el informe de otro.
 - [ ] Informe para una tarea del tablero de un participante no vinculado a los mantenedores.
 
-**Decisiones del propietario sobre la etapa 0** (cuestan dinero, por eso no se toman sin él):
+**Decisiones del propietario sobre la etapa 0** (23 de noviembre de 2026): macOS e iOS no se
+hacen; la versión para Windows se publica sin firma de código.
 
-- Certificado de firma de código para Windows. Sin él, al instalar, Windows muestra la advertencia
-  de SmartScreen y hay que saltársela manualmente.
-- Cuenta de Apple Developer para macOS. Sin ella, macOS bloquea la ejecución del paquete hasta que
-  se permite en los ajustes.
-- Visor del tablero para iOS: hacerlo o no.
 ### Etapa 1. Planteamiento exacto
 
 - [x] Las decisiones D1 y D2 están tomadas y escritas (sección 3).

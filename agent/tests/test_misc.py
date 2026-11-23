@@ -48,7 +48,7 @@ class AutostartTexts(unittest.TestCase):
         self.assertIn('launcher.py" run', script)
 
     def test_status_does_not_fail(self):
-        self.assertTrue(autostart.status().startswith(("on", "off")))
+        self.assertTrue(autostart.status().startswith(("on", "off", "unknown")))
 
 
 class StorePython(unittest.TestCase):
