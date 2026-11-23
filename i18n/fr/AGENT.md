@@ -16,12 +16,12 @@ Il n'est pas nécessaire d'avoir un assistant d'IA pour aider à concevoir SkyNe
 | Se met à jour seul, mais uniquement vers une version signée avec la clé de publication du projet | Installer une mise à jour dont la signature ou l'empreinte d'un fichier est fausse, ou dont le numéro est plus ancien |
 | S'installe dans votre profil et vous laisse choisir s'il doit démarrer à l'ouverture de session | Nécessite des droits d'administrateur |
 
-Les premières tâches sont des calculs exacts sur les règles de paiement de SkyNet. Par exemple : « un participant qui quitte le réseau peut-il gagner avec une rafale de faux résultats, et à partir de quelle part de vérificateurs complices ? ». Tous les appareils doivent obtenir les mêmes chiffres, et les résultats de personnes différentes sont comparés. Voir [tasks/README.md](../../tasks/README.md).
+Les premières tâches sont des calculs exacts sur les règles de paiement de SkyNet, par exemple : « un participant qui quitte le réseau peut-il gagner avec une rafale de faux résultats, et à partir de quelle part de vérificateurs complices ? ». Tous les appareils doivent obtenir les mêmes chiffres, et les résultats de personnes différentes sont comparés. Voir [tasks/README.md](../../tasks/README.md).
 
 ## Prérequis
 
-- L'installateur Windows x64 inclut Python. Les autres méthodes nécessitent Python 3.9 ou plus récent.
-- Quelques mégaoctets d'espace disque et une connexion Internet.
+- L'installateur Windows x64 inclut Python. Sous Linux, l'agent utilise Python 3.9 ou une version plus récente installée sur votre système, ou un environnement d'exécution portable vérifié sur glibc x86_64 et aarch64. Comme les sommes de contrôle de l'environnement d'exécution Linux actuel sont en attente, cette version a besoin du Python du système. Les autres plateformes ont besoin de Python 3.9 ou d'une version plus récente.
+- Une connexion Internet pour recevoir les tâches et publier les résultats. L'installateur Linux en fichier unique fonctionne hors ligne.
 
 ## Installation
 
@@ -34,7 +34,17 @@ Les premières tâches sont des calculs exacts sur les règles de paiement de Sk
 irm https://raw.githubusercontent.com/skyNetAIAgent/skynet-architecture/main/agent/install.ps1 | iex
 ```
 
-**Linux et macOS** (terminal) :
+**Linux**
+
+Téléchargez `skynet-agent-install.sh` depuis la page [Releases](https://github.com/skyNetAIAgent/skynet-architecture/releases) du projet et exécutez `sh skynet-agent-install.sh`. Pour installer directement depuis le dépôt, exécutez :
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/skyNetAIAgent/skynet-architecture/main/agent/install.sh | sh
+```
+
+À la première question, appuyez sur Entrée pour démarrer l'agent maintenant et à l'ouverture de session avec votre service utilisateur systemd. La seconde question propose de le lancer dès le démarrage de l'ordinateur, avant même l'ouverture de session. Pour une installation sans intervention, utilisez `--autostart`, `--autostart --linger` ou `--no-autostart`. Si votre shell ne trouve pas `skynet-agent`, utilisez `~/.local/bin/skynet-agent`. Voir le [guide d'installation Linux](../../installer/linux/README.md).
+
+**macOS** (terminal) :
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/skyNetAIAgent/skynet-architecture/main/agent/install.sh | sh
@@ -53,7 +63,7 @@ Sur un téléphone, l'agent ne travaille que pendant la charge. S'il ne peut pas
 
 Si vous préférez lire avant d'exécuter : téléchargez [`install.py`](../../agent/install.py), lisez-le (il est court), puis exécutez `python3 -I install.py`.
 
-L'installateur place l'agent dans un seul dossier (`%LOCALAPPDATA%\SkyNetAgent` sous Windows, `~/Library/Application Support/SkyNetAgent` sous macOS, `~/.local/share/skynet-agent` sous Linux et Android) et crée la commande `skynet-agent`. Avec les installateurs en ligne de commande, démarrez l'agent vous-même.
+L'installateur place l'agent dans un seul dossier (`%LOCALAPPDATA%\SkyNetAgent` sous Windows, `~/Library/Application Support/SkyNetAgent` sous macOS, `~/.local/share/skynet-agent` sous Linux et Android) et crée la commande `skynet-agent`. Utilisez `skynet-agent run` pour le démarrer manuellement.
 
 ## Premiers pas
 
@@ -95,7 +105,7 @@ Un résultat publié ressemble à ceci et ne contient rien d'autre :
 | `skynet-agent update` | Installer maintenant la dernière version signée |
 | `skynet-agent selftest [--online]` | Vérifier l'appareil, les fichiers installés et les signatures |
 | `skynet-agent autostart enable` / `disable` | Démarrer à l'ouverture de session, ou non |
-| `skynet-agent uninstall --yes` | Désactiver le démarrage automatique et s'arrêter ; supprimez ensuite le dossier de l'agent |
+| `skynet-agent uninstall --yes` | Désactiver le démarrage automatique et arrêter l'agent. L'installation Linux par script supprime aussi ses fichiers de programme |
 
 ## Réglages
 
@@ -154,7 +164,7 @@ Pour une installation par EXE, choisissez **SkyNet Agent → Uninstall** dans le
 skynet-agent uninstall --yes
 ```
 
-Supprimez ensuite le dossier de l'agent. Rien d'autre n'a été modifié sur votre ordinateur.
+L'installateur Linux par script conserve la clé de l'appareil, les réglages et les résultats enregistrés. Pour les supprimer aussi, utilisez `skynet-agent uninstall --yes --purge` lors de la désinstallation. Pour les autres installations en ligne de commande, supprimez le dossier de l'agent une fois la commande terminée.
 
 ## En cas de problème
 

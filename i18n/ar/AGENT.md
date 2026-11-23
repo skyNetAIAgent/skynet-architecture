@@ -22,8 +22,8 @@
 
 ## المتطلبات
 
-- مثبّت Windows x64 يتضمّن Python. أما الطرق الأخرى فتتطلب Python 3.9 أو أحدث.
-- بضعة ميغابايتات من القرص واتصال بالإنترنت.
+- مثبّت Windows x64 يتضمّن Python. ويستخدم Linux لغة Python 3.9 أو أحدث من نظامك، أو بيئة تشغيل محمولة تم التحقّق منها على glibc x86_64 وaarch64. ولا تتوفر بعد قيم التحقّق (checksums) لبيئة تشغيل Linux الحالية، لذا يحتاج هذا البناء إلى Python من النظام. أما الطرق الأخرى فتتطلب Python 3.9 أو أحدث.
+- اتصال بالإنترنت لتلقّي المهام ونشر النتائج. ويعمل مثبّت Linux المكوَّن من ملف واحد دون اتصال.
 
 ## التثبيت
 
@@ -40,7 +40,21 @@ irm https://raw.githubusercontent.com/skyNetAIAgent/skynet-architecture/main/age
 
 <div dir="rtl">
 
-**Linux وmacOS** (الطرفية):
+**Linux**
+
+نزّل `skynet-agent-install.sh` من صفحة [Releases](https://github.com/skyNetAIAgent/skynet-architecture/releases) الخاصة بالمشروع، ثم نفّذ `sh skynet-agent-install.sh`. وللتثبيت مباشرةً من المستودع، نفّذ:
+
+</div>
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/skyNetAIAgent/skynet-architecture/main/agent/install.sh | sh
+```
+
+<div dir="rtl">
+
+عند المطالبة الأولى، اضغط Enter لتشغيل الوكيل الآن وعند تسجيل الدخول باستخدام خدمة systemd الخاصة بالمستخدم. وتعرض المطالبة الثانية تشغيله من بدء تشغيل النظام، حتى قبل تسجيل الدخول. وللإعداد دون تدخّل، استخدم `--autostart` أو `--autostart --linger` أو `--no-autostart`. وإذا لم يجد shell الأمر `skynet-agent`، فاستخدم `~/.local/bin/skynet-agent`. انظر [دليل مثبّت Linux](../../installer/linux/README.md).
+
+**macOS** (الطرفية):
 
 </div>
 
@@ -67,7 +81,7 @@ curl -fsSL https://raw.githubusercontent.com/skyNetAIAgent/skynet-architecture/m
 
 إن كنت تفضّل القراءة قبل التنفيذ: نزّل [`install.py`](../../agent/install.py)، واقرأه (فهو قصير)، ثم نفّذ `python3 -I install.py`.
 
-يضع المثبّت الوكيل في مجلد واحد (`%LOCALAPPDATA%\SkyNetAgent` في Windows، و`~/Library/Application Support/SkyNetAgent` في macOS، و`~/.local/share/skynet-agent` في Linux وAndroid) وينشئ الأمر `skynet-agent`. أما مع مثبّتات سطر الأوامر، فابدأ الوكيل بنفسك.
+يضع المثبّت الوكيل في مجلد واحد (`%LOCALAPPDATA%\SkyNetAgent` في Windows، و`~/Library/Application Support/SkyNetAgent` في macOS، و`~/.local/share/skynet-agent` في Linux وAndroid) وينشئ الأمر `skynet-agent`. استخدم `skynet-agent run` لتشغيله يدويًا.
 
 ## الخطوات الأولى
 
@@ -117,7 +131,7 @@ skynet-agent autostart enable     # اختياري: التشغيل عند تسج
 | `skynet-agent update` | تثبيت أحدث إصدار موقَّع الآن |
 | `skynet-agent selftest [--online]` | فحص الجهاز والملفات المثبّتة والتواقيع |
 | `skynet-agent autostart enable` / `disable` | التشغيل عند تسجيل الدخول أو عدمه |
-| `skynet-agent uninstall --yes` | إيقاف التشغيل التلقائي والتوقف؛ ثم احذف مجلد الوكيل |
+| `skynet-agent uninstall --yes` | إيقاف التشغيل التلقائي وإيقاف الوكيل. ويحذف تثبيت Linux عبر shell ملفات برنامجه أيضًا |
 
 ## الإعدادات
 
@@ -184,7 +198,7 @@ skynet-agent uninstall --yes
 
 <div dir="rtl">
 
-ثم احذف مجلد الوكيل. لم يتغيّر شيء آخر على حاسوبك.
+يحتفظ مثبّت Linux عبر shell بمفتاح الجهاز والإعدادات والنتائج المحفوظة. ولحذف هذه أيضًا، استخدم `skynet-agent uninstall --yes --purge` عند إلغاء التثبيت. وفي تثبيتات سطر الأوامر الأخرى، احذف مجلد الوكيل بعد انتهاء الأمر.
 
 ## إذا حدث خطأ
 

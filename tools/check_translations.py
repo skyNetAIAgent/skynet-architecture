@@ -34,6 +34,7 @@ for name in ("CURRENT_DESIGN", "RESEARCH_AGENT", "PILOT_RESULTS", "OPEN_QUESTION
         + [(lang, "i18n/%s/%s.md" % (lang, name)) for lang in LANGS if lang not in ("en", "ru")])
 DOCS["android/README.md"] = dict((lang, "i18n/%s/ANDROID.md" % lang) for lang in LANGS if lang != "en")
 DOCS["installer/windows/README.md"] = dict((lang, "i18n/%s/WINDOWS_INSTALLER.md" % lang) for lang in LANGS if lang != "en")
+DOCS["installer/linux/README.md"] = dict((lang, "i18n/%s/LINUX_INSTALLER.md" % lang) for lang in LANGS if lang != "en")
 DOCS["tasks/context/variant-b.md"] = {"en": "tasks/context/variant-b.en.md"}
 # English sources
 for source, name in (("CORE.md", "CORE"), ("ERRATA.md", "ERRATA"), ("tasks/README.md", "TASKS"),
@@ -52,7 +53,7 @@ PARALLEL["AGENT"] = dict([("en", "agent/README.md")]
 
 def source_language(source):
     """Language a tracked source document is written in."""
-    english = ("android/README.md", "installer/windows/README.md", "CORE.md", "ERRATA.md", "tasks/README.md", "results/README.md",
+    english = ("android/README.md", "installer/windows/README.md", "installer/linux/README.md", "CORE.md", "ERRATA.md", "tasks/README.md", "results/README.md",
                "results/FIRST_RUN.md")
     return "en" if source in english else "ru"
 

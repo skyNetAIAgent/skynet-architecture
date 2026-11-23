@@ -20,8 +20,8 @@ Las primeras tareas son cálculos exactos sobre las reglas de pago de SkyNet. Po
 
 ## Requisitos
 
-- El instalador de Windows x64 incluye Python. Los demás métodos requieren Python 3.9 o posterior.
-- Unos pocos megabytes de disco y conexión a internet.
+- El instalador de Windows x64 incluye Python. En Linux se usa Python 3.9 o posterior del sistema o un entorno portátil verificado en glibc x86_64 y aarch64. Las sumas de comprobación actuales del entorno de Linux están pendientes, así que esta versión necesita el Python del sistema. Las demás plataformas necesitan Python 3.9 o posterior.
+- Conexión a internet para recibir tareas y publicar resultados. El instalador de Linux de un solo archivo funciona sin conexión.
 
 ## Instalación
 
@@ -34,7 +34,17 @@ Las primeras tareas son cálculos exactos sobre las reglas de pago de SkyNet. Po
 irm https://raw.githubusercontent.com/skyNetAIAgent/skynet-architecture/main/agent/install.ps1 | iex
 ```
 
-**Linux y macOS** (terminal):
+**Linux**
+
+Descargue `skynet-agent-install.sh` de la página [Releases](https://github.com/skyNetAIAgent/skynet-architecture/releases) del proyecto y ejecute `sh skynet-agent-install.sh`. Para instalar directamente desde el repositorio, ejecute:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/skyNetAIAgent/skynet-architecture/main/agent/install.sh | sh
+```
+
+En la primera pregunta, pulse Intro para ejecutar el agente ahora y al iniciar sesión mediante su servicio de usuario de systemd. La segunda pregunta ofrece ejecutarlo desde el arranque, incluso antes de iniciar sesión. Para una instalación desatendida, use `--autostart`, `--autostart --linger` o `--no-autostart`. Si su intérprete de órdenes no encuentra `skynet-agent`, use `~/.local/bin/skynet-agent`. Véase la [guía del instalador de Linux](../../installer/linux/README.md).
+
+**macOS** (terminal):
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/skyNetAIAgent/skynet-architecture/main/agent/install.sh | sh
@@ -53,7 +63,7 @@ En un teléfono el agente solo trabaja mientras el teléfono se está cargando. 
 
 Si prefiere leer antes de ejecutar: descargue [`install.py`](../../agent/install.py), léalo (es corto) y ejecute `python3 -I install.py`.
 
-El instalador coloca el agente en una carpeta (`%LOCALAPPDATA%\SkyNetAgent` en Windows, `~/Library/Application Support/SkyNetAgent` en macOS, `~/.local/share/skynet-agent` en Linux y Android) y crea la orden `skynet-agent`. Con los instaladores de línea de órdenes, arranque el agente usted mismo.
+El instalador coloca el agente en una carpeta (`%LOCALAPPDATA%\SkyNetAgent` en Windows, `~/Library/Application Support/SkyNetAgent` en macOS, `~/.local/share/skynet-agent` en Linux y Android) y crea la orden `skynet-agent`. Use `skynet-agent run` para arrancarlo manualmente.
 
 ## Primeros pasos
 
@@ -95,7 +105,7 @@ Un resultado publicado tiene este aspecto y no contiene nada más:
 | `skynet-agent update` | Instalar ahora la versión firmada más reciente |
 | `skynet-agent selftest [--online]` | Comprobar el dispositivo, los archivos instalados y las firmas |
 | `skynet-agent autostart enable` / `disable` | Arrancar al iniciar sesión, o no |
-| `skynet-agent uninstall --yes` | Desactivar el inicio automático y detenerse; después borre la carpeta del agente |
+| `skynet-agent uninstall --yes` | Desactivar el inicio automático y detener el agente. La instalación de Linux mediante el intérprete de órdenes también elimina sus archivos de programa |
 
 ## Ajustes
 
@@ -154,7 +164,7 @@ Para una instalación con EXE, elija **SkyNet Agent → Uninstall** en el menú 
 skynet-agent uninstall --yes
 ```
 
-Después borre la carpeta del agente. No se cambió nada más en su ordenador.
+El instalador de Linux mediante el intérprete de órdenes conserva la clave del dispositivo, los ajustes y los resultados guardados. Para borrarlos también, use `skynet-agent uninstall --yes --purge` al desinstalar. Para las demás instalaciones desde la línea de órdenes, borre la carpeta del agente cuando termine la orden.
 
 ## Problemas frecuentes
 

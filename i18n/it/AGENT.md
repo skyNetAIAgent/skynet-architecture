@@ -20,8 +20,8 @@ I primi compiti sono calcoli esatti sulle regole di pagamento di SkyNet, per ese
 
 ## Requisiti
 
-- Il programma di installazione per Windows x64 include Python. Gli altri metodi richiedono Python 3.9 o successivo.
-- Qualche megabyte di spazio su disco e una connessione a internet.
+- Il programma di installazione per Windows x64 include Python. Linux usa Python 3.9 o successivo del sistema oppure un runtime portabile verificato su glibc x86_64 e aarch64. I checksum attuali del runtime Linux sono in attesa, quindi questa versione richiede il Python di sistema. Le altre piattaforme richiedono Python 3.9 o successivo.
+- Una connessione a internet per ricevere i compiti e pubblicare i risultati. Il programma di installazione Linux in un singolo file funziona offline.
 
 ## Installazione
 
@@ -34,7 +34,17 @@ I primi compiti sono calcoli esatti sulle regole di pagamento di SkyNet, per ese
 irm https://raw.githubusercontent.com/skyNetAIAgent/skynet-architecture/main/agent/install.ps1 | iex
 ```
 
-**Linux e macOS** (terminale):
+**Linux**
+
+Scaricate `skynet-agent-install.sh` dalla pagina [Releases](https://github.com/skyNetAIAgent/skynet-architecture/releases) del progetto ed eseguite `sh skynet-agent-install.sh`. Per installare direttamente dal repository, eseguite:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/skyNetAIAgent/skynet-architecture/main/agent/install.sh | sh
+```
+
+Alla prima domanda, premete Invio per avviare l'agente subito e all'accesso usando il vostro servizio utente systemd. La seconda domanda propone di avviarlo all'accensione, anche prima che accediate. Per un'installazione senza interazione, usate `--autostart`, `--autostart --linger` o `--no-autostart`. Se la vostra shell non trova `skynet-agent`, usate `~/.local/bin/skynet-agent`. Vedere la [guida del programma di installazione per Linux](../../installer/linux/README.md).
+
+**macOS** (terminale):
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/skyNetAIAgent/skynet-architecture/main/agent/install.sh | sh
@@ -53,7 +63,7 @@ Su un telefono l'agente lavora solo mentre il telefono è in carica. Se non ries
 
 Se preferite leggere prima di eseguire: scaricate [`install.py`](../../agent/install.py), leggetelo (è breve) ed eseguite `python3 -I install.py`.
 
-Il programma di installazione mette l'agente in una cartella (`%LOCALAPPDATA%\SkyNetAgent` su Windows, `~/Library/Application Support/SkyNetAgent` su macOS, `~/.local/share/skynet-agent` su Linux e Android) e crea il comando `skynet-agent`. Con i programmi di installazione a riga di comando, avviate l'agente voi stessi.
+Il programma di installazione mette l'agente in una cartella (`%LOCALAPPDATA%\SkyNetAgent` su Windows, `~/Library/Application Support/SkyNetAgent` su macOS, `~/.local/share/skynet-agent` su Linux e Android) e crea il comando `skynet-agent`. Usate `skynet-agent run` per avviarlo manualmente.
 
 ## Primi passi
 
@@ -95,7 +105,7 @@ Un risultato pubblicato ha questo aspetto e non contiene altro:
 | `skynet-agent update` | Installare subito l'ultima versione firmata |
 | `skynet-agent selftest [--online]` | Controllare il dispositivo, i file installati e le firme |
 | `skynet-agent autostart enable` / `disable` | Avviarsi all'accesso oppure no |
-| `skynet-agent uninstall --yes` | Disattivare l'avvio automatico e fermarsi; poi eliminate la cartella dell'agente |
+| `skynet-agent uninstall --yes` | Disattivare l'avvio automatico e fermare l'agente. L'installazione Linux tramite shell rimuove anche i suoi file di programma |
 
 ## Impostazioni
 
@@ -154,7 +164,7 @@ Per un'installazione EXE, scegliete **SkyNet Agent → Disinstalla** nel menu St
 skynet-agent uninstall --yes
 ```
 
-Poi eliminate la cartella dell'agente. Sul vostro computer non è stato cambiato altro.
+L'installazione Linux tramite shell conserva la chiave del dispositivo, le impostazioni e i risultati salvati. Per eliminare anche questi, usate `skynet-agent uninstall --yes --purge` durante la disinstallazione. Per le altre installazioni a riga di comando, eliminate la cartella dell'agente dopo che il comando è terminato.
 
 ## Se qualcosa non va
 

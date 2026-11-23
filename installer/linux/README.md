@@ -1,5 +1,7 @@
 # Linux installer
 
+**English** · [中文](../../i18n/zh/LINUX_INSTALLER.md) · [Español](../../i18n/es/LINUX_INSTALLER.md) · [Français](../../i18n/fr/LINUX_INSTALLER.md) · [Deutsch](../../i18n/de/LINUX_INSTALLER.md) · [Italiano](../../i18n/it/LINUX_INSTALLER.md) · [Русский](../../i18n/ru/LINUX_INSTALLER.md) · [Português](../../i18n/pt/LINUX_INSTALLER.md) · [العربية](../../i18n/ar/LINUX_INSTALLER.md)
+
 Run the single file from the project's Releases page under your own account.
 
 ```sh

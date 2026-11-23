@@ -20,8 +20,8 @@
 
 ## 需要什么
 
-- Windows x64 安装程序自带 Python。其他安装方式需要 Python 3.9 或更高版本。
-- 几兆字节的磁盘空间和网络连接。
+- Windows x64 安装程序自带 Python。Linux 使用系统提供的 Python 3.9 或更高版本，或在 glibc x86_64 和 aarch64 上使用经过验证的便携运行时。目前 Linux 运行时的校验和仍未确定，所以这个版本需要使用系统的 Python。其他平台需要 Python 3.9 或更高版本。
+- 用于接收任务和发布结果的网络连接。单文件 Linux 安装程序可以离线工作。
 
 ## 安装
 
@@ -34,7 +34,17 @@
 irm https://raw.githubusercontent.com/skyNetAIAgent/skynet-architecture/main/agent/install.ps1 | iex
 ```
 
-**Linux 和 macOS**（终端）：
+**Linux**
+
+从项目的 [Releases](https://github.com/skyNetAIAgent/skynet-architecture/releases) 下载 `skynet-agent-install.sh`，然后运行 `sh skynet-agent-install.sh`。如果要从仓库直接安装，请运行：
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/skyNetAIAgent/skynet-architecture/main/agent/install.sh | sh
+```
+
+在第一个提示处按回车，代理程序就会通过你的 systemd 用户服务立即运行，并在登录时启动。第二个提示会询问是否从开机起就运行，甚至在你登录之前。无人值守安装时，请使用 `--autostart`、`--autostart --linger` 或 `--no-autostart`。如果你的 shell 找不到 `skynet-agent`，请使用 `~/.local/bin/skynet-agent`。参见 [Linux 安装程序指南](../../installer/linux/README.md)。
+
+**macOS**（终端）：
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/skyNetAIAgent/skynet-architecture/main/agent/install.sh | sh
@@ -53,7 +63,7 @@ curl -fsSL https://raw.githubusercontent.com/skyNetAIAgent/skynet-architecture/m
 
 如果你想先看清楚再运行：下载 [`install.py`](../../agent/install.py)，读一读（它很短），然后运行 `python3 -I install.py`。
 
-安装程序把代理程序放进一个文件夹（Windows 为 `%LOCALAPPDATA%\SkyNetAgent`，macOS 为 `~/Library/Application Support/SkyNetAgent`，Linux 和 Android 为 `~/.local/share/skynet-agent`），并创建 `skynet-agent` 命令。使用命令行安装程序时，请自行启动代理程序。
+安装程序把代理程序放进一个文件夹（Windows 为 `%LOCALAPPDATA%\SkyNetAgent`，macOS 为 `~/Library/Application Support/SkyNetAgent`，Linux 和 Android 为 `~/.local/share/skynet-agent`），并创建 `skynet-agent` 命令。使用 `skynet-agent run` 手动启动它。
 
 ## 第一步
 
@@ -95,7 +105,7 @@ skynet-agent autostart enable     # 可选：登录时自动启动
 | `skynet-agent update` | 立即安装最新的已签名版本 |
 | `skynet-agent selftest [--online]` | 检查设备、已安装的文件和签名 |
 | `skynet-agent autostart enable` / `disable` | 是否在登录时启动 |
-| `skynet-agent uninstall --yes` | 关闭自启动并停止；然后删除代理程序文件夹 |
+| `skynet-agent uninstall --yes` | 关闭自启动并停止代理程序。Linux shell 安装还会一并删除它的程序文件 |
 
 ## 设置
 
@@ -154,7 +164,7 @@ skynet-agent config set ai.enabled true
 skynet-agent uninstall --yes
 ```
 
-然后删除代理程序文件夹。你的电脑上没有其他改动。
+Linux shell 安装程序会保留设备密钥、设置和已保存的结果。要一并删除它们，请在卸载时使用 `skynet-agent uninstall --yes --purge`。对于其他命令行安装，请在命令执行结束后删除代理程序文件夹。
 
 ## 疑难解答
 

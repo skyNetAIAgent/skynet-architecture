@@ -1,4 +1,4 @@
-# Программа-агент SkyNet
+# Исследовательский агент SkyNet
 
 [English](../../agent/README.md) · [中文](../zh/AGENT.md) · [Español](../es/AGENT.md) · [Français](../fr/AGENT.md) · [Deutsch](../de/AGENT.md) · [Italiano](../it/AGENT.md) · **Русский** · [Português](../pt/AGENT.md) · [العربية](../ar/AGENT.md)
 
@@ -28,8 +28,8 @@
 
 ## Что нужно
 
-- Установщик для Windows x64 включает Python. Другие способы требуют Python 3.9 или новее.
-- Несколько мегабайт на диске и доступ в интернет.
+- Установщик для Windows x64 включает Python. В Linux используется Python 3.9+ из системы или проверенная переносимая среда выполнения на glibc x86_64 и aarch64. Контрольные суммы текущей среды выполнения для Linux пока не готовы, поэтому этой сборке нужен системный Python. Другим платформам нужен Python 3.9 или новее.
+- Подключение к интернету для получения заданий и публикации результатов. Однофайловый установщик для Linux работает без интернета.
 
 ## Установка
 
@@ -42,7 +42,17 @@
 irm https://raw.githubusercontent.com/skyNetAIAgent/skynet-architecture/main/agent/install.ps1 | iex
 ```
 
-**Linux и macOS** (терминал):
+**Linux**
+
+Скачайте `skynet-agent-install.sh` со страницы [Releases](https://github.com/skyNetAIAgent/skynet-architecture/releases) проекта и выполните `sh skynet-agent-install.sh`. Чтобы установить напрямую из репозитория, выполните:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/skyNetAIAgent/skynet-architecture/main/agent/install.sh | sh
+```
+
+При первом запросе нажмите Enter, чтобы запустить агент сейчас и при входе в систему с помощью пользовательской службы systemd. Второй запрос предлагает запускать его с момента загрузки, ещё до входа в систему. Для установки без участия человека используйте `--autostart`, `--autostart --linger` или `--no-autostart`. Если оболочка не находит `skynet-agent`, используйте `~/.local/bin/skynet-agent`. См. [руководство по установщику для Linux](../../installer/linux/README.md).
+
+**macOS** (терминал):
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/skyNetAIAgent/skynet-architecture/main/agent/install.sh | sh
@@ -67,7 +77,7 @@ curl -fsSL https://raw.githubusercontent.com/skyNetAIAgent/skynet-architecture/m
 
 Установщик кладёт агент в одну папку (`%LOCALAPPDATA%\SkyNetAgent` в Windows,
 `~/Library/Application Support/SkyNetAgent` в macOS, `~/.local/share/skynet-agent` в Linux
-и Android) и создаёт команду `skynet-agent`. При установке из командной строки запустите агент сами.
+и Android) и создаёт команду `skynet-agent`. Чтобы запустить его вручную, выполните `skynet-agent run`.
 
 ## Первые шаги
 
@@ -118,7 +128,7 @@ skynet-agent autostart enable     # по желанию: запускаться 
 | `skynet-agent update` | Поставить новейшую подписанную версию сейчас |
 | `skynet-agent selftest [--online]` | Проверить устройство, установленные файлы и подписи |
 | `skynet-agent autostart enable` / `disable` | Запускаться при входе или нет |
-| `skynet-agent uninstall --yes` | Выключить автозапуск и остановиться; затем удалите папку агента |
+| `skynet-agent uninstall --yes` | Выключить автозапуск и остановить агент. Установка через shell-скрипт в Linux также удаляет программные файлы агента |
 
 ## Настройки
 
@@ -134,7 +144,7 @@ skynet-agent autostart enable     # по желанию: запускаться 
 | `batch_minutes` | 60 | При `submit_via github`: результаты одного задания публикуются вместе, не чаще одного комментария за столько минут |
 | `max_submissions_per_day` | 48 | При `submit_via github`: сколько комментариев в сутки публикуется с этого устройства |
 | `report_platform` | true | Добавлять к результату грубую метку вида `windows-amd64-py3.12` |
-| `ai.enabled` | false | Режим ИИ, см. ниже |
+| `ai.enabled` | false | Необязательный режим ИИ, см. ниже |
 
 Пример: `skynet-agent config set workers 4`.
 
@@ -180,7 +190,7 @@ skynet-agent config set ai.enabled true
   вручную, прочитав изменения. Самая первая установка доверяет соединению HTTPS с GitHub.
   В сети SkyNet такого ключа быть не должно; агент — инструмент исследования и сам требованиям
   SkyNet пока не удовлетворяет. Подробности и таблица угроз:
-  [docs/RESEARCH_AGENT.md](../../docs/RESEARCH_AGENT.md).
+  [docs/RESEARCH_AGENT.md](../../docs/RESEARCH_AGENT.md) (на русском).
 
 ## Приватность
 
@@ -205,7 +215,7 @@ skynet-agent config set ai.enabled true
 skynet-agent uninstall --yes
 ```
 
-Затем удалите папку агента. Больше на вашем компьютере ничего не менялось.
+Установщик в виде shell-скрипта для Linux сохраняет ключ устройства, настройки и сохранённые результаты. Чтобы удалить и их, при удалении выполните `skynet-agent uninstall --yes --purge`. Для других установок из командной строки удалите папку агента после завершения команды.
 
 ## Если что-то не так
 

@@ -20,8 +20,8 @@ Die ersten Aufgaben sind exakte Berechnungen zu den Zahlungsregeln von SkyNet. Z
 
 ## Voraussetzungen
 
-- Das Installationsprogramm für Windows x64 enthält Python. Andere Methoden erfordern Python 3.9 oder neuer.
-- Einige Megabyte Speicherplatz und eine Internetverbindung.
+- Das Installationsprogramm für Windows x64 enthält Python. Linux nutzt Python 3.9 oder neuer aus dem System oder eine geprüfte portable Laufzeit auf glibc x86_64 und aarch64. Die Prüfsummen der aktuellen Linux-Laufzeit stehen noch aus, daher benötigt diese Version Python aus dem System. Andere Plattformen erfordern Python 3.9 oder neuer.
+- Eine Internetverbindung, um Aufgaben zu empfangen und Ergebnisse zu veröffentlichen. Das Linux-Installationsprogramm, das nur aus einer Datei besteht, funktioniert offline.
 
 ## Installation
 
@@ -34,7 +34,17 @@ Die ersten Aufgaben sind exakte Berechnungen zu den Zahlungsregeln von SkyNet. Z
 irm https://raw.githubusercontent.com/skyNetAIAgent/skynet-architecture/main/agent/install.ps1 | iex
 ```
 
-**Linux und macOS** (Terminal):
+**Linux**
+
+Laden Sie `skynet-agent-install.sh` von den [Releases](https://github.com/skyNetAIAgent/skynet-architecture/releases) des Projekts herunter und führen Sie `sh skynet-agent-install.sh` aus. Um direkt aus dem Repository zu installieren, führen Sie aus:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/skyNetAIAgent/skynet-architecture/main/agent/install.sh | sh
+```
+
+Drücken Sie bei der ersten Abfrage die Eingabetaste, um den Agenten jetzt und bei der Anmeldung über Ihren systemd-Benutzerdienst auszuführen. Die zweite Abfrage bietet an, ihn beim Systemstart auszuführen, noch bevor Sie sich anmelden. Für eine unbeaufsichtigte Einrichtung verwenden Sie `--autostart`, `--autostart --linger` oder `--no-autostart`. Wenn Ihre Shell `skynet-agent` nicht findet, verwenden Sie `~/.local/bin/skynet-agent`. Siehe das [Linux-Installationshandbuch](../../installer/linux/README.md).
+
+**macOS** (Terminal):
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/skyNetAIAgent/skynet-architecture/main/agent/install.sh | sh
@@ -53,7 +63,7 @@ Auf einem Telefon arbeitet der Agent nur, während es geladen wird. Kann er nich
 
 Wenn Sie lieber erst lesen und dann ausführen: Laden Sie [`install.py`](../../agent/install.py) herunter, lesen Sie die Datei (sie ist kurz) und führen Sie `python3 -I install.py` aus.
 
-Das Installationsprogramm legt den Agenten in einen Ordner (`%LOCALAPPDATA%\SkyNetAgent` unter Windows, `~/Library/Application Support/SkyNetAgent` unter macOS, `~/.local/share/skynet-agent` unter Linux und Android) und erstellt den Befehl `skynet-agent`. Bei den Installationsprogrammen für die Befehlszeile starten Sie den Agenten selbst.
+Das Installationsprogramm legt den Agenten in einen Ordner (`%LOCALAPPDATA%\SkyNetAgent` unter Windows, `~/Library/Application Support/SkyNetAgent` unter macOS, `~/.local/share/skynet-agent` unter Linux und Android) und erstellt den Befehl `skynet-agent`. Verwenden Sie `skynet-agent run`, um ihn von Hand zu starten.
 
 ## Erste Schritte
 
@@ -95,7 +105,7 @@ Ein veröffentlichtes Ergebnis sieht so aus und enthält nichts anderes:
 | `skynet-agent update` | Die neueste signierte Version jetzt installieren |
 | `skynet-agent selftest [--online]` | Gerät, installierte Dateien und Signaturen prüfen |
 | `skynet-agent autostart enable` / `disable` | Beim Anmelden starten oder nicht |
-| `skynet-agent uninstall --yes` | Autostart ausschalten und anhalten; danach den Ordner des Agenten löschen |
+| `skynet-agent uninstall --yes` | Autostart ausschalten und den Agenten anhalten. Die Linux-Shell-Installation entfernt auch ihre Programmdateien |
 
 ## Einstellungen
 
@@ -131,7 +141,7 @@ skynet-agent config set ai.enabled true
 
 ## Sicherheit, ehrlich gesagt
 
-- **Updates und Aufgabenlisten sind signiert** (Ed25519). Der Agent nimmt sie nur an, wenn die Signatur zu einem Release-Schlüssel passt, der in der installierten Kopie eingebaut ist, die Versionsnummer höher ist als die aktuelle und jede Datei zu ihrem SHA-256 passt. Ein Spiegel oder eine schlechte Verbindung ändern daran nichts.
+- **Updates und Aufgabenlisten sind signiert** (Ed25519). Der Agent nimmt sie nur an, wenn die Signatur zu einem Release-Schlüssel passt, der in der installierten Kopie eingebaut ist, die Versionsnummer höher ist als die aktuelle und jede Datei zu ihrem SHA-256 passt. Ein Download von einem Spiegel oder über eine schlechte Verbindung kann daran nichts ändern.
 - **Aufgaben sind Daten, keine Programme.** Neue Arten von Berechnungen kommen nur innerhalb einer signierten Version, als lesbarer Python-Quelltext in [`skynet_agent/kernels`](../../agent/skynet_agent/kernels).
 - **Der Agent läuft im isolierten Modus von Python**, mit einem Zeitlimit für jedes Stück Arbeit, in einem eigenen Prozess mit niedriger Priorität.
 - **Startet eine neue Version nicht**, kehrt der Starter zur vorherigen zurück und merkt sich, diese Version nicht noch einmal zu installieren.
@@ -154,7 +164,7 @@ Bei einer EXE-Installation wählen Sie **SkyNet Agent → Uninstall** im Startme
 skynet-agent uninstall --yes
 ```
 
-Löschen Sie danach den Ordner des Agenten. Sonst wurde auf Ihrem Computer nichts verändert.
+Das Linux-Shell-Installationsprogramm behält den Geräteschlüssel, die Einstellungen und gespeicherte Ergebnisse. Um auch diese zu löschen, verwenden Sie beim Deinstallieren `skynet-agent uninstall --yes --purge`. Bei anderen Installationen über die Befehlszeile löschen Sie den Ordner des Agenten, nachdem der Befehl beendet ist.
 
 ## Wenn etwas nicht klappt
 
