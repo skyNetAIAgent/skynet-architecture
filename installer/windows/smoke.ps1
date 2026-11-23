@@ -7,7 +7,7 @@ $app = Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) 'SkyNetA
 $group = Join-Path ([Environment]::GetFolderPath('Programs')) 'SkyNet Agent'
 $runKey = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Run'
 if ((Test-Path -LiteralPath $app) -or (Test-Path -LiteralPath $group) -or
-    (Get-ItemPropertyValue $runKey SkyNetAgent -ErrorAction SilentlyContinue)) {
+    (Get-ItemProperty -Path $runKey -Name SkyNetAgent -ErrorAction SilentlyContinue)) {
     throw 'This smoke test needs a fresh agent profile.'
 }
 
@@ -40,7 +40,7 @@ foreach ($folder in 'outbox', 'net/pending') {
 Set-Content -LiteralPath "$app/identity.key" -Value 'smoke'
 $uninstaller = Get-Item -Path "$app/unins*.exe"
 Run-Setup $uninstaller.FullName $silent
-if ((Test-Path -LiteralPath $group) -or (Get-ItemPropertyValue $runKey SkyNetAgent -ErrorAction SilentlyContinue)) {
+if ((Test-Path -LiteralPath $group) -or (Get-ItemProperty -Path $runKey -Name SkyNetAgent -ErrorAction SilentlyContinue)) {
     throw 'The Start menu group or autostart entry survived uninstall.'
 }
 foreach ($item in 'python', 'versions', 'launcher.py', 'skynet-agent.cmd', $uninstaller.Name) {
