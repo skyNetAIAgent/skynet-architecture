@@ -54,6 +54,7 @@ class FromDirAttacks(unittest.TestCase):
         check.assert_not_called()
         self.assertFalse((self.home / "versions").exists())
 
+    @unittest.skipUnless(os.name == "nt", "the start script for Windows")
     def test_valid_bundle_installs_offline_in_tricky_path(self):
         code, text = self.run_cli()
         self.assertEqual(code, 0, text)
@@ -130,6 +131,7 @@ class FromDirAttacks(unittest.TestCase):
         self.rejected_without_run("older than")
         self.assertTrue((self.home / "current.json").exists())
 
+    @unittest.skipUnless(os.name == "nt", "the start script for Windows")
     def test_downgrade_with_keep_newer_keeps_everything(self):
         self.home.mkdir()
         launcher = self.home / "launcher.py"
@@ -152,6 +154,7 @@ class FromDirAttacks(unittest.TestCase):
         self.rejected_without_run("older than")
         self.assertFalse((self.home / "current.json").exists())
 
+    @unittest.skipUnless(os.name == "nt", "the start script for Windows")
     def test_shim_uses_bundled_python_when_installed_with_it(self):
         self.home.mkdir()
         fake = str(Path(self.home, "python", "python.exe"))

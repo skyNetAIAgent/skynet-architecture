@@ -174,11 +174,9 @@ var
 begin
   Result := True;
   if not UninstallSilent then begin
-    Form := CreateCustomForm;
+    Form := CreateCustomForm(ScaleX(420), ScaleY(95), False, False);
     try
       Form.Caption := 'Uninstall SkyNet Agent';
-      Form.ClientWidth := ScaleX(420);
-      Form.ClientHeight := ScaleY(95);
       Choice := TNewCheckBox.Create(Form);
       Choice.Parent := Form;
       Choice.SetBounds(ScaleX(12), ScaleY(12), ScaleX(395), ScaleY(30));
