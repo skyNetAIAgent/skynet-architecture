@@ -203,9 +203,10 @@ begin
 end;
 
 procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
-const
-  RunKey = 'Software\Microsoft\Windows\CurrentVersion\Run';
+var
+  RunKey: String;
 begin
+  RunKey := 'Software\Microsoft\Windows\CurrentVersion\Run';
   if CurUninstallStep = usUninstall then begin
     if not StopAgent then RaiseException('The agent is still working. Retry after it stops.');
     if RegValueExists(HKCU, RunKey, 'SkyNetAgent') and
