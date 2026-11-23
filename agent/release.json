@@ -5,7 +5,7 @@
    "size": 5965
   },
   "skynet_agent/__init__.py": {
-   "sha256": "0a1c1090d1895c7239632dfc5e19bbe80b9c5c6aefd5ffafdbfe7d153701ef07",
+   "sha256": "1e7de839a428d950edd2763c61ba64d5f86ed7e3adb0ee0d233b60fec32624f8",
    "size": 1373
   },
   "skynet_agent/__main__.py": {
@@ -29,8 +29,8 @@
    "size": 10641
   },
   "skynet_agent/deployment.py": {
-   "sha256": "3e09b44a2d9cbfb904cef52e47fddaa8703f25dfc44a38858f12a2afce240d14",
-   "size": 7574
+   "sha256": "e0863fae446fa45bc7478332031b7200735e0dc2a1be04ea5f5798a94b4481c8",
+   "size": 7981
   },
   "skynet_agent/ed25519.py": {
    "sha256": "20b69ea12ff71f664de98a0f192d3909e2e57454a37917c8902ffa130f1723a6",
@@ -97,8 +97,8 @@
    "size": 1960
   },
   "skynet_agent/updater.py": {
-   "sha256": "0c9b5b3772aece41859d3df4ffb8fdebbb5d4d6e134f1f0119e1129daaee8bda",
-   "size": 11186
+   "sha256": "47b073f3ac1f7cf9bedf0d2d24c4b0284757ec46e99a1a89fb3a4415405fe72f",
+   "size": 11240
   },
   "skynet_agent/worker.py": {
    "sha256": "16faa432b37ab1c572b7d72ebbbe8ada2e8349a482fa296b89f983b992874e77",
@@ -111,6 +111,6 @@
   3,
   9
  ],
- "seq": 3,
- "version": "0.2.1"
+ "seq": 4,
+ "version": "0.2.2"
 }

@@ -180,6 +180,7 @@ def confirm_legacy_install(home):
     with deployment.update_lock(home):
         cur = read_current(home) or {}
         if cur.get("dir") == relative and deployment.read_local(path, 0) < RELEASE_SEQ:
+            deployment.remove_bytecode(running_dir())
             deployment.check_candidate(home, running_dir(), rel)
             deployment.write_local(home, "max_seq.json", deployment.sequence_floor(home))
 

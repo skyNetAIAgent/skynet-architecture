@@ -67,6 +67,16 @@ def write_local(home, name, value):
     os.replace(path + ".tmp", path)
 
 
+def remove_bytecode(root):
+    """Delete __pycache__ folders that Python wrote into a version started by an older launcher."""
+    for base, dirs, _names in os.walk(root):
+        for name in list(dirs):
+            path = os.path.join(base, name)
+            if name == "__pycache__" and not os.path.islink(path):
+                shutil.rmtree(path, ignore_errors=True)
+                dirs.remove(name)
+
+
 def tree_problems(root, files, exact=True):
     root_info = os.lstat(root)
     if (not stat.S_ISDIR(root_info.st_mode) or stat.S_ISLNK(root_info.st_mode)
