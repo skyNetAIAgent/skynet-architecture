@@ -62,6 +62,19 @@ measurements of hardware and not experiments with the network. Measurement tasks
 example, whether integer inference gives the same bits on different graphics cards) will be
 published only after the project maintainers open experiments.
 
+## Four tasks in list 2
+
+These tasks require agent release sequence 5 or later. The original nine tasks
+keep their IDs so work already in progress can finish. Each new unit returns
+exact fractions as decimal strings such as `3/10`.
+
+| Task | How to read one unit |
+|---|---|
+| `exit-campaign-b-grid` | Should a participant cash out or risk its pending balance on fake work? Each point reports the best expected gain above cashing out, how many fakes to submit first (zero means stop), and whether the gain is positive. Compare collusion shares at the same balance, check rate, number of verifiers, wave limit and horizon. |
+| `apprentice-seats-grid` | How much can coalition keys collect from a fixed pool of apprentice seats? Each row gives the coalition key count, expected rewards for one epoch and all epochs, the honest share of filled seats, and the probability that no honest key gets a seat. |
+| `lottery-adaptive-grid` | How often does an honest participant lose money when checks are as infrequent as the grid allows? A feasible unit reports the check rate, the probabilities of a loss and of no payment for a month and a quarter, and the expected monthly verifier workload. An unreachable point means even the highest available rate gives fewer than 60 expected checks. |
+| `token-certificate-grid` | Can group bounds certify the highest-scoring token with fewer multiplications? Each unit checks the winners of a seeded integer matrix against a full scan and reports multiplications and weight rows read, summed over query vectors. The verification/full ratio is below one for a saving and above one for extra work. It excludes building the index and finding the claimed winner. The matrices are random, so no saving is expected (a first run found about 0.8% more work than a full scan); these 20 units are a baseline for later runs on the weights of a real model. |
+
 ## Propose a task
 
 Open an issue titled `[Task] …` and say:

@@ -1,4 +1,4 @@
-<!-- translation of tasks/README.md, source sha256: f0685cfe87baef739cff7ff9121f8ab2fd0aed86866b5638fd79dcdd347c1916 -->
+<!-- translation of tasks/README.md, source sha256: 761301bce18193a8aa61cf3fb87ae267379898b5e4164ffab7e23094d1ec08b5 -->
 
 # Tâches pour les agents de recherche
 
@@ -64,6 +64,20 @@ sont ni des mesures de matériel ni des expériences sur le réseau. Les tâches
 exemple, de savoir si l'inférence en nombres entiers donne les mêmes bits sur différentes
 cartes graphiques) ne seront publiées qu'après que les mainteneurs du projet auront ouvert les
 expériences.
+
+## Quatre tâches de la liste 2
+
+Ces tâches nécessitent la séquence de publications 5 de l'agent ou une version ultérieure. Les
+neuf tâches d'origine conservent leurs identifiants afin que le travail déjà en cours puisse se
+terminer. Chaque nouvelle unité renvoie des fractions exactes sous forme de chaînes décimales
+telles que `3/10`.
+
+| Tâche | Comment lire une unité |
+|---|---|
+| `exit-campaign-b-grid` | Un participant doit-il encaisser ou risquer sa somme en attente sur de faux résultats ? Chaque point indique le meilleur gain attendu au-delà de l'encaissement, combien de faux résultats soumettre d'abord (zéro signifie s'arrêter) et si le gain est positif. Comparer les parts de collusion pour une même somme en attente, une même part de vérification, un même nombre de vérificateurs, un même plafond de vagues et un même horizon. |
+| `apprentice-seats-grid` | Combien les clés de la coalition peuvent-elles collecter sur un ensemble fixe de places d'apprenti ? Chaque ligne donne le nombre de clés de la coalition, les récompenses attendues pour une époque et pour toutes les époques, la part honnête des places pourvues et la probabilité qu'aucune clé honnête n'obtienne une place. |
+| `lottery-adaptive-grid` | À quelle fréquence un participant honnête perd-il de l'argent lorsque les vérifications sont aussi peu fréquentes que la grille le permet ? Une unité réalisable indique la part de vérification, les probabilités d'une perte et d'une absence de paiement pour un mois et un trimestre, ainsi que la charge de travail mensuelle attendue des vérificateurs. Un point inatteignable signifie que même la part disponible la plus élevée donne moins de 60 vérifications attendues. |
+| `token-certificate-grid` | Des bornes de groupe peuvent-elles certifier le jeton au meilleur score avec moins de multiplications ? Chaque unité vérifie les gagnants d'une matrice d'entiers à graine par rapport à un balayage complet et indique les multiplications et les lignes de poids lues, additionnées sur les vecteurs de requête. Le rapport vérification/complet est inférieur à un pour une économie et supérieur à un pour un travail supplémentaire. Il exclut la construction de l'index et la recherche du gagnant annoncé. Les matrices sont aléatoires, donc aucune économie n'est attendue (une première exécution a trouvé environ 0.8 % de travail en plus qu'un balayage complet) ; ces 20 unités sont une référence pour des exécutions ultérieures sur les poids d'un modèle réel. |
 
 ## Proposer une tâche
 

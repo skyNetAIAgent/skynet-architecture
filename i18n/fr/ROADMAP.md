@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: 3009fa9bba5e1d6570484a29bf8bf33e5e10c5ff34439f7dee55ff8c53171c7c -->
+<!-- translation of docs/ROADMAP.md, source sha256: abdb6f18f1052fd01d01bf76bcf63b29c7a9faf1b0d0e61d26d3803068d46b5c -->
 
 # Feuille de route : protection contre la fraude
 
@@ -217,11 +217,14 @@ Déjà fait :
 
 **Point 4. Linux**
 
-- [ ] L'installateur utilise le Python système 3.9+, et s'il n'y en a pas, télécharge un Python portable
-      et vérifie son empreinte.
-- [ ] Service utilisateur systemd avec l'accord de l'utilisateur ; le fonctionnement sans ouverture de
+- [x] L'installateur utilise le Python système 3.9+, et s'il n'y en a pas, installe un Python portable et
+      vérifie son empreinte. Il existe aussi un installateur en un seul fichier, sans réseau (version
+      v0.2.2).
+- [x] Service utilisateur systemd avec l'accord de l'utilisateur ; le fonctionnement sans ouverture de
       session est une case séparée.
-- [ ] Vérification sur Linux Mint, Ubuntu et Debian.
+- [x] Vérification dans la CI : Debian 12 sans Python et Ubuntu 24.04 avec Python ; installation en
+      conditions réelles sur Linux Mint.
+- [ ] Vérification en conditions réelles chez un participant sans lien avec les mainteneurs.
 
 **Point 5. Mise à jour du Python embarqué et des shells**
 
@@ -231,11 +234,14 @@ Déjà fait :
 
 **Point 6. Flux des tâches**
 
-- [ ] Quatre nouvelles tâches de calcul de l'étape 2 (la campagne de sortie de la variante B, les places
+- [x] Quatre nouvelles tâches de calcul de l'étape 2 (la campagne de sortie de la variante B, les places
       d'apprenti, la loterie avec une part de vérification choisie, le certificat du jeton gagnant) — de
-      nouveaux noyaux intégrés ; chacune a une portion de référence avec l'empreinte attendue.
-- [ ] Le code des noyaux est publié avant la liste des tâches qui les exige. L'ancien agent saute la
-      tâche incompatible et continue de travailler.
+      nouveaux noyaux intégrés de l'agent 0.3.0, 515 portions dans la liste de tâches n° 2. Les
+      mathématiques ont été vérifiées indépendamment par une autre méthode sur 111 points. Le certificat
+      n'apporte pas d'économie sur des matrices aléatoires (environ 0,8% de travail supplémentaire), c'est
+      pourquoi 20 portions ont été conservées comme base de comparaison avec les poids du modèle réel.
+- [x] Les nouvelles tâches exigent l'agent 0.3.0 ou une version supérieure ; l'ancien agent saute la tâche
+      incompatible et continue de travailler (vérifié par un test).
 - [ ] Quand toutes les tâches sont calculées, l'agent attend et reprend lui-même la liste suivante.
 - [ ] Le collecteur de résultats fonctionne selon un planning sur le nœud complet et publie un
       récapitulatif.

@@ -13,6 +13,9 @@ import install
 from skynet_agent import config, deployment, ed25519, net, records, signed, submit, trust, updater
 
 
+B = updater.RELEASE_SEQ  # test releases are numbered above the running agent
+
+
 class SignedDocuments(unittest.TestCase):
     def setUp(self):
         self.seed = bytes.fromhex(helpers.TEST_SEED_HEX)
@@ -245,7 +248,7 @@ class UpdateFlow(unittest.TestCase):
         self.assertEqual(sorted(os.listdir(os.path.join(self.home, "versions"))), ["6-0.6.0", "7-0.7.0"])
 
     def test_manifest_is_authenticated_before_download_or_execution(self):
-        helpers.build_test_release(self.repo, 3, "0.3.0")
+        helpers.build_test_release(self.repo, B + 3, "0.3.0")
         path = Path(self.repo, "agent", "release.json")
         path.write_bytes(path.read_bytes() + b" ")
         with mock.patch.object(install, "fetch", wraps=self.get) as fetch, mock.patch.object(
@@ -258,7 +261,7 @@ class UpdateFlow(unittest.TestCase):
         self.assertIsNone(updater.read_current(self.home))
 
     def test_reinstall_keeps_previous_identity_and_queued_bytes(self):
-        helpers.build_test_release(self.repo, 3, "0.3.0")
+        helpers.build_test_release(self.repo, B + 3, "0.3.0")
         install.install(self.home, self.base)
         seed = records.load_seed()
         task = {"id": "test", "kernel": "selftest", "kernel_version": 1, "units": 1, "issue": 1}
@@ -266,29 +269,29 @@ class UpdateFlow(unittest.TestCase):
         name = submit.save_to_outbox(task, record, text, "compute")
         pending = Path(self.home, "outbox", name)
         original = pending.read_bytes()
-        helpers.build_test_release(self.repo, 4, "0.4.0")
+        helpers.build_test_release(self.repo, B + 4, "0.4.0")
         updater.is_installed_layout = lambda home: True
         updater.check_and_apply(self.home, self.base, self.cfg)
         for reinstall in (False, True):
             if reinstall:
                 install.install(self.home, self.base)
-            self.assertEqual(updater.read_current(self.home)["previous"]["seq"], 3)
+            self.assertEqual(updater.read_current(self.home)["previous"]["seq"], B + 3)
             self.assertEqual(records.load_seed(create=False), seed)
             self.assertEqual(pending.read_bytes(), original)
-            self.assertTrue(Path(self.home, "versions", "3-0.3.0", "launcher.py").is_file())
+            self.assertTrue(Path(self.home, "versions", "%d-0.3.0" % (B + 3), "launcher.py").is_file())
 
     def test_failures_leave_the_working_release_selected(self):
         updater.is_installed_layout = lambda home: True
-        helpers.build_test_release(self.repo, 3, "0.3.0")
+        helpers.build_test_release(self.repo, B + 3, "0.3.0")
         install.install(self.home, self.base)
         pointer = Path(self.home, "current.json")
         working = pointer.read_bytes()
         for failure in ("hash", "foreign key", "interrupted", "min_python", "halt", "extra", "self-check"):
             with self.subTest(failure=failure):
-                helpers.build_test_release(self.repo, 4, "0.4.0", halt_through=4 if failure == "halt" else None)
+                helpers.build_test_release(self.repo, B + 4, "0.4.0", halt_through=B + 4 if failure == "halt" else None)
                 agent = Path(self.repo, "agent")
                 source = agent / "launcher.py"
-                target = Path(self.home, "versions", "4-0.4.0")
+                target = Path(self.home, "versions", "%d-0.4.0" % (B + 4))
                 if failure == "extra":
                     rel, raw, sig = updater.fetch_release(self.base)
                     updater.download_release(self.home, self.base, rel, raw, sig)
@@ -312,7 +315,7 @@ class UpdateFlow(unittest.TestCase):
                 elif failure == "self-check":
                     cli = agent / "skynet_agent" / "cli.py"
                     cli.write_bytes(cli.read_bytes() + b"\nraise RuntimeError('broken release')\n")
-                    helpers.build_test_release(self.repo, 4, "0.4.0")
+                    helpers.build_test_release(self.repo, B + 4, "0.4.0")
                 if failure in ("halt", "min_python"):
                     self.assertFalse(updater.check_and_apply(self.home, self.base, self.cfg).installed)
                 else:
@@ -324,36 +327,36 @@ class UpdateFlow(unittest.TestCase):
                     shutil.rmtree(target)
 
     def test_floor_after_rollback_and_explicit_downgrade(self):
-        helpers.build_test_release(self.repo, 5, "0.5.0")
+        helpers.build_test_release(self.repo, B + 5, "0.5.0")
         install.install(self.home, self.base)
-        helpers.build_test_release(self.repo, 4, "0.4.0")
+        helpers.build_test_release(self.repo, B + 4, "0.4.0")
         updater.is_installed_layout = lambda home: True
         for apply, error in ((lambda **kw: install.install(self.home, self.base, **kw), install.InstallError),
                              (lambda **kw: updater.check_and_apply(self.home, self.base, self.cfg, **kw),
                               updater.ReleaseError)):
             with self.assertRaises(error):
                 apply()
-            self.assertEqual(updater.read_current(self.home)["seq"], 5)
+            self.assertEqual(updater.read_current(self.home)["seq"], B + 5)
             with mock.patch("sys.stderr") as stderr:
                 apply(allow_downgrade=True)
                 self.assertIn("WARNING", str(stderr.write.call_args_list))
-            self.assertEqual(updater.read_current(self.home)["seq"], 4)
-            self.assertEqual(json.loads(Path(self.home, "max_seq.json").read_bytes()), 5)
+            self.assertEqual(updater.read_current(self.home)["seq"], B + 4)
+            self.assertEqual(json.loads(Path(self.home, "max_seq.json").read_bytes()), B + 5)
             # A fallback does not lower the floor on a later reinstall.
             with self.assertRaises(install.InstallError):
                 install.install(self.home, self.base)
-            helpers.build_test_release(self.repo, 5, "0.5.0")
+            helpers.build_test_release(self.repo, B + 5, "0.5.0")
             install.install(self.home, self.base)
-            helpers.build_test_release(self.repo, 4, "0.4.0")
+            helpers.build_test_release(self.repo, B + 4, "0.4.0")
 
     def test_old_launcher_after_interrupted_refresh_and_new_launcher_after_rollback(self):
         source = Path(self.repo, "agent", "launcher.py")
         source.write_bytes(source.read_bytes().replace(b'"-IB"', b'"-I"'))
-        helpers.build_test_release(self.repo, 3, "0.3.0")
+        helpers.build_test_release(self.repo, B + 3, "0.3.0")
         install.install(self.home, self.base)
         old = Path(self.home, "launcher.py").read_bytes()
         shutil.copyfile(os.path.join(helpers.AGENT_DIR, "launcher.py"), source)
-        helpers.build_test_release(self.repo, 4, "0.4.0")
+        helpers.build_test_release(self.repo, B + 4, "0.4.0")
         replace = os.replace
         def interrupt(src, dst):
             if Path(dst) == Path(self.home, "launcher.py"):
@@ -367,13 +370,13 @@ class UpdateFlow(unittest.TestCase):
         def version():
             return subprocess.check_output([sys.executable, "-I", str(launcher), "version"], timeout=30)
         Path(self.home, "max_seq.json").unlink()  # legacy installations have no stored maximum
-        self.assertIn(b"release 4", version())
-        self.assertEqual(json.loads(Path(self.home, "max_seq.json").read_bytes()), 4)
-        self.assertEqual(updater.verify_installed(os.path.join(self.home, "versions", "4-0.4.0")), [])
+        self.assertIn(b"release %d" % (B + 4), version())
+        self.assertEqual(json.loads(Path(self.home, "max_seq.json").read_bytes()), B + 4)
+        self.assertEqual(updater.verify_installed(os.path.join(self.home, "versions", "%d-0.4.0" % (B + 4))), [])
         shutil.copyfile(source, launcher)
         import launcher as launcher_module
         self.assertTrue(launcher_module.rollback(self.home, updater.read_current(self.home)))
-        self.assertIn(b"release 3", version())
+        self.assertIn(b"release %d" % (B + 3), version())
 
 
 class Bootstrap(unittest.TestCase):

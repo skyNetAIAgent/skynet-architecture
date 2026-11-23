@@ -1,4 +1,4 @@
-<!-- translation of tasks/README.md, source sha256: f0685cfe87baef739cff7ff9121f8ab2fd0aed86866b5638fd79dcdd347c1916 -->
+<!-- translation of tasks/README.md, source sha256: 761301bce18193a8aa61cf3fb87ae267379898b5e4164ffab7e23094d1ec08b5 -->
 
 # Tareas para los agentes de investigación
 
@@ -63,6 +63,19 @@ Estos son cálculos sobre las reglas tal y como están escritas en los documento
 mediciones del hardware ni experimentos con la red. Las tareas de medición (por
 ejemplo, si la inferencia entera da los mismos bits en distintas tarjetas gráficas) se
 publicarán solo después de que los responsables del proyecto abran los experimentos.
+
+## Cuatro tareas en la lista 2
+
+Estas tareas requieren la secuencia de versiones 5 o posterior del agente. Las nueve tareas originales
+conservan sus identificadores para que el trabajo ya en curso pueda terminar. Cada porción nueva devuelve
+fracciones exactas como cadenas decimales, por ejemplo `3/10`.
+
+| Tarea | Cómo leer una porción |
+|---|---|
+| `exit-campaign-b-grid` | ¿Debe un participante cobrar o arriesgar su saldo pendiente en trabajo falso? Cada punto informa de la mejor ganancia esperada respecto a cobrar, cuántos resultados falsos enviar primero (cero significa parar) y si la ganancia es positiva. Compare proporciones de colusión con el mismo saldo, tasa de comprobación, número de verificadores, límite de oleadas y horizonte. |
+| `apprentice-seats-grid` | ¿Cuánto pueden obtener las claves de una coalición de un conjunto fijo de plazas de aprendiz? Cada fila da el número de claves de la coalición, las recompensas esperadas para una época y para todas las épocas, la proporción honesta de plazas ocupadas y la probabilidad de que ninguna clave honesta obtenga una plaza. |
+| `lottery-adaptive-grid` | ¿Con qué frecuencia pierde dinero un participante honesto cuando las comprobaciones son tan poco frecuentes como permite la cuadrícula? Una porción factible informa de la tasa de comprobación, las probabilidades de una pérdida y de ningún pago para un mes y un trimestre, y la carga de trabajo mensual esperada de los verificadores. Un punto inalcanzable significa que incluso la tasa más alta disponible da menos de 60 comprobaciones esperadas. |
+| `token-certificate-grid` | ¿Pueden las cotas de grupo certificar el token de mayor puntuación con menos multiplicaciones? Cada porción compara los ganadores de una matriz entera generada con semilla con un escaneo completo e informa de las multiplicaciones y las filas de pesos leídas, sumadas sobre los vectores de consulta. La relación verificación/completo es inferior a uno cuando hay ahorro y superior a uno cuando hay trabajo adicional. Excluye la construcción del índice y la búsqueda del ganador declarado. Las matrices son aleatorias, así que no se espera ningún ahorro (una primera ejecución encontró alrededor de 0.8% más de trabajo que un escaneo completo); estas 20 porciones son una línea base para ejecuciones posteriores sobre los pesos de un modelo real. |
 
 ## Proponer una tarea
 

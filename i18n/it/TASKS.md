@@ -1,4 +1,4 @@
-<!-- translation of tasks/README.md, source sha256: f0685cfe87baef739cff7ff9121f8ab2fd0aed86866b5638fd79dcdd347c1916 -->
+<!-- translation of tasks/README.md, source sha256: 761301bce18193a8aa61cf3fb87ae267379898b5e4164ffab7e23094d1ec08b5 -->
 
 # Compiti per gli agenti di ricerca
 
@@ -63,6 +63,19 @@ Sono calcoli sulle regole così come scritte nei documenti di progettazione. Non
 misurazioni dell'hardware né esperimenti con la rete. I compiti di misurazione (per
 esempio, se l'inferenza con aritmetica intera dà gli stessi bit su schede grafiche diverse) saranno
 pubblicati solo dopo che i responsabili del progetto apriranno gli esperimenti.
+
+## Quattro compiti nell'elenco 2
+
+Questi compiti richiedono la sequenza di rilascio 5 o successiva dell'agente. I nove compiti
+originali mantengono i loro ID così che il lavoro già in corso possa essere completato. Ogni nuova porzione restituisce
+frazioni esatte come stringhe decimali, ad esempio `3/10`.
+
+| Compito | Come leggere una porzione |
+|---|---|
+| `exit-campaign-b-grid` | Un partecipante dovrebbe incassare o rischiare il proprio saldo in sospeso sul lavoro falso? Ogni punto riporta il miglior guadagno atteso rispetto all'incasso, quanti falsi presentare prima (zero significa fermarsi) e se il guadagno è positivo. Confrontare le quote di collusione a parità di saldo, frequenza dei controlli, numero di verificatori, limite di ondate e orizzonte. |
+| `apprentice-seats-grid` | Quanto possono raccogliere le chiavi della coalizione da un insieme fisso di posti da apprendista? Ogni riga riporta il numero di chiavi della coalizione, le ricompense attese per un'epoca e per tutte le epoche, la quota onesta dei posti occupati e la probabilità che nessuna chiave onesta ottenga un posto. |
+| `lottery-adaptive-grid` | Quanto spesso un partecipante onesto perde denaro quando i controlli sono rari quanto la griglia consente? Una porzione realizzabile riporta la frequenza dei controlli, le probabilità di una perdita e di nessun pagamento per un mese e un trimestre, e il carico di lavoro mensile atteso dei verificatori. Un punto irraggiungibile significa che anche la frequenza più alta disponibile dà meno di 60 controlli attesi. |
+| `token-certificate-grid` | I limiti di gruppo possono certificare il token con il punteggio più alto con meno moltiplicazioni? Ogni porzione verifica i vincitori di una matrice di interi con seme rispetto a una scansione completa e riporta le moltiplicazioni e le righe di pesi lette, sommate sui vettori di query. Il rapporto verifica/scansione completa è inferiore a uno in caso di risparmio e superiore a uno in caso di lavoro extra. Esclude la costruzione dell'indice e la ricerca del vincitore dichiarato. Le matrici sono casuali, quindi non si prevede alcun risparmio (una prima esecuzione ha trovato circa lo 0.8% di lavoro in più rispetto a una scansione completa); queste 20 porzioni sono una linea di base per esecuzioni successive sui pesi di un modello reale. |
 
 ## Proporre un compito
 

@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: 3009fa9bba5e1d6570484a29bf8bf33e5e10c5ff34439f7dee55ff8c53171c7c -->
+<!-- translation of docs/ROADMAP.md, source sha256: abdb6f18f1052fd01d01bf76bcf63b29c7a9faf1b0d0e61d26d3803068d46b5c -->
 
 # Roteiro: defesa contra fraude
 
@@ -213,11 +213,13 @@ Já feito:
 
 **Passo 4. Linux**
 
-- [ ] O instalador usa o Python 3.9+ do sistema e, se não houver, baixa um Python portátil e confere sua
-      impressão digital.
-- [ ] Serviço de usuário do systemd com o consentimento do usuário; trabalhar sem entrar no sistema é
+- [x] O instalador usa o Python 3.9+ do sistema e, se não houver, instala um Python portátil e
+      confere sua impressão digital. Há também um instalador de um único arquivo sem rede (versão
+      v0.2.2).
+- [x] Serviço de usuário do systemd com o consentimento do usuário; trabalhar sem entrar no sistema é
       uma caixa de seleção à parte.
-- [ ] Verificação no Linux Mint, Ubuntu e Debian.
+- [x] Verificação no CI: Debian 12 sem Python e Ubuntu 24.04 com Python; instalação ao vivo no Linux Mint.
+- [ ] Verificação ao vivo com um participante sem vínculo com os mantenedores.
 
 **Passo 5. Atualização do Python embutido e dos invólucros**
 
@@ -227,11 +229,14 @@ Já feito:
 
 **Passo 6. Fluxo de tarefas**
 
-- [ ] Quatro novas tarefas de cálculo da etapa 2 (campanha de saída na variante B, vagas de aprendiz,
+- [x] Quatro novas tarefas de cálculo da etapa 2 (campanha de saída na variante B, vagas de aprendiz,
       loteria com parcela de verificação ajustada, certificado do token vencedor) — novos núcleos
-      embutidos; cada uma com uma porção de referência e impressão digital esperada.
-- [ ] O código dos núcleos é lançado antes da lista de tarefas que os exige. O agente antigo pula a
-      tarefa incompatível e continua o trabalho.
+      embutidos do agente 0.3.0, 515 porções na lista de tarefas nº 2. A matemática foi conferida de
+      forma independente por outro método em 111 pontos. O certificado em matrizes aleatórias não traz
+      economia (cerca de 0,8% de trabalho extra), por isso foram mantidas 20 porções como base de
+      comparação com os pesos do modelo real.
+- [x] As novas tarefas exigem o agente 0.3.0 ou superior; o agente antigo pula a tarefa incompatível
+      e continua o trabalho (verificado por teste).
 - [ ] Quando todas as tarefas estão calculadas, o agente espera e pega por conta própria a lista seguinte.
 - [ ] O coletor de resultados trabalha por agendamento no nó completo e publica um resumo.
 - [ ] Confirmação independente de todas as 702 porções da primeira lista. O segundo dispositivo (servidor

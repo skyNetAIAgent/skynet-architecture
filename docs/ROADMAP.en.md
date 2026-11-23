@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: 3009fa9bba5e1d6570484a29bf8bf33e5e10c5ff34439f7dee55ff8c53171c7c -->
+<!-- translation of docs/ROADMAP.md, source sha256: abdb6f18f1052fd01d01bf76bcf63b29c7a9faf1b0d0e61d26d3803068d46b5c -->
 
 # Roadmap: protection against cheating
 
@@ -202,11 +202,14 @@ Already done:
 
 **Step 4. Linux**
 
-- [ ] The installer uses the system Python 3.9+, and if there is none, downloads a portable Python
-      and checks its hash.
-- [ ] A systemd user service with the user's consent; running without logging in is a separate
+- [x] The installer uses the system Python 3.9+, and if there is none, installs a portable Python
+      and checks its hash. There is also a one-file installer that works without the network
+      (release v0.2.2).
+- [x] A systemd user service with the user's consent; running without logging in is a separate
       checkbox.
-- [ ] A check on Linux Mint, Ubuntu, and Debian.
+- [x] A check in CI: Debian 12 without Python and Ubuntu 24.04 with Python; a live installation
+      on Linux Mint.
+- [ ] A live check with a participant not connected with the maintainers.
 
 **Step 5. Updating the embedded Python and the wrappers**
 
@@ -216,11 +219,14 @@ Already done:
 
 **Step 6. Task flow**
 
-- [ ] Four new computational tasks of stage 2 (the exit campaign of Variant B, apprentice seats,
+- [x] Four new computational tasks of stage 2 (the exit campaign of Variant B, apprentice seats,
       a lottery with a chosen verification share, the winning-token certificate) — new built-in
-      kernels; each has a reference chunk with an expected hash.
-- [ ] The kernel code is released before the task list that requires it. An old agent skips an
-      incompatible task and keeps working.
+      kernels of agent 0.3.0, 515 chunks in task list No. 2. The mathematics was verified
+      independently by another method at 111 points. The certificate gives no savings on random
+      matrices (about 0.8% extra work), so 20 chunks were left as a basis for comparison with the
+      weights of the real model.
+- [x] New tasks require agent 0.3.0 and above; an old agent skips an incompatible task and keeps
+      working (verified by a test).
 - [ ] When all tasks are computed, the agent waits and picks up the next list by itself.
 - [ ] The result collector runs on a schedule on the full node and publishes a summary.
 - [ ] Independent confirmation of all 702 chunks of the first list. A second device (the

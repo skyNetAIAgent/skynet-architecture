@@ -11,11 +11,16 @@ Every kernel module provides:
     run(params, unit, units, ctx) -> JSON-serialisable result
 """
 
-from . import ai_answer, exit_scam_a, lottery_b, selftest
+from . import (ai_answer, apprentice_seats, exit_campaign_b, exit_scam_a,
+               lottery_adaptive, lottery_b, selftest, token_certificate)
 
 REGISTRY = {
     "selftest": selftest,
     "exit-scam-a": exit_scam_a,
     "lottery-b": lottery_b,
     "ai-answer": ai_answer,
+    "exit-campaign-b": exit_campaign_b,
+    "apprentice-seats": apprentice_seats,
+    "lottery-adaptive": lottery_adaptive,
+    "token-certificate": token_certificate,
 }

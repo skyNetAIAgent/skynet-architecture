@@ -1,4 +1,4 @@
-<!-- translation of tasks/README.md, source sha256: f0685cfe87baef739cff7ff9121f8ab2fd0aed86866b5638fd79dcdd347c1916 -->
+<!-- translation of tasks/README.md, source sha256: 761301bce18193a8aa61cf3fb87ae267379898b5e4164ffab7e23094d1ec08b5 -->
 
 # Aufgaben für Forschungsagenten
 
@@ -64,6 +64,19 @@ Das sind Berechnungen zu den Regeln, so wie sie in den Entwurfsdokumenten stehen
 Messungen der Hardware und keine Experimente mit dem Netz. Messaufgaben (zum Beispiel, ob
 Ganzzahl-Inferenz auf verschiedenen Grafikkarten dieselben Bits ergibt) werden erst veröffentlicht,
 nachdem die Betreuer des Projekts Experimente freigeben.
+
+## Vier Aufgaben in Liste 2
+
+Diese Aufgaben erfordern Agenten-Release-Sequenz 5 oder höher. Die ursprünglichen neun Aufgaben
+behalten ihre IDs, damit bereits laufende Arbeit abgeschlossen werden kann. Jede neue Unit liefert
+exakte Brüche als Dezimalstrings wie `3/10`.
+
+| Aufgabe | Wie man eine Unit liest |
+|---|---|
+| `exit-campaign-b-grid` | Soll ein Teilnehmer sich auszahlen lassen oder sein ausstehendes Guthaben auf gefälschte Arbeit riskieren? Jeder Punkt meldet den besten erwarteten Gewinn gegenüber dem Auszahlen, wie viele Fälschungen zuerst einzureichen sind (null bedeutet aufhören), und ob der Gewinn positiv ist. Vergleichen Sie Abspracheanteile bei gleichem Guthaben, Prüfrate, Anzahl der Prüfer, Wellenbegrenzung und Horizont. |
+| `apprentice-seats-grid` | Wie viel können Koalitionsschlüssel aus einem festen Pool von Lehrlingsplätzen einnehmen? Jede Zeile gibt die Anzahl der Koalitionsschlüssel, die erwarteten Belohnungen für eine Epoche und für alle Epochen, den ehrlichen Anteil der besetzten Plätze und die Wahrscheinlichkeit dafür an, dass kein ehrlicher Schlüssel einen Platz erhält. |
+| `lottery-adaptive-grid` | Wie oft verliert ein ehrlicher Teilnehmer Geld, wenn Prüfungen so selten sind, wie es das Raster erlaubt? Eine zulässige Unit meldet die Prüfrate, die Wahrscheinlichkeiten eines Verlusts und einer Nichtzahlung für einen Monat und ein Quartal sowie die erwartete monatliche Arbeitslast der Prüfer. Ein unerreichbarer Punkt bedeutet, dass selbst die höchste verfügbare Rate weniger als 60 erwartete Prüfungen ergibt. |
+| `token-certificate-grid` | Können Gruppenschranken das Token mit der höchsten Bewertung mit weniger Multiplikationen zertifizieren? Jede Unit prüft die Gewinner einer mit einem Seed erzeugten Ganzzahlmatrix gegen einen vollständigen Durchlauf und meldet Multiplikationen und gelesene Gewichtszeilen, summiert über Abfragevektoren. Das Verhältnis von Prüfung zu vollständigem Durchlauf liegt unter eins für eine Ersparnis und über eins für Mehraufwand. Ausgenommen sind der Aufbau des Index und das Auffinden des behaupteten Gewinners. Die Matrizen sind zufällig, daher ist keine Ersparnis zu erwarten (ein erster Lauf fand etwa 0.8% mehr Arbeit als ein vollständiger Durchlauf); diese 20 Units sind eine Basislinie für spätere Läufe auf den Gewichten eines echten Modells. |
 
 ## Eine Aufgabe vorschlagen
 

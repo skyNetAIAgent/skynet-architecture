@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: 3009fa9bba5e1d6570484a29bf8bf33e5e10c5ff34439f7dee55ff8c53171c7c -->
+<!-- translation of docs/ROADMAP.md, source sha256: abdb6f18f1052fd01d01bf76bcf63b29c7a9faf1b0d0e61d26d3803068d46b5c -->
 
 # Hoja de ruta: defensa contra el engaño
 
@@ -214,11 +214,12 @@ Ya hecho:
 
 **Paso 4. Linux**
 
-- [ ] El instalador usa el Python 3.9+ del sistema y, si no lo hay, descarga un Python portátil
-      y comprueba su hash.
-- [ ] Servicio de usuario systemd con el consentimiento del usuario; el funcionamiento sin iniciar
+- [x] El instalador usa el Python 3.9+ del sistema y, si no lo hay, instala un Python portátil
+      y comprueba su hash. También hay un instalador de un solo archivo sin red (versión v0.2.2).
+- [x] Servicio de usuario systemd con el consentimiento del usuario; el funcionamiento sin iniciar
       sesión es una casilla aparte.
-- [ ] Comprobación en Linux Mint, Ubuntu y Debian.
+- [x] Comprobación en CI: Debian 12 sin Python y Ubuntu 24.04 con Python; instalación en vivo en Linux Mint.
+- [ ] Comprobación en vivo en un participante no vinculado a los mantenedores.
 
 **Paso 5. Actualización del Python integrado y de los envoltorios**
 
@@ -228,18 +229,21 @@ Ya hecho:
 
 **Paso 6. Flujo de tareas**
 
-- [ ] Cuatro tareas de cálculo nuevas de la etapa 2 (campaña de salida de la variante B, plazas de
+- [x] Cuatro tareas de cálculo nuevas de la etapa 2 (campaña de salida de la variante B, plazas de
       aprendiz, lotería con proporción de verificación ajustada, certificado del token ganador):
-      núcleos integrados nuevos; cada una tiene una porción de referencia con el hash esperado.
-- [ ] El código de los núcleos se publica antes que la lista de tareas que los exige. El agente
-      antiguo se salta la tarea incompatible y sigue trabajando.
+      nuevos núcleos integrados del agente 0.3.0, 515 porciones en la lista de tareas n.º 2.
+      La matemática se verificó de forma independiente con otro método en 111 puntos. El certificado
+      sobre matrices aleatorias no aporta ahorro (alrededor del 0,8% de trabajo adicional), por lo
+      que se dejaron 20 porciones como base para comparar con los pesos del modelo real.
+- [x] Las tareas nuevas requieren el agente 0.3.0 o superior; el agente antiguo se salta la tarea
+      incompatible y sigue trabajando (comprobado con una prueba).
 - [ ] Cuando todas las tareas están calculadas, el agente espera y toma por sí mismo la lista
       siguiente.
 - [ ] El recolector de resultados funciona según un horario en el nodo completo y publica un
       resumen.
-- [ ] Confirmación independiente de las 702 porciones de la primera lista de tareas. Un segundo dispositivo (el servidor
-      de los mantenedores) recalculó las 702 y todas coincidieron; todavía no hay un participante no vinculado
-      a los mantenedores.
+- [ ] Confirmación independiente de las 702 porciones de la primera lista. Un segundo dispositivo
+      (el servidor de los mantenedores) recalculó las 702 y todas coincidieron; todavía no hay un
+      participante no vinculado a los mantenedores.
 
 **Paso 7. Piloto con otras personas**
 

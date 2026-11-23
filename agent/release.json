@@ -5,7 +5,7 @@
    "size": 5965
   },
   "skynet_agent/__init__.py": {
-   "sha256": "1e7de839a428d950edd2763c61ba64d5f86ed7e3adb0ee0d233b60fec32624f8",
+   "sha256": "703c187f6a2ed26f2b30af7717a8a311e75fae29ca3c98151acb1b36b49fdca5",
    "size": 1373
   },
   "skynet_agent/__main__.py": {
@@ -37,16 +37,32 @@
    "size": 4278
   },
   "skynet_agent/kernels/__init__.py": {
-   "sha256": "913d63fa9a85bc00b1de43d6dee61b683f4aa429b8980d8b5839da5fb849c6bc",
-   "size": 770
+   "sha256": "d9ee0acfe9a1351125baa557a9d9f134fcdc28074b66f3e1ab3dad2f74fa5d6c",
+   "size": 1027
+  },
+  "skynet_agent/kernels/_grid.py": {
+   "sha256": "3c59a47e9b465cbd5a6abfb05cab1b5d76013fd3057ae6fd28aeb8c5b3202868",
+   "size": 1985
   },
   "skynet_agent/kernels/ai_answer.py": {
    "sha256": "f402704f7c7de68e99e2b1df9cbe3a8059b579d215f8d0d1bbc080d4c92da7cf",
    "size": 9249
   },
+  "skynet_agent/kernels/apprentice_seats.py": {
+   "sha256": "cd7689a9d0b5578ef247b25b3122ad87bf229fbad907f070dcedf2aea7fc7d42",
+   "size": 2594
+  },
+  "skynet_agent/kernels/exit_campaign_b.py": {
+   "sha256": "422970e956ac76229c977f61c659b3f4ab7dff4add5887293ac27b25cef346fa",
+   "size": 2700
+  },
   "skynet_agent/kernels/exit_scam_a.py": {
    "sha256": "9691274a75ca9d798b1cbb131e78f97a3516a4089894e8b9f784df5ac0a496f5",
    "size": 17403
+  },
+  "skynet_agent/kernels/lottery_adaptive.py": {
+   "sha256": "bb54fcdf8a84baccf59a364fe8d6c9f934778941c7bb8e6a5904baa6eebd9abc",
+   "size": 2284
   },
   "skynet_agent/kernels/lottery_b.py": {
    "sha256": "8c6593c950bc91b77a52319a0230bd3ed5e35eabf359a65ebd174bd1a0681b8d",
@@ -55,6 +71,10 @@
   "skynet_agent/kernels/selftest.py": {
    "sha256": "04709a53090b9d783593a38b057915ba71ae48fb9f3734a3ac477cce9b41a517",
    "size": 2970
+  },
+  "skynet_agent/kernels/token_certificate.py": {
+   "sha256": "2f295e56650025f26d76499225babc401ed5a39bd30f91dc0052c1a92ac44733",
+   "size": 4783
   },
   "skynet_agent/net.py": {
    "sha256": "3bdf123e18d2616c66e96aa46a5afec56c90d70d311c902146c3474d691eeda3",
@@ -111,6 +131,6 @@
   3,
   9
  ],
- "seq": 4,
- "version": "0.2.2"
+ "seq": 5,
+ "version": "0.3.0"
 }

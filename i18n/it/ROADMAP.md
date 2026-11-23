@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: 3009fa9bba5e1d6570484a29bf8bf33e5e10c5ff34439f7dee55ff8c53171c7c -->
+<!-- translation of docs/ROADMAP.md, source sha256: abdb6f18f1052fd01d01bf76bcf63b29c7a9faf1b0d0e61d26d3803068d46b5c -->
 
 # Tabella di marcia: difesa dall'inganno
 
@@ -224,11 +224,12 @@ Già fatto:
 
 **Passo 4. Linux**
 
-- [ ] L'installatore usa il Python di sistema 3.9+ e, se non c'è, scarica un Python portatile e ne
-      verifica l'hash.
-- [ ] Servizio utente systemd con il consenso dell'utente; il lavoro senza accesso al sistema è una
+- [x] L'installatore usa il Python di sistema 3.9+ e, se non c'è, installa un Python portatile e ne
+      verifica l'hash. C'è anche un installatore in un solo file senza rete (versione v0.2.2).
+- [x] Servizio utente systemd con il consenso dell'utente; il lavoro senza accesso al sistema è una
       casella separata.
-- [ ] Verifica su Linux Mint, Ubuntu e Debian.
+- [x] Verifica in CI: Debian 12 senza Python e Ubuntu 24.04 con Python; installazione dal vivo su Linux Mint.
+- [ ] Verifica dal vivo presso un partecipante non legato ai manutentori.
 
 **Passo 5. Aggiornamento del Python incorporato e delle shell**
 
@@ -237,11 +238,14 @@ Già fatto:
 
 **Passo 6. Flusso dei compiti**
 
-- [ ] Quattro nuovi compiti di calcolo della fase 2 (campagna di uscita della variante B, posti da
+- [x] Quattro nuovi compiti di calcolo della fase 2 (campagna di uscita della variante B, posti da
       apprendista, lotteria con quota di verifica scelta, certificato del token vincente) — nuovi
-      nuclei incorporati; ognuno ha una porzione di riferimento con l'hash atteso.
-- [ ] Il codice dei nuclei viene rilasciato prima dell'elenco di compiti che li richiede. Il vecchio
-      agente salta il compito incompatibile e continua a lavorare.
+      nuclei incorporati dell'agente 0.3.0, 515 porzioni nell'elenco dei compiti n. 2. La matematica è
+      stata verificata in modo indipendente con un altro metodo in 111 punti. Il certificato su matrici
+      casuali non dà risparmio (circa lo 0,8% di lavoro in più), perciò sono state lasciate 20 porzioni
+      come base per il confronto con i pesi del modello reale.
+- [x] I nuovi compiti richiedono l'agente 0.3.0 o superiore; il vecchio agente salta il compito
+      incompatibile e continua a lavorare (verificato con un test).
 - [ ] Quando tutti i compiti sono calcolati, l'agente aspetta e prende da solo l'elenco successivo.
 - [ ] Il raccoglitore dei risultati lavora secondo un programma sul nodo completo e pubblica un
       riepilogo.

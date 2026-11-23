@@ -1,4 +1,4 @@
-<!-- translation of tasks/README.md, source sha256: f0685cfe87baef739cff7ff9121f8ab2fd0aed86866b5638fd79dcdd347c1916 -->
+<!-- translation of tasks/README.md, source sha256: 761301bce18193a8aa61cf3fb87ae267379898b5e4164ffab7e23094d1ec08b5 -->
 
 # Tarefas para agentes de pesquisa
 
@@ -65,6 +65,19 @@ São cálculos sobre as regras como escritas nos documentos de projeto. Não sã
 hardware nem experimentos com a rede. As tarefas de medição (por exemplo, se a inferência
 inteira dá os mesmos bits em placas de vídeo diferentes) só serão publicadas depois que os
 mantenedores do projeto abrirem experimentos.
+
+## Quatro tarefas na lista 2
+
+Estas tarefas exigem a sequência de lançamentos 5 ou posterior do agente. As nove tarefas
+originais mantêm seus IDs para que o trabalho já em andamento possa terminar. Cada nova
+porção retorna frações exatas como strings decimais, por exemplo `3/10`.
+
+| Tarefa | Como ler uma porção |
+|---|---|
+| `exit-campaign-b-grid` | Um participante deve sacar ou arriscar seu saldo pendente em trabalho falso? Cada ponto relata o melhor ganho esperado em comparação com sacar, quantos resultados falsos enviar primeiro (zero significa parar) e se o ganho é positivo. Compare parcelas de conluio com o mesmo saldo, taxa de verificação, número de verificadores, limite de ondas e horizonte. |
+| `apprentice-seats-grid` | Quanto as chaves de uma coalizão podem receber de um conjunto fixo de vagas de aprendiz? Cada linha traz a contagem de chaves da coalizão, as recompensas esperadas para uma época e para todas as épocas, a parcela honesta das vagas preenchidas e a probabilidade de nenhuma chave honesta conseguir uma vaga. |
+| `lottery-adaptive-grid` | Com que frequência um participante honesto perde dinheiro quando as verificações são tão pouco frequentes quanto a grade permite? Uma porção viável relata a taxa de verificação, as probabilidades de prejuízo e de ausência de pagamento para um mês e para um trimestre, e a carga de trabalho mensal esperada dos verificadores. Um ponto inalcançável significa que mesmo a maior taxa disponível resulta em menos de 60 verificações esperadas. |
+| `token-certificate-grid` | Os limites de grupo podem certificar o token de maior pontuação com menos multiplicações? Cada porção confere os vencedores de uma matriz de inteiros gerada por semente contra uma varredura completa e relata multiplicações e linhas de pesos lidas, somadas ao longo dos vetores de consulta. A razão verificação/varredura completa é menor que um quando há economia e maior que um quando há trabalho extra. Ela exclui a construção do índice e a localização do vencedor declarado. As matrizes são aleatórias, então não se espera economia (uma primeira execução encontrou cerca de 0.8% mais trabalho que uma varredura completa); estas 20 porções são uma linha de base para execuções posteriores sobre os pesos de um modelo real. |
 
 ## Propor uma tarefa
 

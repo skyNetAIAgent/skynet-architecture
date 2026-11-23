@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: 3009fa9bba5e1d6570484a29bf8bf33e5e10c5ff34439f7dee55ff8c53171c7c -->
+<!-- translation of docs/ROADMAP.md, source sha256: abdb6f18f1052fd01d01bf76bcf63b29c7a9faf1b0d0e61d26d3803068d46b5c -->
 
 # Roadmap: Schutz vor Betrug
 
@@ -233,11 +233,13 @@ Bereits erledigt:
 
 **Schritt 4. Linux**
 
-- [ ] Der Installer nutzt das systemweite Python 3.9+, und wenn es fehlt, lädt er ein portables
-      Python herunter und prüft dessen Hash.
-- [ ] Ein systemd-Benutzerdienst mit Einverständnis des Nutzers; Arbeit ohne Anmeldung ist ein
+- [x] Der Installer nutzt das systemweite Python 3.9+, und wenn es fehlt, installiert er ein portables
+      Python und prüft dessen Hash. Es gibt auch einen Installer als eine Datei, der ohne Netz
+      funktioniert (Release v0.2.2).
+- [x] Ein systemd-Benutzerdienst mit Einverständnis des Nutzers; Arbeit ohne Anmeldung ist ein
       gesondertes Häkchen.
-- [ ] Prüfung auf Linux Mint, Ubuntu und Debian.
+- [x] Prüfung in CI: Debian 12 ohne Python und Ubuntu 24.04 mit Python; Live-Installation auf Linux Mint.
+- [ ] Live-Prüfung bei einem Teilnehmer, der nicht mit den Betreuern verbunden ist.
 
 **Schritt 5. Aktualisierung des eingebetteten Python und der Shells**
 
@@ -247,11 +249,14 @@ Bereits erledigt:
 
 **Schritt 6. Aufgabenstrom**
 
-- [ ] Vier neue Rechenaufgaben der Phase 2 (Ausstiegskampagne in Variante B, Lehrlingsplätze,
+- [x] Vier neue Rechenaufgaben der Phase 2 (Ausstiegskampagne in Variante B, Lehrlingsplätze,
       Lotterie mit gewähltem Prüfanteil, Zertifikat des gewinnenden Tokens) — neue eingebaute
-      Kerne; jede mit einer Referenzportion mit erwartetem Hash.
-- [ ] Der Code der Kerne wird vor der Aufgabenliste veröffentlicht, die sie benötigt. Der alte
-      Agent überspringt eine inkompatible Aufgabe und arbeitet weiter.
+      Kerne des Agenten 0.3.0, 515 Portionen in der Aufgabenliste Nr. 2. Die Mathematik wurde
+      unabhängig mit einer anderen Methode an 111 Punkten nachgeprüft. Das Zertifikat bringt bei
+      zufälligen Matrizen keine Ersparnis (etwa 0,8% zusätzliche Arbeit), deshalb sind 20 Portionen
+      als Grundlage für den Vergleich mit den Gewichten des echten Modells belassen.
+- [x] Neue Aufgaben erfordern den Agenten 0.3.0 und höher; ein alter Agent überspringt eine
+      inkompatible Aufgabe und arbeitet weiter (durch einen Test geprüft).
 - [ ] Wenn alle Aufgaben gerechnet sind, wartet der Agent und nimmt selbst die nächste Liste auf.
 - [ ] Der Ergebnissammler arbeitet nach Zeitplan auf dem vollständigen Knoten und veröffentlicht
       eine Übersicht.
