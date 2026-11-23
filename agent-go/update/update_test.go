@@ -155,3 +155,40 @@ func TestRedirectAndLock(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+// An older Python launcher imports the compat adapter without -B: the bytecode it
+// leaves in the version folder must not make the signed tree look tampered with.
+func TestCompatBytecodeIsRemoved(t *testing.T) {
+	dir := t.TempDir()
+	files := map[string]File{}
+	for name, data := range adapters {
+		p := filepath.Join(dir, filepath.FromSlash(name))
+		if err := os.MkdirAll(filepath.Dir(p), 0700); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(p, data, 0600); err != nil {
+			t.Fatal(err)
+		}
+		files[name] = File{int64(len(data)), digest(data)}
+	}
+	cache := filepath.Join(dir, "skynet_agent", "__pycache__")
+	if err := os.MkdirAll(cache, 0700); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(cache, "cli.cpython-312.pyc"), []byte("x"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if err := checkedTree(dir, files); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := os.Stat(cache); !os.IsNotExist(err) {
+		t.Fatal("bytecode folder kept", err)
+	}
+	// Anything else that is not signed is still refused.
+	if err := os.WriteFile(filepath.Join(dir, "skynet_agent", "planted.py"), []byte("x"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if err := checkedTree(dir, files); err == nil {
+		t.Fatal("accepted an unsigned file")
+	}
+}

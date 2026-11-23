@@ -41,6 +41,14 @@ func checkedTree(dir string, files map[string]File) error {
 			return err
 		}
 		name := filepath.ToSlash(rel)
+		if name == "skynet_agent/__pycache__" && de.IsDir() && de.Type()&fs.ModeSymlink == 0 {
+			// An older Python launcher imports the compat adapter without -B and
+			// leaves bytecode here. It is regenerated and never run by Go: remove it.
+			if err := os.RemoveAll(p); err != nil {
+				return err
+			}
+			return filepath.SkipDir
+		}
 		if de.IsDir() && dirs[name] {
 			return directory(p)
 		}
