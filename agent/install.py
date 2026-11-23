@@ -16,6 +16,8 @@ import hashlib
 import json
 import os
 import re
+import runpy
+import shlex
 import shutil
 import stat
 import subprocess
@@ -436,7 +438,7 @@ def is_termux():
     return "TERMUX_VERSION" in os.environ or os.environ.get("PREFIX", "").startswith("/data/data/com.termux")
 
 
-def write_shim(home, bin_dir=None):
+def write_shim(home, bin_dir=None, uninstaller=None):
     """Create a small start script. Returns (path, hint for the user)."""
     launcher = os.path.join(home, "launcher.py")
     if os.name == "nt":
@@ -459,9 +461,15 @@ def write_shim(home, bin_dir=None):
         bin_dir = os.path.join(os.path.expanduser("~"), ".local", "bin")
     os.makedirs(bin_dir, exist_ok=True)
     shim = os.path.join(bin_dir, "skynet-agent")
-    with open(shim, "w", encoding="utf-8", newline="\n") as f:
-        f.write('#!/bin/sh\nexec "%s" "%s" "$@"\n' % (sys.executable, launcher))
-    os.chmod(shim, 0o755)
+    py = shlex.quote(sys.executable)
+    with tempfile.NamedTemporaryFile(mode="w", dir=bin_dir, delete=False, encoding="utf-8", newline="\n") as f:
+        f.write("#!/bin/sh\n")
+        if uninstaller:
+            f.write('if [ "${1:-}" = uninstall ]; then\n    shift\n')
+            f.write('    exec %s -I %s "$0" "$@"\nfi\n' % (py, shlex.quote(uninstaller)))
+        f.write('exec %s -I %s "$@"\n' % (py, shlex.quote(launcher)))
+    os.chmod(f.name, 0o755)
+    os.replace(f.name, shim)
     on_path = bin_dir in os.environ.get("PATH", "").split(os.pathsep)
     hint = "Run it as:  skynet-agent status"
     if not on_path:
@@ -561,10 +569,19 @@ def main(argv=None):
     parser.add_argument("--keep-newer", action="store_true", help="keep a newer active release and refresh its shim")
     parser.add_argument("--bin-dir", help="folder for the skynet-agent start script")
     parser.add_argument("--no-shim", action="store_true", help="do not create a start script")
+    parser.add_argument("--linux-setup", action="store_true", help=argparse.SUPPRESS)
+    startup = parser.add_mutually_exclusive_group()
+    startup.add_argument("--autostart", dest="autostart", action="store_true", default=None)
+    startup.add_argument("--no-autostart", dest="autostart", action="store_false")
+    parser.add_argument("--linger", action="store_true", help="allow the Linux user service to run before login")
     parser.add_argument("--allow-local-http", action="store_true", help="allow HTTP on loopback for tests")
     parser.add_argument("--test-release-key", help="test public key for a development installer with empty pins")
     parser.add_argument("--allow-downgrade", action="store_true", help="allow a release below the local maximum")
     args = parser.parse_args(argv)
+    if args.linger and args.autostart is False:
+        parser.error("--linger conflicts with --no-autostart")
+    if (args.linger or args.autostart is not None) and not args.linux_setup:
+        parser.error("use install.sh for Linux autostart options")
     if sys.version_info[:2] < MIN_PYTHON:
         print("Python %d.%d or newer is needed; this is %d.%d." % (MIN_PYTHON + tuple(sys.version_info[:2])))
         return 1
@@ -581,15 +598,25 @@ def main(argv=None):
             if not args.keep_newer:
                 raise
             message = "Keeping the installed release: %s" % e
+        uninstaller = None
+        if args.linux_setup:
+            uninstaller = os.path.join(home, "uninstall.py")
+            helper = os.path.join(os.path.dirname(__file__), "linux_setup.py")
+            with tempfile.NamedTemporaryFile(dir=home, delete=False) as f:
+                with open(helper, "rb") as source_file:
+                    shutil.copyfileobj(source_file, f)
+            os.replace(f.name, uninstaller)
         if args.no_shim:
             hint = 'Run it as:  "%s" "%s" status' % (sys.executable, os.path.join(home, "launcher.py"))
         else:
-            _, hint = write_shim(home, args.bin_dir)
+            _, hint = write_shim(home, args.bin_dir, uninstaller)
     except (InstallError, OSError, subprocess.SubprocessError) as e:
         print("Installation failed: %s" % e)
         return 1
     print(message)
     print(hint)
+    if args.linux_setup:
+        return runpy.run_path(uninstaller)["configure"](home, args.autostart, args.linger)
     print("")
     print("Next steps:")
     print("  1. skynet-agent selftest --online    check that everything works")

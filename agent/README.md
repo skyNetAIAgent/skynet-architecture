@@ -29,8 +29,8 @@ results are compared. See [tasks/README.md](../tasks/README.md).
 
 ## Requirements
 
-- The Windows x64 installer includes Python. Other methods require Python 3.9 or newer.
-- A few megabytes of disk space and an Internet connection.
+- The Windows x64 installer includes Python. Linux uses Python 3.9+ from your system or a verified portable runtime on glibc x86_64 and aarch64. The current Linux runtime checksums are pending, so this build needs system Python. Other platforms need Python 3.9+.
+- An Internet connection to receive tasks and publish results. The single-file Linux installer works offline.
 
 ## Install
 
@@ -43,7 +43,17 @@ results are compared. See [tasks/README.md](../tasks/README.md).
 irm https://raw.githubusercontent.com/skyNetAIAgent/skynet-architecture/main/agent/install.ps1 | iex
 ```
 
-**Linux and macOS** (terminal):
+**Linux**
+
+Download `skynet-agent-install.sh` from the project's [Releases](https://github.com/skyNetAIAgent/skynet-architecture/releases) and run `sh skynet-agent-install.sh`. To install directly from the repository, run:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/skyNetAIAgent/skynet-architecture/main/agent/install.sh | sh
+```
+
+At the first prompt, press Enter to run the agent now and at sign-in using your systemd user service. The second prompt offers to run it from boot, even before you sign in. For unattended setup, use `--autostart`, `--autostart --linger`, or `--no-autostart`. If your shell cannot find `skynet-agent`, use `~/.local/bin/skynet-agent`. See the [Linux installer guide](../installer/linux/README.md).
+
+**macOS** (terminal):
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/skyNetAIAgent/skynet-architecture/main/agent/install.sh | sh
@@ -67,7 +77,7 @@ If you prefer to read before you run: download
 
 The installer puts the agent into one folder (`%LOCALAPPDATA%\SkyNetAgent` on Windows,
 `~/Library/Application Support/SkyNetAgent` on macOS, `~/.local/share/skynet-agent` on Linux
-and Android) and creates a `skynet-agent` command. With the command-line installers, start the agent yourself.
+and Android) and creates a `skynet-agent` command. Use `skynet-agent run` to start it manually.
 
 ## First steps
 
@@ -118,7 +128,7 @@ A published result looks like this and contains nothing else:
 | `skynet-agent update` | Install the newest signed version now |
 | `skynet-agent selftest [--online]` | Check the device, the installed files and the signatures |
 | `skynet-agent autostart enable` / `disable` | Start at login, or not |
-| `skynet-agent uninstall --yes` | Turn autostart off and stop; then delete the agent folder |
+| `skynet-agent uninstall --yes` | Turn autostart off and stop the agent. The Linux shell installation also removes its program files |
 
 ## Settings
 
@@ -204,7 +214,7 @@ checkbox to remove them as well. For a command-line installation, run the follow
 skynet-agent uninstall --yes
 ```
 
-Then delete the agent folder. Nothing else was changed on your computer.
+The Linux shell installer keeps the device key, settings and saved results. To delete those too, use `skynet-agent uninstall --yes --purge` when uninstalling. For other command-line installations, delete the agent folder after the command exits.
 
 ## Troubleshooting
 

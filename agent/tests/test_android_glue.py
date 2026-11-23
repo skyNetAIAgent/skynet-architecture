@@ -149,7 +149,7 @@ class AndroidGlue(unittest.TestCase):
     def test_files_not_in_the_signed_release_are_found(self):
         vdir = os.path.join(self.tmp, "vcheck")
         shutil.copytree(os.path.join(self.repo, "agent"), vdir,
-                        ignore=shutil.ignore_patterns("install.*", "README.md", "LICENSE", "__pycache__"))
+                        ignore=shutil.ignore_patterns("install.*", "linux_setup.py", "README.md", "LICENSE", "__pycache__"))
         self.assertEqual(updater.verify_installed(vdir, keys=[helpers.TEST_PUBLIC_HEX]), [])
         with open(os.path.join(vdir, "skynet_agent", "json.py"), "w") as f:        # a planted module
             f.write("raise SystemExit\n")

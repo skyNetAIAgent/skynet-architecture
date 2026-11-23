@@ -57,7 +57,7 @@ chaquopy {
         main {
             // The same agent code as on a computer; nothing but the package itself.
             srcDir '../../agent'
-            exclude 'tests/**', 'install.*', 'launcher.py', 'README.md', 'LICENSE', 'release.json*'
+            exclude 'tests/**', 'install.*', 'linux_setup.py', 'launcher.py', 'README.md', 'LICENSE', 'release.json*'
         }
     }
 }
