@@ -1,0 +1,25 @@
+{
+  "ai": {
+    "allow_remote": false,
+    "enabled": false,
+    "endpoint": "",
+    "extra": "preserve",
+    "model": "",
+    "review_before_submit": true,
+    "timeout_minutes": 30
+  },
+  "batch_minutes": 60,
+  "extra": {
+    "big": 1180591620717411303424
+  },
+  "max_submissions_per_day": 48,
+  "max_task_minutes": 120,
+  "paused": false,
+  "poll_minutes": 30,
+  "report_platform": true,
+  "run_on_battery": true,
+  "submit": "manual",
+  "submit_via": "net",
+  "update": "auto",
+  "workers": 1
+}

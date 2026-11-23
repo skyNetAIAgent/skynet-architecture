@@ -1,6 +1,5 @@
 plugins {
     id 'com.android.application'
-    id 'com.chaquo.python'
 }
 
 android {
@@ -11,11 +10,17 @@ android {
         applicationId 'org.skynet.agent'
         minSdk 24
         targetSdk 34
-        versionCode 2
-        versionName '0.2.0'
+        versionCode 3
+        versionName '0.3.0'
         ndk {
-            // 64-bit phones and tablets, and 64-bit emulators
             abiFilters 'arm64-v8a', 'x86_64'
+        }
+    }
+
+    packaging {
+        jniLibs {
+            useLegacyPackaging = true
+            keepDebugSymbols += ['**/libskynet.so']
         }
     }
 
@@ -35,29 +40,14 @@ dependencies {
     implementation 'androidx.core:core:1.13.1'
 }
 
-// A release APK whose agent trusts no release key would accept no task and no update.
-// Stop such a build unless it is asked for on purpose (-PallowNoReleaseKey, for test builds).
-tasks.configureEach { t ->
-    if (t.name == 'preReleaseBuild') {
-        t.doFirst {
-            def trust = file('../../agent/skynet_agent/trust.py').text
-            if (trust =~ /(?m)^RELEASE_KEYS = \[\]\s*$/ && !project.hasProperty('allowNoReleaseKey')) {
-                throw new GradleException('agent/skynet_agent/trust.py lists no release key: ' +
-                        'run tools/make_release.py --set-trust first (or pass -PallowNoReleaseKey for a test build)')
-            }
-        }
-    }
+def buildGoAgent = tasks.register('buildGoAgent', Exec) {
+    workingDir rootDir
+    commandLine 'bash', 'build-go.sh'
+    inputs.file rootProject.file('build-go.sh')
+    inputs.dir rootProject.file('../agent-go')
+    outputs.files(['arm64-v8a', 'x86_64'].collect {
+        file("src/main/jniLibs/${it}/libskynet.so")
+    })
 }
 
-chaquopy {
-    defaultConfig {
-        version '3.12'
-    }
-    sourceSets {
-        main {
-            // The same agent code as on a computer; nothing but the package itself.
-            srcDir '../../agent'
-            exclude 'tests/**', 'install.*', 'linux_setup.py', 'launcher.py', 'README.md', 'LICENSE', 'release.json*'
-        }
-    }
-}
+tasks.named('preBuild').configure { dependsOn buildGoAgent }

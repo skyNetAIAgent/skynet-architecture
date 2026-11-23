@@ -117,6 +117,7 @@ def _poll(args, cfg, state, current_index):
         res = updater.check_and_apply(config.home(), base, mode)
         halt = res.halt
         state["halt"], state["halt_seq"] = halt, RELEASE_SEQ
+        state["halt_through"] = getattr(res, "through", 0)
         if res.installed:
             log.info("installed version %s (release %d); restarting", res.available[1], res.available[0])
             restart = True
@@ -210,7 +211,7 @@ def _run_loop(args):
     executor = ThreadPoolExecutor(max_workers=256)
     futures = {}                      # future -> (task, unit)
     index = coverage = None
-    halt = state["halt"] if state["halt_seq"] == RELEASE_SEQ else ""
+    halt = state["halt"] if (state["halt_seq"] == RELEASE_SEQ or state.get("halt_through", 0) >= RELEASE_SEQ) else ""
     restart = False
     next_poll = 0.0
     finished = 0
@@ -593,7 +594,7 @@ def cmd_update(args):
     forced = dict(cfg)
     forced["update"] = "auto"
     try:
-        res = updater.check_and_apply(config.home(), updater.base_url(), forced, allow_downgrade=args.allow_downgrade)
+        res = updater.check_and_apply(config.home(), updater.base_url(), forced, manual=True)
     except (net.NetError, signed.SignatureError, updater.ReleaseError, OSError) as e:
         say("Update check failed: %s" % e)
         return 1
@@ -732,7 +733,6 @@ def build_parser():
     p.set_defaults(func=cmd_selftest)
 
     p = sub.add_parser("update", help="install the newest signed version now")
-    p.add_argument("--allow-downgrade", action="store_true", help="allow a release below the local maximum")
     p.set_defaults(func=cmd_update)
 
     p = sub.add_parser("pause", help="stop taking new tasks")

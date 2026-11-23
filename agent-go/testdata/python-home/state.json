@@ -1,0 +1,76 @@
+{
+  "counters": {
+    "published": 0,
+    "units_done": 1,
+    "units_failed": 0
+  },
+  "done": {
+    "old-task": [
+      0
+    ]
+  },
+  "extra": "saved",
+  "fails": {},
+  "halt": "",
+  "halt_seq": 0,
+  "index_seq": 2,
+  "last_error": "",
+  "last_poll": 0,
+  "last_post": {},
+  "poll_error": "",
+  "poll_failures": 0,
+  "publish_after": 0,
+  "publish_fails": 0,
+  "retry_at": 0,
+  "skip": {
+    "apprentice-seats-grid": {
+      "reason": "fixture",
+      "until": 4102444800
+    },
+    "ask-variant-b-attack": {
+      "reason": "fixture",
+      "until": 4102444800
+    },
+    "exit-a-honest-check": {
+      "reason": "fixture",
+      "until": 4102444800
+    },
+    "exit-a-sizes-cap": {
+      "reason": "fixture",
+      "until": 4102444800
+    },
+    "exit-a-sizes-nocap": {
+      "reason": "fixture",
+      "until": 4102444800
+    },
+    "exit-a-uniform-cap-h399": {
+      "reason": "fixture",
+      "until": 4102444800
+    },
+    "exit-a-uniform-h1200": {
+      "reason": "fixture",
+      "until": 4102444800
+    },
+    "exit-a-uniform-h399": {
+      "reason": "fixture",
+      "until": 4102444800
+    },
+    "exit-campaign-b-grid": {
+      "reason": "fixture",
+      "until": 4102444800
+    },
+    "lottery-adaptive-grid": {
+      "reason": "fixture",
+      "until": 4102444800
+    },
+    "lottery-b-table": {
+      "reason": "fixture",
+      "until": 4102444800
+    },
+    "token-certificate-grid": {
+      "reason": "fixture",
+      "until": 4102444800
+    }
+  },
+  "submitted": []
+}

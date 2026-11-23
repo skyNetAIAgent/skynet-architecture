@@ -1,95 +1,90 @@
 #!/bin/sh
-# Install the SkyNet research agent in the current user's profile.
+# The network bootstrap trusts this script and the release key embedded here.
 set -eu
-
-base=${SKYNET_AGENT_BASE_URL:-https://raw.githubusercontent.com/skyNetAIAgent/skynet-architecture/main}
-base=${base%/}
-py=
-tmp=$(mktemp -d "${TMPDIR:-/tmp}/skynet-install.XXXXXXXX")
-stage=
-trap 'rm -rf "$tmp"; if [ -n "$stage" ]; then rm -rf "$stage"; fi' 0
-trap 'exit 1' HUP INT TERM
-
+umask 077
 die() { echo "$*" >&2; exit 1; }
-
-download() {
-    if command -v curl >/dev/null 2>&1; then
-        curl -fsSL "$1" -o "$2"
-    elif command -v wget >/dev/null 2>&1; then
-        wget -q -O "$2" "$1"
-    elif [ -n "$py" ]; then
-        "$py" -I -c 'import sys, urllib.request; urllib.request.urlretrieve(*sys.argv[1:])' "$1" "$2"
-    else
-        die "Install curl or wget and rerun setup."
-    fi
-}
+[ "$(uname -s)" = Linux ] && [ -z "${TERMUX_VERSION:-}" ] || die "Use the Python installer for this platform."
+case $(uname -m) in
+    x86_64) arch=amd64 ;;
+    aarch64|arm64) arch=arm64 ;;
+    armv7l) arch=arm ;;
+    *) die "No Go target for this architecture." ;;
+esac
+home=${SKYNET_AGENT_HOME:-${XDG_DATA_HOME:-$HOME/.local/share}/skynet-agent}
+startup=keep
+linger=no
+while [ "$#" -gt 0 ]; do
+    case $1 in
+        --home) shift; home=${1:?missing home} ;;
+        --home=*) home=${1#*=} ;;
+        --autostart) startup=enable ;;
+        --no-autostart) startup=disable ;;
+        --linger) linger=yes; startup=enable ;;
+        *) die "Unknown option $1" ;;
+    esac
+    shift
+done
+[ -n "$home" ] || die "Missing home"
+tmp=$(mktemp -d "${TMPDIR:-/tmp}/skynet-install.XXXXXXXX")
+trap 'rm -rf "$tmp"' EXIT
+trap 'exit 1' HUP INT TERM
 
 # build.py inserts the offline payload here.
 
-linux=no
-if [ "$(uname -s)" = Linux ] && [ -z "${TERMUX_VERSION:-}" ]; then
-    case ${PREFIX:-} in /data/data/com.termux*) ;; *) linux=yes ;; esac
-fi
-py=
-for candidate in python3 python; do
-    if command -v "$candidate" >/dev/null 2>&1 &&
-        "$candidate" -I -c 'import sys; sys.exit(sys.version_info < (3, 9))' 2>/dev/null; then
-        py=$candidate
-        break
-    fi
-done
-
-# The lock uses one scalar per line so the bootstrap can read it without Python or jq.
-lock_string() {
-    sed -n "s/^[[:space:]]*\"$1\"[[:space:]]*:[[:space:]]*\"\([A-Za-z0-9.+_-]*\)\"[,[:space:]]*$/\1/p" "$tmp/python.lock"
-}
-
-if [ -z "$py" ]; then
-    [ "$linux" = yes ] || die "Install Python 3.9 or newer and rerun setup."
-    arch=$(uname -m)
-    case $arch in x86_64|aarch64) ;; *) die "This architecture needs system Python 3.9 or newer." ;; esac
-    getconf GNU_LIBC_VERSION >/dev/null 2>&1 || die "This system needs glibc or system Python 3.9 or newer."
-    if [ ! -d "$tmp/release" ]; then download "$base/installer/linux/python.lock" "$tmp/python.lock"; fi
-    hash=$(lock_string "${arch}_sha256")
-    case $hash in ''|*[!0-9a-f]*) die "No verified Python hash for $arch. Install system Python 3.9 or newer." ;; esac
-    [ "${#hash}" -eq 64 ] || die "Invalid Python SHA-256 in python.lock."
-    tag=$(lock_string release)
-    version=$(lock_string version)
-    asset=$(lock_string "${arch}_file")
-    [ "$asset" = "cpython-$version+$tag-$arch-unknown-linux-gnu-install_only_stripped.tar.gz" ] ||
-        die "Invalid Python archive name in python.lock."
-
-    agent_home=${SKYNET_AGENT_HOME:-${XDG_DATA_HOME:-$HOME/.local/share}/skynet-agent}
-    next_home=no
-    for arg do
-        if [ "$next_home" = yes ]; then agent_home=$arg; next_home=no; continue; fi
-        case $arg in --home) next_home=yes ;; --home=*) agent_home=${arg#--home=} ;; esac
+bundle=$tmp/bundle/$arch
+if [ ! -d "$bundle" ]; then
+    for tool in curl jq openssl xxd sha256sum; do
+        command -v "$tool" >/dev/null || die "Network setup requires $tool. The offline installer embeds a verified binary."
     done
-    if [ -z "$agent_home" ] || [ "$next_home" = yes ]; then die "Missing --home directory."; fi
-    runtime=$agent_home/python/$hash
-    if [ ! -x "$runtime/bin/python3" ]; then
-        archive=$tmp/$asset
-        if [ ! -d "$tmp/release" ]; then
-            download "https://github.com/astral-sh/python-build-standalone/releases/download/$tag/$asset" "$archive"
-        fi
-        [ -f "$archive" ] || die "The offline installer is missing the pinned Python archive."
-        actual=$(sha256sum < "$archive")
-        [ "${actual%% *}" = "$hash" ] || die "Python SHA-256 mismatch. Installation stopped."
-        mkdir -p "$agent_home/python"
-        stage=$(mktemp -d "$agent_home/python/.stage-XXXXXXXX")
-        tar -xzf "$archive" -C "$stage"
-        [ -x "$stage/python/bin/python3" ] || die "Missing Python executable in the archive."
-        # A concurrent installer may already have published the same verified runtime.
-        mv -T "$stage/python" "$runtime" || [ -x "$runtime/bin/python3" ] || exit 1
-    fi
-    py=$runtime/bin/python3
+    mkdir -p "$bundle"
+    base=https://raw.githubusercontent.com/skyNetAIAgent/skynet-architecture/main/agent/v2
+    for file in release.json release.json.sig; do
+        limit=262144
+        [ "$file" != release.json.sig ] || limit=16384
+        curl -q --fail --silent --show-error --proto '=https' --max-time 45 --max-filesize "$limit" "$base/$file" -o "$bundle/$file"
+    done
+    key=33deadd767eddfb05d5646caa1b32727a73e261a071d8d4ca8530b7355d2ded9
+    printf '302a300506032b6570032100%s' "$key" | xxd -r -p > "$tmp/key.der"
+    awk -F: -v k="$key" '$1=="ed25519" && $2==k && length($3)==128 && $3~/^[0-9a-fA-F]+$/ {print $3}' \
+        "$bundle/release.json.sig" > "$tmp/signatures"
+    verified=no
+    while IFS= read -r signature; do
+        printf '%s' "$signature" | xxd -r -p > "$tmp/signature"
+        if openssl pkeyutl -verify -rawin -pubin -keyform DER -inkey "$tmp/key.der" \
+                -sigfile "$tmp/signature" -in "$bundle/release.json" >/dev/null; then verified=yes; break; fi
+    done < "$tmp/signatures"
+    [ "$verified" = yes ] || die "Untrusted release signature."
+    target=$(jq -ce --arg k "linux-$arch" 'select(.format==2) | .targets[$k] | select(.name=="skynet-agent")' "$bundle/release.json")
+    size=$(printf '%s' "$target" | jq -er '.size | select(type=="number" and floor==. and .>0 and .<=67108864)')
+    hash=$(printf '%s' "$target" | jq -er '.sha256 | select(test("^[0-9a-f]{64}$"))')
+    url=$(printf '%s' "$target" | jq -er '.url')
+    for attempt in 0 1 2 3; do
+        case $url in https://github.com/*|https://objects.githubusercontent.com/*|https://release-assets.githubusercontent.com/*) ;; *) die "Unexpected asset URL." ;; esac
+        response=$(curl -q --silent --show-error --proto '=https' --max-time 90 --max-filesize "$size" \
+            -o "$bundle/skynet-agent" -w '%{http_code} %{redirect_url}' "$url")
+        case $response in
+            "200 "*) break ;;
+            301\ *|302\ *|303\ *|307\ *|308\ *) url=${response#* } ;;
+            *) die "Asset download failed." ;;
+        esac
+    done
+    case $response in "200 "*) ;; *) die "Too many redirects." ;; esac
+    [ "$(wc -c < "$bundle/skynet-agent")" -eq "$size" ] || die "Incorrect binary size."
+    actual=$(sha256sum < "$bundle/skynet-agent")
+    [ "${actual%% *}" = "$hash" ] || die "Incorrect binary SHA-256."
+    chmod 700 "$bundle/skynet-agent"
 fi
-
-if [ -d "$tmp/release" ]; then
-    set -- "$@" --from-dir "$tmp/release" --keep-newer
-else
-    download "$base/agent/install.py" "$tmp/install.py"
-    if [ "$linux" = yes ]; then download "$base/agent/linux_setup.py" "$tmp/linux_setup.py"; fi
-fi
-if [ "$linux" = yes ]; then set -- "$@" --linux-setup; fi
-"$py" -I "$tmp/install.py" "$@"
+mkdir -p "$home"
+home=$(cd "$home" && pwd -P)
+"$bundle/skynet-agent" install-bundle "$bundle" "$home"
+mkdir -p "$HOME/.local/bin"
+shim=$HOME/.local/bin/skynet-agent
+# Quote the absolute path once when generating the installed wrapper.
+escaped=$(printf '%s' "$home/skynet-agent" | sed "s/'/'\\\\''/g")
+wrapper=$(mktemp "$HOME/.local/bin/.skynet-XXXXXXXX")
+printf '%s\n' '#!/bin/sh' "exec '$escaped' launch \"\$@\"" > "$wrapper"
+chmod 700 "$wrapper"
+mv -f "$wrapper" "$shim"
+if [ "$startup" != keep ]; then "$home/skynet-agent" launch autostart "$startup"; fi
+if [ "$linger" = yes ]; then loginctl --no-ask-password enable-linger "$(id -un)"; fi
+printf 'Installed. Run %s status\n' "$shim"

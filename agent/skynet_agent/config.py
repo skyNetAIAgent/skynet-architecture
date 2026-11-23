@@ -246,6 +246,7 @@ DEFAULT_STATE = {
     "retry_at": 0,
     "halt": "",
     "halt_seq": 0,
+    "halt_through": 0,
 }
 
 

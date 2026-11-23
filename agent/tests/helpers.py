@@ -10,6 +10,7 @@ import runpy
 import shutil
 import subprocess
 import sys
+import tempfile
 import threading
 
 AGENT_DIR = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
@@ -72,6 +73,22 @@ def build_test_release(repo, seq, version, **options):
         builder(repo, seq, version, bytes.fromhex(TEST_SEED_HEX), set_trust=True, **options)
     finally:
         sys.path[:] = old_path
+
+
+def make_local_bundle(destination):
+    """Build a signed offline package from the current sources in a temporary mirror."""
+    from skynet_agent import RELEASE_SEQ, __version__
+
+    with tempfile.TemporaryDirectory() as mirror:
+        copy_repo(mirror)
+        build_test_release(mirror, RELEASE_SEQ, __version__)
+        agent = Path(mirror, "agent")
+        release = json.loads((agent / "release.json").read_bytes())
+        for name in ["release.json", "release.json.sig", *release["files"]]:
+            target = destination / name
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(agent / name, target)
+    return release
 
 
 def file_fetch(repo):

@@ -9,7 +9,7 @@ from urllib.parse import quote
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
-sys.path[:0] = [str(HERE), str(ROOT / "agent"), str(ROOT / "android/app/src/main/python")]
+sys.path[:0] = [str(HERE), str(ROOT / "agent")]
 
 import apk_update
 import keytool

@@ -8,12 +8,6 @@
     <string name="start">Start</string>
     <string name="stop">Stopp</string>
     <string name="run_on_battery">Auch im Akkubetrieb arbeiten</string>
-    <string name="token_help">Ergebnisse werden als Kommentare auf GitHub unter Ihrem Konto veröffentlicht. Erstellen Sie in GitHub einen Token (Einstellungen → Entwicklereinstellungen → Persönliche Zugriffstokens), der Issues öffentlicher Repositories schreiben darf, und fügen Sie ihn hier ein. Er wird nur innerhalb dieser App gespeichert. Ohne Token warten die Ergebnisse auf dem Gerät.</string>
-    <string name="token_hint">GitHub-Token</string>
-    <string name="save_token">Token speichern</string>
-    <string name="token_saved">Token gespeichert</string>
-    <string name="token_removed">Token entfernt</string>
-    <string name="token_not_saved">Der Token konnte nicht gespeichert werden</string>
     <string name="setting_not_saved">Die Einstellung konnte nicht gespeichert werden</string>
     <string name="about">Was ist das? (öffnet die Projektseite)</string>
     <string name="about_url">https://github.com/skyNetAIAgent/skynet-architecture/blob/main/i18n/de/ANDROID.md</string>
@@ -27,8 +21,6 @@
     <string name="label_version">Agent-Version: %1$s (Release %2$d)</string>
     <string name="label_units">Recheneinheiten erledigt: %1$d, fehlgeschlagen: %2$d</string>
     <string name="label_published">Veröffentlicht: %1$d, wartend: %2$d</string>
-    <string name="label_token_set">GitHub-Token: gesetzt</string>
-    <string name="label_token_missing">GitHub-Token: nicht gesetzt</string>
     <string name="label_problem">Letztes Problem: %1$s</string>
 
     <!-- Vom Agenten gemeldete Zustände (das Feld „code“ von status.json). -->
@@ -36,14 +28,14 @@
     <string name="state_expired">die Aufgabenliste ist abgelaufen; warte auf eine neue</string>
     <string name="state_halted">von den Betreuern angehalten</string>
     <string name="state_paused">pausiert</string>
-    <string name="state_outbox_full">zu viele Ergebnisse warten auf die Veröffentlichung; GitHub-Token hinzufügen</string>
     <string name="state_not_charging">wird nicht geladen, warte auf das Ladegerät</string>
     <string name="state_all_done">alle verfügbaren Aufgaben sind auf diesem Gerät erledigt</string>
     <string name="state_working">arbeitet</string>
     <string name="state_stopped">gestoppt</string>
     <string name="state_error">Fehler</string>
-    <string name="problem_no_token">noch kein GitHub-Token: fügen Sie unten einen ein, um die Ergebnisse zu veröffentlichen</string>
 
+    <string name="github_unsupported">Diese Version kann keine Ergebnisse auf GitHub veröffentlichen. Ausstehende Ergebnisse bleiben auf diesem Gerät gespeichert.</string>
+    <string name="engine_stopped">Der Agent wurde angehalten. Tippen Sie auf Start, um es erneut zu versuchen.</string>
     <string name="queue_full">Die Warteschlange für Ergebnisse ist voll. Veröffentlichung steht aus.</string>
     <string name="start_on_boot">Nach einem Neustart starten</string>
     <string name="app_updates">App-Updates</string>

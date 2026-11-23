@@ -1,4 +1,4 @@
-"""APK update checks. Imported only by the UI process, which runs bundled Python."""
+"""APK manifest validation shared by release tooling and its offline tests."""
 
 import hashlib
 import os

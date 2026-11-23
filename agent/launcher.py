@@ -116,6 +116,13 @@ def main():
     quick_restarts = 0
     while True:
         cur = read_json(os.path.join(h, "current.json"))
+        if isinstance(cur, dict) and cur.get("runtime") == "go":
+            exe = os.path.join(h, "skynet-agent.exe" if os.name == "nt" else "skynet-agent")
+            try:
+                return subprocess.call([exe, "launch", *args], env=dict(os.environ, SKYNET_AGENT_HOME=h))
+            except OSError as exc:
+                print("Could not start the Go launcher:", exc, file=sys.stderr)
+                return 1
         path = version_dir(h, cur)
         if path is None:
             # The files of the current version are missing or damaged: go back if we can.

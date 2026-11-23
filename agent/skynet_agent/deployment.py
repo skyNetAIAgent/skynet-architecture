@@ -44,6 +44,13 @@ def read_local(path, default=None):
         raise ReleaseError("invalid JSON in %s" % path) from e
 
 
+def real_directory(path):
+    info = os.lstat(path)
+    if (not stat.S_ISDIR(info.st_mode) or stat.S_ISLNK(info.st_mode)
+            or getattr(info, "st_file_attributes", 0) & stat.FILE_ATTRIBUTE_REPARSE_POINT):
+        raise ReleaseError("unexpected directory: " + str(path))
+
+
 def sequence_floor(home):
     highest = read_local(os.path.join(home, "max_seq.json"), 0)
     cur = read_local(os.path.join(home, "current.json"), {})
@@ -54,7 +61,10 @@ def sequence_floor(home):
             if not isinstance(entry, dict) or type(entry.get("seq")) is not int:
                 raise ReleaseError("invalid local release number")
             highest = max(highest, entry["seq"])
-    return highest
+    history = read_local(os.path.join(home, "release-history.json"), {})
+    if not isinstance(history, dict) or type(history.get("seq", 0)) is not int:
+        raise ReleaseError("invalid durable release history")
+    return max(highest, history.get("seq", 0))
 
 
 def write_local(home, name, value):
@@ -177,8 +187,8 @@ def switch_version(home, rel, relative, confirmed=True):
     cur = read_local(os.path.join(home, "current.json"), {})
     previous = cur.get("previous")
     if cur and cur["dir"] != relative:
-        previous = {k: cur[k] for k in ("seq", "version", "dir")}
-    new = dict(seq=rel["seq"], version=rel["version"], dir=relative,
+        previous = {k: cur[k] for k in ("seq", "version", "dir", "runtime", "python", "compat", "manifest_sha256") if k in cur}
+    new = dict(runtime="python", python=sys.executable, seq=rel["seq"], version=rel["version"], dir=relative,
                previous=previous, activated=int(time.time()))
     highest = sequence_floor(home)
     if confirmed:

@@ -4,12 +4,16 @@ on:
   workflow_dispatch:
   push:
     paths:
-      - "agent/**"
+      - "agent/v2/**"
+      - "agent-go/**"
+      - "tools/desktop_release.py"
       - "installer/windows/**"
       - ".github/workflows/windows-installer.yml"
   pull_request:
     paths:
-      - "agent/**"
+      - "agent/v2/**"
+      - "agent-go/**"
+      - "tools/desktop_release.py"
       - "installer/windows/**"
       - ".github/workflows/windows-installer.yml"
 
@@ -27,6 +31,21 @@ jobs:
       - name: Preserve signed release bytes
         run: git config --global core.autocrlf false
       - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.27.4'
+          cache: false
+      - name: Check the Go module
+        working-directory: agent-go
+        run: |
+          go vet -buildvcs=false ./...
+          go test -buildvcs=false ./...
+      - name: Verify the frozen Python bridge
+        run: python -IB -c "import sys; sys.path.insert(0, 'agent'); from skynet_agent import updater; problems=updater.verify_installed('agent', exact=False); sys.exit(', '.join(problems) if problems else 0)"
+      - name: Build the signed release assets from source
+        run: |
+          $release = Get-Content -Raw agent/v2/release.json | ConvertFrom-Json
+          python tools/build_go.py --dir dist --version $release.version --seq $release.seq
       - name: Verify and build
         run: ./installer/windows/build.ps1 -BuildDir build
       - name: Install, test and uninstall without system Python

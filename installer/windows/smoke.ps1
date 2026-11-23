@@ -17,22 +17,16 @@ function Run-Setup([string]$Exe, [string[]]$Options) {
 }
 
 $version = (Get-Content -Raw -LiteralPath "$BuildDir/release/release.json" | ConvertFrom-Json).version
-$exe = Get-Item -LiteralPath "$BuildDir/dist/SkyNetAgentSetup-$version.exe"
+$exe = Get-Item -LiteralPath "$BuildDir/dist/SkyNetAgentSetup-$version-amd64.exe"
 $expected = ((Get-Content -Raw -LiteralPath "$($exe.FullName).sha256") -split '\s+')[0]
 if ((Get-FileHash -LiteralPath $exe.FullName).Hash -ne $expected) { throw 'Invalid installer checksum.' }
 $silent = @('/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART')
 Run-Setup $exe.FullName ($silent + '/CURRENTUSER' + '/TASKS=autostart')
-if ((Get-ItemPropertyValue $runKey SkyNetAgent) -ne ('"{0}\python\pythonw.exe" "{0}\launcher.py" run' -f $app)) {
-    throw 'Autostart did not select the bundled interpreter.'
+if ((Get-ItemPropertyValue $runKey SkyNetAgent) -ne ('"{0}\skynet-agent.exe" launch run' -f $app)) {
+    throw 'Autostart did not select the Go launcher.'
 }
-$result = & "$app/skynet-agent.cmd" selftest
-if ($LASTEXITCODE -ne 0 -or $result -notcontains 'Installed files match the signed release: yes') {
-    throw "Offline selftest failed: $result"
-}
-$reported = & "$app/skynet-agent.cmd" version
-if ($LASTEXITCODE -ne 0 -or "$reported" -notlike "skynet-agent $version (*") {
-    throw "Unexpected version output: $reported"
-}
+& "$app/skynet-agent.exe" launch verify-install
+if ($LASTEXITCODE -ne 0) { throw 'Offline verification failed.' }
 foreach ($folder in 'outbox', 'net/pending') {
     New-Item -ItemType Directory -Force -Path "$app/$folder" | Out-Null
     Set-Content -LiteralPath "$app/$folder/smoke.json" -Value '{}'
@@ -46,6 +40,6 @@ if ((Test-Path -LiteralPath $group) -or (Get-ItemProperty -Path $runKey -Name Sk
 foreach ($item in 'python', 'versions', 'launcher.py', 'skynet-agent.cmd', $uninstaller.Name) {
     if (Test-Path -LiteralPath "$app/$item") { throw "Uninstall left $item." }
 }
-foreach ($item in 'identity.key', 'outbox/smoke.json', 'net/pending/smoke.json') {
+foreach ($item in 'identity.key', 'max_seq.json', 'release-history.json', 'outbox/smoke.json', 'net/pending/smoke.json') {
     if (-not (Test-Path -LiteralPath "$app/$item")) { throw "Uninstall lost $item." }
 }

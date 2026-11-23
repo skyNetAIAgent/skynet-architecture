@@ -1,18 +1,16 @@
-<!-- translation of android/README.md, source sha256: 3fd07398dc6f1c3ed1d7c21b1315b13e43cdbf629cf72aab3887e8ebbd602e2b -->
+<!-- translation of android/README.md, source sha256: e6e5eb4a3358a14712c3c5b2e0efee2cd483b0009e7378ef16b31cc789c0d054 -->
 
 # Agente de investigación de SkyNet para Android (experimental)
 
 [English](../../android/README.md) · [中文](../zh/ANDROID.md) · **Español** · [Français](../fr/ANDROID.md) · [Deutsch](../de/ANDROID.md) · [Italiano](../it/ANDROID.md) · [Русский](../ru/ANDROID.md) · [Português](../pt/ANDROID.md) · [العربية](../ar/ANDROID.md)
 
-Una aplicación de Android que incluye el mismo [agente de investigación](../../agent/README.md) que la
+Una aplicación de Android que lleva los mismos [kernels de cálculo en Go](../../agent-go/README.md) que la
 versión de escritorio. Instale un archivo y pulse Iniciar. De forma predeterminada, el agente firma
 cada resultado en el dispositivo y lo publica sin cuenta ni token.
 En esta etapa no se ofrecen recompensas.
 
-**Experimental.** El shell anterior se probó en un emulador de Android 14 el 22 de noviembre de
-2026. Completó las siete unidades de prueba, esperó mientras se cargaba y conservó su estado entre
-detenciones y arranques. El shell 0.2.0 incluye el agente 0.2.2. Sus flujos de instalación y
-reinicio todavía deben probarse en Android.
+**Experimental.** El shell 0.3.0 incluye el agente Go 1.0.0 (versión 7 del motor) en el APK. La
+instalación sobre la 0.2.0, el ciclo de vida del servicio y el reinicio aún deben probarse en Android.
 
 ## Para participantes
 
@@ -24,22 +22,22 @@ reinicio todavía deben probarse en Android.
    funcionamiento.
 
 - Solo funciona mientras el dispositivo se está cargando, salvo que marque «Trabajar también con
-  batería». El cargador se comprueba entre porciones de trabajo: una porción ya iniciada
-  (normalmente de menos de un minuto) se termina aunque desconecte el dispositivo.
+  batería». Desenchufar el dispositivo cancela la unidad actual y la deja disponible para una
+  ejecución posterior.
 - Para reanudar tras reiniciar el dispositivo, active **Iniciar tras reiniciar**. Está desactivada
   de forma predeterminada. Pulsar **Detener** mantiene el agente detenido tras un reinicio.
 - En Android 13 y posterior, si rechaza las notificaciones, la aplicación sigue funcionando;
   Android la muestra entonces solo en la lista de aplicaciones en ejecución.
-- Los usuarios avanzados que seleccionen `submit_via=github` pueden introducir un token de GitHub
-  en la pantalla principal.
-- Android 7.0 o posterior, un dispositivo de 64 bits, unos 40 MB.
+- Si un perfil existente usa `submit_via=github`, sus resultados permanecen en cola. Esta versión
+  admite la publicación mediante registros de red firmados.
+- Android 7.0 o posterior en arm64-v8a o x86_64.
 - El modo de IA opcional no está disponible en la aplicación.
 - Para eliminarla, desinstale la aplicación; no queda nada más en el dispositivo.
 
 ## Actualizar la aplicación
 
-Si tiene la versión 0.1.0, instale la 0.2.0 desde Releases sobre la aplicación existente para
-conservar sus ajustes y los resultados en cola. A partir de la 0.2.0, al abrir la pantalla se
+Instale la 0.3.0 sobre la aplicación existente con la misma firma de paquete para conservar la
+identidad de su dispositivo, los ajustes, el progreso y los resultados en cola. A partir de la 0.2.0, al abrir la pantalla se
 comprueba si hay un APK nuevo. Android también programa una comprobación diaria cuando hay una red
 disponible, incluso si el agente está detenido. Las restricciones de batería pueden retrasar esa
 comprobación.
@@ -51,47 +49,40 @@ instalarla. En Android 8 y posterior, permita la instalación desde SkyNet Agent
 vuelva a la aplicación y confirme en el instalador de Android. Con las notificaciones desactivadas,
 use el botón de la pantalla principal.
 
-## En qué se diferencia del agente de escritorio
+## El agente y las actualizaciones
 
-| | Escritorio | Aplicación de Android |
-|---|---|---|
-| Código del agente | `agent/skynet_agent` | el mismo paquete, incorporado al APK |
-| Trabajo | procesos separados de baja prioridad | una unidad cada vez dentro del proceso en segundo plano de la aplicación |
-| Límite de tiempo | se mata el proceso de trabajo | un vigilante termina el proceso en segundo plano; Android lo reinicia y la tarea se deja para dispositivos más rápidos |
-| Actualizaciones del agente | versión firmada del repositorio | el APK comprueba los archivos firmados y el número de versión. Un agente nuevo dispone de tres arranques para superar una autocomprobación local y completar un paso del bucle |
-| La propia aplicación | lanzador e instalador | un APK verificado instalado con su confirmación |
-| Publicación | registros firmados de forma predeterminada | registros firmados de forma predeterminada |
+El servicio en primer plano inicia el ejecutable extraído en el directorio de bibliotecas nativas.
+Ejecuta un trabajador de baja prioridad cada vez y mantiene un wake lock durante el cálculo. Un
+trabajador que agota el tiempo de espera se detiene y el agente omite temporalmente esa tarea. Las
+tareas nuevas llegan a través del índice de tareas firmado. El código ejecutable nuevo llega con una
+actualización de la aplicación.
 
-Límites honestos. El APK está firmado con una clave en poder de los mantenedores del proyecto;
-Android acepta una actualización de la aplicación solo si está firmada con la misma clave. La clave
-de publicación (para el código del agente y las listas de tareas) y esta clave del APK son dos
-puntos únicos de confianza que la red SkyNet objetivo no debe tener. La aplicación carga código
-Python firmado en tiempo de ejecución, algo que las normas de Google Play no permiten, por lo que
-se distribuye como archivo.
+Android comprueba el certificado de firma del APK durante la instalación. La clave de publicación
+separada autentica el índice de tareas y el manifiesto de descarga del APK. La aplicación comprueba
+el tamaño, el SHA-256, el nombre del paquete y el código de versión del APK antes de abrir el
+instalador.
 
 ## Compílela usted mismo
 
-Necesita JDK 17, el Android SDK (plataforma 34, build-tools 34), Gradle 8.7 y Python 3.12 en el
-ordenador de compilación.
+En Linux, instale Go 1.27.4 con las fuentes, Bash, GNU patch, coreutils, file y readelf (binutils).
+Para compilar el APK también necesita JDK 17, Gradle 8.7 y Android SDK 34.
 
 ```sh
 cd android
 gradle assembleRelease
 ```
 
-El resultado es `app/build/outputs/apk/release/app-release-unsigned.apk`. Fírmelo con su propia
-clave (`zipalign` y después `apksigner sign`) antes de instalarlo. Un APK que firme usted mismo no
-puede instalarse encima del del proyecto, y viceversa.
+Gradle invoca `./build-go.sh`. Ejecute ese script directamente para compilar solo los dos
+ejecutables `app/src/main/jniLibs/<abi>/libskynet.so`. Usa `GOOS=android`,
+`CGO_ENABLED=0` y PIE para ambas ABI. La compilación para arm64 usa el Go estándar. Para la
+compilación del emulador x86_64, el script habilita la vinculación interna en una copia temporal de
+las herramientas de compilación del host de Go 1.27.4. Comprueba la arquitectura, el punto de
+entrada y el intérprete `/system/bin/linker64` antes de instalar cualquiera de los dos archivos.
 
-Compile la aplicación solo a partir de una confirmación en la que `agent/skynet_agent/trust.py`
-contenga la clave de publicación: un agente sin clave de publicación no acepta tareas. La compilación
-de versión se detiene con un error en ese caso; `-PallowNoReleaseKey` compila igualmente un APK así,
-solo para pruebas.
-
-El puente del agente y el verificador del APK tienen pruebas de Python independientes en el
-ordenador.
-[Pruebas del agente](../../agent/tests/test_android_glue.py) · [Pruebas de actualización del APK](../../agent/tests/test_apk_update.py)
-Python se integra con [Chaquopy](https://chaquo.com/chaquopy/) (licencia MIT).
+El APK de versión es `app/build/outputs/apk/release/app-release-unsigned.apk`. Use
+`zipalign` y después `apksigner sign` con la misma clave que el APK anterior para las
+actualizaciones in situ. Genere y firme `android/latest.json` a partir del APK firmado final con
+`tools/make_apk_manifest.py`.
 
 ## Licencia
 

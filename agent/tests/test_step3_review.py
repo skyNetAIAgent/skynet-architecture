@@ -11,7 +11,6 @@ import io
 import json
 import os
 from pathlib import Path
-import shutil
 import subprocess
 import tempfile
 import unittest
@@ -30,13 +29,11 @@ class FromDirAttacks(unittest.TestCase):
         # The strongest realistic paths: spaces, Cyrillic letters, percent sign.
         self.bundle = base / "сборочный пакет 100%"
         self.home = base / "агент дом 100%"
-        agent = Path(helpers.AGENT_DIR)
-        self.rel = json.loads((agent / "release.json").read_bytes())
-        for name in ["release.json", "release.json.sig", *self.rel["files"]]:
-            target = self.bundle / name
-            target.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copyfile(agent / name, target)
-        self.args = ["--from-dir", str(self.bundle), "--home", str(self.home)]
+        self.rel = helpers.make_local_bundle(self.bundle)
+        keys = mock.patch.object(install, "RELEASE_KEYS", [helpers.TEST_PUBLIC_HEX])
+        keys.start()
+        self.addCleanup(keys.stop)
+        self.args = ["--from-dir", str(self.bundle), "--home", str(self.home), "--bin-dir", str(self.home)]
         network = mock.patch.object(install, "fetch", side_effect=AssertionError("network was used"))
         network.start()
         self.addCleanup(network.stop)
@@ -76,7 +73,7 @@ class FromDirAttacks(unittest.TestCase):
         self.rejected_without_run("changed file")
 
     def test_foreign_signature_rejected(self):
-        seed = bytes.fromhex(helpers.TEST_SEED_HEX)
+        seed = bytes(32)
         raw = (self.bundle / "release.json").read_bytes()
         signature = signed.format_sig_line(ed25519.public_key(seed), ed25519.sign(seed, raw))
         (self.bundle / "release.json.sig").write_bytes(signature.encode("ascii"))

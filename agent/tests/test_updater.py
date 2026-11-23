@@ -10,7 +10,7 @@ import sys
 
 import helpers
 import install
-from skynet_agent import config, deployment, ed25519, net, records, signed, submit, trust, updater
+from skynet_agent import bridge, config, deployment, ed25519, net, records, signed, submit, trust, updater
 
 
 B = updater.RELEASE_SEQ  # test releases are numbered above the running agent
@@ -146,6 +146,37 @@ class UpdateFlow(unittest.TestCase):
         with open(os.path.join(vdir, "skynet_agent", "net.py"), "ab") as f:
             f.write(b"# changed\n")
         self.assertEqual(updater.verify_installed(vdir), ["changed file: skynet_agent/net.py"])
+
+    def test_late_client_takes_the_python_bridge_first(self):
+        # A client that slept on 5 sees both channels live: v1 seq 6 and v2 seq 7
+        # requiring the bridge. It must install 6 before 7 ever applies.
+        helpers.build_test_release(self.repo, 6, "0.4.0")
+        binary = b"native bootstrap"
+        rel = dict(format=2, seq=7, version="1.0.0", min_bridge_seq=6,
+                   targets={"linux-amd64": dict(name="skynet-agent",
+                                                url="https://github.com/test/v7",
+                                                **bridge.meta(binary))},
+                   compat_files={k: bridge.meta(v) for k, v in bridge.COMPAT.items()})
+        raw = json.dumps(rel).encode()
+        v2 = os.path.join(self.repo, "agent", "v2")
+        os.makedirs(v2, exist_ok=True)
+        with open(os.path.join(v2, "release.json"), "wb") as f:
+            f.write(raw)
+        with open(os.path.join(v2, "release.json.sig"), "wb") as f:
+            seed = bytes.fromhex(helpers.TEST_SEED_HEX)
+            f.write(signed.format_sig_line(ed25519.public_key(seed),
+                                           ed25519.sign(seed, raw)).encode("ascii"))
+        saved = updater.RELEASE_SEQ
+        updater.RELEASE_SEQ = 5
+        try:
+            updater.is_installed_layout = lambda home: True
+            res = updater.check_and_apply(self.home, self.base, self.cfg)
+        finally:
+            updater.RELEASE_SEQ = saved
+        self.assertTrue(res.installed, res.note)
+        cur = updater.read_current(self.home)
+        self.assertEqual((cur["seq"], cur["version"]), (6, "0.4.0"))
+        self.assertEqual(cur["runtime"], "python")
 
     def test_tampered_file_is_refused(self):
         helpers.build_test_release(self.repo, updater.RELEASE_SEQ + 1, "0.1.1")
@@ -337,10 +368,9 @@ class UpdateFlow(unittest.TestCase):
             with self.assertRaises(error):
                 apply()
             self.assertEqual(updater.read_current(self.home)["seq"], B + 5)
-            with mock.patch("sys.stderr") as stderr:
+            with self.assertRaises(error):
                 apply(allow_downgrade=True)
-                self.assertIn("WARNING", str(stderr.write.call_args_list))
-            self.assertEqual(updater.read_current(self.home)["seq"], B + 4)
+            self.assertEqual(updater.read_current(self.home)["seq"], B + 5)
             self.assertEqual(json.loads(Path(self.home, "max_seq.json").read_bytes()), B + 5)
             # A fallback does not lower the floor on a later reinstall.
             with self.assertRaises(install.InstallError):

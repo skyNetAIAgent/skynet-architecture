@@ -37,7 +37,14 @@ def _python_background():
     return exe
 
 
+def go_launcher():
+    path = config.path("skynet-agent.exe" if os.name == "nt" else "skynet-agent")
+    return path if os.path.isfile(path) and os.path.isfile(config.path("release-history.json")) else None
+
+
 def windows_command():
+    if go_launcher():
+        return '"%s" launch run' % go_launcher()
     return '"%s" "%s" run' % (_python_background(), launcher_path())
 
 
@@ -71,18 +78,20 @@ def linux_unit_path():
 
 
 def linux_unit():
+    command = ('"%s" launch run' % go_launcher() if go_launcher()
+               else '"%s" "%s" run' % (sys.executable, launcher_path()))
     return (
         "[Unit]\n"
         "Description=SkyNet research agent\n"
         "After=network-online.target\n\n"
         "[Service]\n"
-        "ExecStart=\"%s\" \"%s\" run\n"
+        "ExecStart=%s\n"
         "Restart=on-failure\n"
         "RestartSec=60\n"
         "Nice=19\n\n"
         "[Install]\n"
         "WantedBy=default.target\n"
-    ) % (sys.executable, launcher_path())
+    ) % command
 
 
 def termux_boot_path():

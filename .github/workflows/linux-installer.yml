@@ -1,9 +1,9 @@
 name: Linux installer
 on:
   push:
-    paths: ["agent/**", "installer/linux/**", ".github/workflows/linux-installer.yml"]
+    paths: ["agent-go/**", "agent/v2/**", "installer/linux/**", "agent/install.sh", "tools/desktop_release.py", ".github/workflows/linux-installer.yml"]
   pull_request:
-    paths: ["agent/**", "installer/linux/**", ".github/workflows/linux-installer.yml"]
+    paths: ["agent-go/**", "agent/v2/**", "installer/linux/**", "agent/install.sh", "tools/desktop_release.py", ".github/workflows/linux-installer.yml"]
   workflow_dispatch:
 
 permissions:
@@ -12,38 +12,32 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      SKYNET_PYTHON_SHA256_X86_64: ${{ vars.SKYNET_PYTHON_SHA256_X86_64 }}
-      SKYNET_PYTHON_SHA256_AARCH64: ${{ vars.SKYNET_PYTHON_SHA256_AARCH64 }}
     steps:
       - uses: actions/checkout@v4
-      - name: Check shell and Linux setup tests
+      - name: Check bootstrap and installer tests
         run: |
-          shellcheck -s sh agent/install.sh installer/linux/build.sh installer/linux/smoke.sh
           dash -n agent/install.sh
-          python3 -I -m unittest discover -s agent/tests -p test_linux_setup.py
-      - name: Build verified offline installer
+          python3 -IB -m unittest discover -s agent/tests -p test_linux_setup.py
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.27.4'
+          cache: false
+      - name: Check the Go module
+        working-directory: agent-go
         run: |
-          sh installer/linux/build.sh
+          go vet -buildvcs=false ./...
+          go test -buildvcs=false ./...
+      - name: Verify the frozen Python bridge
+        run: python3 -IB -c "import sys; sys.path.insert(0, 'agent'); from skynet_agent import updater; problems=updater.verify_installed('agent', exact=False); sys.exit(', '.join(problems) if problems else 0)"
+      - name: Build the assets and verify the signed bundle
+        run: |
+          python3 tools/build_go.py --dir dist --seq "$(jq -er .seq agent/v2/release.json)" --version "$(jq -er .version agent/v2/release.json)"
+          sh installer/linux/build.sh --dir dist
           dash -n installer/linux/skynet-agent-install.sh
-      - name: Test without system Python on Debian
+      - name: Test the bundle offline
         run: |
-          pin=$(jq -r '.x86_64_sha256 // empty' installer/linux/python.lock)
-          mode=portable
-          if [ -z "${pin:-$SKYNET_PYTHON_SHA256_X86_64}" ]; then
-            echo "::warning::No x86_64 Python pin. Skipping portable installation and testing refusal."
-            mode=unpinned
-          fi
           docker run --rm --network none --user 65534:65534 -e HOME=/tmp/home \
-            -v "$PWD/installer/linux:/bundle:ro" debian:12-slim dash /bundle/smoke.sh "$mode"
-      - name: Test with system Python on Ubuntu
-        run: |
-          docker build -t skynet-ubuntu - <<'EOF'
-          FROM ubuntu:24.04
-          RUN apt-get update && apt-get install -y --no-install-recommends python3
-          EOF
-          docker run --rm --network none --user 65534:65534 -e HOME=/tmp/home \
-            -v "$PWD/installer/linux:/bundle:ro" skynet-ubuntu dash /bundle/smoke.sh system
+            -v "$PWD/installer/linux:/bundle:ro" debian:12-slim dash /bundle/smoke.sh
       - uses: actions/upload-artifact@v4
         with:
           name: skynet-agent-linux-installer

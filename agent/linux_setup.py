@@ -111,14 +111,15 @@ def uninstall(home, shim, purge):
                 remove_empty(root)
         if purge:
             for name in ("identity.key", "outbox", "net", "sent", "logs", "config.json",
-                         "state.json", "task-list.json", "github-token"):
+                         "state.json", "task-list.json", "github-token", "release-history.json", "max_seq.json",
+                         "bad_seqs.json", "release-policy.json"):
                 remove_entry(home / name)
         helper = home / "uninstall.py"
         if shim and shim.is_file():
             dispatch = '    exec %s -I %s "$0" "$@"' % (shlex.quote(sys.executable), shlex.quote(str(helper)))
             if dispatch in shim.read_text(encoding="utf-8").splitlines():
                 shim.unlink()
-        for name in ("current.json", "max_seq.json", "bad_seqs.json", "stop", "launcher.py",
+        for name in ("current.json", "launch-trial.json", "skynet-agent", "stop", "launcher.py",
                      "uninstall.py", "agent.lock", "update.lock"):
             (home / name).unlink(missing_ok=True)
     remove_empty(home)

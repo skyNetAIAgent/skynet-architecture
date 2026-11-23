@@ -1,0 +1,766 @@
+{
+ "format": 1,
+ "seq": 2,
+ "issued": "2026-11-23",
+ "tasks": [
+  {
+   "id": "selftest-1",
+   "kernel": "selftest",
+   "kernel_version": 1,
+   "units": 1,
+   "redundancy": 3,
+   "priority": 30,
+   "max_seconds": 300,
+   "issue": 1,
+   "title": "Self-test: does every device compute exactly the same?",
+   "params": {
+    "rounds": 8
+   }
+  },
+  {
+   "id": "exit-a-uniform-h399",
+   "kernel": "exit-scam-a",
+   "kernel_version": 1,
+   "units": 1,
+   "redundancy": 3,
+   "priority": 30,
+   "max_seconds": 600,
+   "issue": 2,
+   "title": "Leaving with fakes, equal small tasks, 399 prices pending: at which collusion share does it pay?",
+   "params": {
+    "H0": 399,
+    "cap_third": false,
+    "batches": 1,
+    "n_max": 400,
+    "sizes": {
+     "mode": "fixed",
+     "r": 1
+    },
+    "q_list": [
+     [
+      800,
+      1000
+     ],
+     [
+      850,
+      1000
+     ],
+     [
+      870,
+      1000
+     ],
+     [
+      880,
+      1000
+     ],
+     [
+      882,
+      1000
+     ],
+     [
+      884,
+      1000
+     ],
+     [
+      886,
+      1000
+     ],
+     [
+      888,
+      1000
+     ],
+     [
+      890,
+      1000
+     ],
+     [
+      892,
+      1000
+     ],
+     [
+      894,
+      1000
+     ],
+     [
+      896,
+      1000
+     ],
+     [
+      898,
+      1000
+     ],
+     [
+      900,
+      1000
+     ],
+     [
+      902,
+      1000
+     ],
+     [
+      904,
+      1000
+     ],
+     [
+      906,
+      1000
+     ],
+     [
+      908,
+      1000
+     ],
+     [
+      910,
+      1000
+     ]
+    ]
+   }
+  },
+  {
+   "id": "exit-a-uniform-h1200",
+   "kernel": "exit-scam-a",
+   "kernel_version": 1,
+   "units": 4,
+   "redundancy": 2,
+   "priority": 20,
+   "max_seconds": 1800,
+   "issue": 3,
+   "title": "Leaving with fakes, equal small tasks, 1200 prices pending",
+   "params": {
+    "H0": 1200,
+    "cap_third": false,
+    "batches": 1,
+    "n_max": 1200,
+    "sizes": {
+     "mode": "fixed",
+     "r": 1
+    },
+    "q_list": [
+     [
+      800,
+      1000
+     ],
+     [
+      850,
+      1000
+     ],
+     [
+      870,
+      1000
+     ],
+     [
+      880,
+      1000
+     ],
+     [
+      882,
+      1000
+     ],
+     [
+      884,
+      1000
+     ],
+     [
+      886,
+      1000
+     ],
+     [
+      888,
+      1000
+     ],
+     [
+      890,
+      1000
+     ],
+     [
+      892,
+      1000
+     ],
+     [
+      894,
+      1000
+     ],
+     [
+      896,
+      1000
+     ],
+     [
+      898,
+      1000
+     ],
+     [
+      900,
+      1000
+     ],
+     [
+      902,
+      1000
+     ],
+     [
+      904,
+      1000
+     ],
+     [
+      906,
+      1000
+     ],
+     [
+      908,
+      1000
+     ],
+     [
+      910,
+      1000
+     ]
+    ]
+   }
+  },
+  {
+   "id": "exit-a-uniform-cap-h399",
+   "kernel": "exit-scam-a",
+   "kernel_version": 1,
+   "units": 64,
+   "redundancy": 2,
+   "priority": 10,
+   "max_seconds": 3600,
+   "issue": 4,
+   "title": "Leaving with fakes in three waves, equal small tasks, with the one-third limit",
+   "params": {
+    "H0": 399,
+    "cap_third": true,
+    "batches": 3,
+    "n_max": 400,
+    "sizes": {
+     "mode": "fixed",
+     "r": 1
+    },
+    "q_list": [
+     [
+      800,
+      1000
+     ],
+     [
+      850,
+      1000
+     ],
+     [
+      870,
+      1000
+     ],
+     [
+      880,
+      1000
+     ],
+     [
+      882,
+      1000
+     ],
+     [
+      884,
+      1000
+     ],
+     [
+      886,
+      1000
+     ],
+     [
+      888,
+      1000
+     ],
+     [
+      890,
+      1000
+     ],
+     [
+      892,
+      1000
+     ],
+     [
+      894,
+      1000
+     ],
+     [
+      896,
+      1000
+     ],
+     [
+      898,
+      1000
+     ],
+     [
+      900,
+      1000
+     ],
+     [
+      902,
+      1000
+     ],
+     [
+      904,
+      1000
+     ],
+     [
+      906,
+      1000
+     ],
+     [
+      908,
+      1000
+     ],
+     [
+      910,
+      1000
+     ]
+    ]
+   }
+  },
+  {
+   "id": "exit-a-sizes-cap",
+   "kernel": "exit-scam-a",
+   "kernel_version": 1,
+   "units": 256,
+   "redundancy": 2,
+   "priority": 10,
+   "max_seconds": 3600,
+   "issue": 5,
+   "title": "Leaving with fakes in three waves, tasks of any size, with the one-third limit",
+   "params": {
+    "H0": 1200,
+    "cap_third": true,
+    "batches": 3,
+    "n_max": 96,
+    "sizes": {
+     "mode": "grid",
+     "points": 96
+    },
+    "q_list": [
+     [
+      800,
+      1000
+     ],
+     [
+      840,
+      1000
+     ],
+     [
+      850,
+      1000
+     ],
+     [
+      860,
+      1000
+     ],
+     [
+      865,
+      1000
+     ],
+     [
+      870,
+      1000
+     ],
+     [
+      875,
+      1000
+     ],
+     [
+      880,
+      1000
+     ],
+     [
+      885,
+      1000
+     ],
+     [
+      890,
+      1000
+     ],
+     [
+      900,
+      1000
+     ],
+     [
+      910,
+      1000
+     ]
+    ]
+   }
+  },
+  {
+   "id": "exit-a-sizes-nocap",
+   "kernel": "exit-scam-a",
+   "kernel_version": 1,
+   "units": 96,
+   "redundancy": 2,
+   "priority": 10,
+   "max_seconds": 3600,
+   "issue": 6,
+   "title": "Leaving with fakes in two waves, tasks of any size, without the one-third limit",
+   "params": {
+    "H0": 1200,
+    "cap_third": false,
+    "batches": 2,
+    "n_max": 100,
+    "sizes": {
+     "mode": "grid",
+     "points": 24
+    },
+    "q_list": [
+     [
+      0,
+      1
+     ],
+     [
+      500,
+      1000
+     ],
+     [
+      600,
+      1000
+     ],
+     [
+      700,
+      1000
+     ],
+     [
+      750,
+      1000
+     ],
+     [
+      780,
+      1000
+     ],
+     [
+      800,
+      1000
+     ],
+     [
+      810,
+      1000
+     ],
+     [
+      820,
+      1000
+     ],
+     [
+      830,
+      1000
+     ],
+     [
+      840,
+      1000
+     ],
+     [
+      850,
+      1000
+     ]
+    ]
+   }
+  },
+  {
+   "id": "exit-a-honest-check",
+   "kernel": "exit-scam-a",
+   "kernel_version": 1,
+   "units": 256,
+   "redundancy": 2,
+   "priority": 10,
+   "max_seconds": 3600,
+   "issue": 7,
+   "title": "Leaving with fakes without any collusion: is there a profitable way at all?",
+   "params": {
+    "H0": 1200,
+    "q": [
+     0,
+     1
+    ],
+    "cap_third": false,
+    "batches": 2,
+    "n_max": 200,
+    "sizes": {
+     "mode": "grid",
+     "points": 48
+    }
+   }
+  },
+  {
+   "id": "lottery-b-table",
+   "kernel": "lottery-b",
+   "kernel_version": 1,
+   "units": 24,
+   "redundancy": 2,
+   "priority": 10,
+   "max_seconds": 3600,
+   "issue": 8,
+   "title": "Paying only for checked tasks: how often is a month or a quarter a loss?",
+   "params": {
+    "tasks": [
+     600,
+     2000,
+     6000,
+     20000,
+     60000,
+     200000
+    ],
+    "check_one_in": [
+     10,
+     20,
+     50,
+     100,
+     200
+    ],
+    "costs": [
+     [
+      1,
+      2
+     ],
+     [
+      7,
+      10
+     ],
+     [
+      8,
+      10
+     ],
+     [
+      9,
+      10
+     ],
+     [
+      95,
+      100
+     ],
+     [
+      98,
+      100
+     ]
+    ],
+    "months": [
+     1,
+     3
+    ]
+   }
+  },
+  {
+   "id": "ask-variant-b-attack",
+   "kernel": "ai-answer",
+   "kernel_version": 1,
+   "units": 1,
+   "redundancy": 1,
+   "priority": 10,
+   "issue": 9,
+   "title": "For a local AI model: find a new attack on \"the network pays only for checked work\"",
+   "params": {
+    "max_answers": 20,
+    "max_output_chars": 6000,
+    "max_tokens": 2500,
+    "temperature_milli": 700,
+    "context": [
+     {
+      "path": "tasks/context/variant-b.en.md",
+      "sha256": "4fa0d7cd4a86d07ba42ea8ef09e256da0b758fd8949d6ab42d2109be2809b0df"
+     }
+    ],
+    "question": "Above are the rules of variant B: \"the network pays only for checked work\". Find one new way to obtain credits for a wrong result or to harm the network that these rules do not close and that is not in the list of attacks already found. Answer in English, in this form:\n1. Who acts and what they have (hardware, accounts, share of the network).\n2. The steps of the attack, in order.\n3. What they gain on average, with the calculation.\n4. From which data the network could notice it, and why it does not.\n5. Which rule would close the attack, and what it costs honest participants.\nIf you found no new attack, say so and explain which known attack remains the most dangerous and why. Do not invent sources or numbers: every number either comes from the text above or from your own calculation, which you show."
+   }
+  },
+  {
+   "id": "exit-campaign-b-grid",
+   "kernel": "exit-campaign-b",
+   "kernel_version": 1,
+   "min_agent_seq": 5,
+   "units": 432,
+   "redundancy": 2,
+   "priority": 10,
+   "max_seconds": 3600,
+   "title": "When does a campaign of fake tasks beat cashing out?",
+   "params": {
+    "H0": [
+     0,
+     25,
+     100
+    ],
+    "p": [
+     [
+      1,
+      10
+     ],
+     [
+      1,
+      50
+     ]
+    ],
+    "q": [
+     [
+      0,
+      1
+     ],
+     [
+      1,
+      4
+     ],
+     [
+      1,
+      2
+     ],
+     [
+      2,
+      3
+     ],
+     [
+      3,
+      4
+     ],
+     [
+      4,
+      5
+     ],
+     [
+      9,
+      10
+     ],
+     [
+      19,
+      20
+     ],
+     [
+      1,
+      1
+     ]
+    ],
+    "k": [
+     1,
+     3
+    ],
+    "C": [
+     4,
+     32
+    ],
+    "T": [
+     3,
+     12
+    ]
+   }
+  },
+  {
+   "id": "apprentice-seats-grid",
+   "kernel": "apprentice-seats",
+   "kernel_version": 1,
+   "min_agent_seq": 5,
+   "units": 36,
+   "redundancy": 2,
+   "priority": 10,
+   "max_seconds": 3600,
+   "title": "How much of the apprentice pool can coalition keys collect?",
+   "params": {
+    "S": [
+     8,
+     64,
+     256
+    ],
+    "n": [
+     0,
+     32,
+     128,
+     1024
+    ],
+    "m": [
+     0,
+     2048,
+     64
+    ],
+    "f": [
+     [
+      1,
+      10
+     ],
+     [
+      1,
+      2
+     ],
+     [
+      1,
+      1
+     ]
+    ],
+    "E": 30
+   }
+  },
+  {
+   "id": "lottery-adaptive-grid",
+   "kernel": "lottery-adaptive",
+   "kernel_version": 1,
+   "min_agent_seq": 5,
+   "units": 27,
+   "redundancy": 2,
+   "priority": 10,
+   "max_seconds": 3600,
+   "title": "With at least 60 expected checks, how often does income fall short?",
+   "params": {
+    "N": [
+     30,
+     60,
+     119,
+     120,
+     300,
+     599,
+     600,
+     1200,
+     1800
+    ],
+    "P": [
+     1,
+     2,
+     5,
+     10,
+     16
+    ],
+    "R": 1,
+    "c": [
+     [
+      4,
+      5
+     ],
+     [
+      19,
+      20
+     ],
+     [
+      49,
+      50
+     ]
+    ],
+    "k": 3
+   }
+  },
+  {
+   "id": "token-certificate-grid",
+   "kernel": "token-certificate",
+   "kernel_version": 1,
+   "min_agent_seq": 5,
+   "units": 20,
+   "redundancy": 2,
+   "priority": 10,
+   "max_seconds": 3600,
+   "title": "How many multiplications does a winning token certificate save or add?",
+   "params": {
+    "shapes": [
+     [
+      32000,
+      1024,
+      8
+     ],
+     [
+      150000,
+      4096,
+      1
+     ]
+    ],
+    "weights": [
+     -8,
+     7
+    ],
+    "seed": 0,
+    "seeds": 10
+   }
+  }
+ ]
+}

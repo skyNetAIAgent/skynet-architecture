@@ -32,10 +32,10 @@ def _legacy_bytecode():
 
 _legacy_bytecode()
 
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 
 # Monotonic release number. A signed release with a higher number replaces
 # this one; a lower or equal number is ignored (protection against rollback).
-RELEASE_SEQ = 5
+RELEASE_SEQ = 6
 
 MIN_PYTHON = (3, 9)

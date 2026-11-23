@@ -11,25 +11,28 @@ import android.os.Build;
 import android.util.Base64;
 import android.util.Log;
 
-import com.chaquo.python.PyObject;
-import com.chaquo.python.Python;
-import com.chaquo.python.android.AndroidPlatform;
-
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/** All cache changes and Python checks run on one worker in the UI process. */
+/** All cache changes and APK checks run on one worker in the UI process. */
 final class ApkUpdates {
     static final ExecutorService worker = Executors.newSingleThreadExecutor();
     private static final AtomicBoolean checkingOnOpen = new AtomicBoolean();
     private static final int NOTICE = 2;
     private static final String CHANNEL = "apk_updates";
+    private static final int METADATA_LIMIT = 16 * 1024;
     static volatile ApkUpdates ready;
 
     final String name, hash, url;
@@ -53,23 +56,57 @@ final class ApkUpdates {
         return ctx.getSharedPreferences("apk_update", Context.MODE_PRIVATE);
     }
 
-    private static PyObject verifier(Context ctx) {
-        if (!Python.isStarted()) Python.start(new AndroidPlatform(ctx.getApplicationContext()));
-        return Python.getInstance().getModule("apk_update");
-    }
-
     private static ApkUpdates read(Context ctx, byte[] raw, byte[] sig) throws Exception {
+        if (raw.length > METADATA_LIMIT || sig.length > METADATA_LIMIT) throw new IOException("APK metadata too large");
         long installed = code(ctx.getPackageManager().getPackageInfo(ctx.getPackageName(), 0));
-        PyObject doc = verifier(ctx).callAttr("manifest", raw, sig, installed, Build.VERSION.SDK_INT);
-        return doc == null ? null : new ApkUpdates(ctx, new JSONObject(doc.toString()));
+        File verifier = new File(ctx.getApplicationInfo().nativeLibraryDir, "libskynet.so");
+        Process process = new ProcessBuilder(verifier.getPath(), "verify-apk-manifest",
+                Long.toString(installed), Integer.toString(Build.VERSION.SDK_INT),
+                Base64.encodeToString(sig, Base64.NO_WRAP)).redirectErrorStream(true).start();
+        try {
+            try (OutputStream stdin = process.getOutputStream()) {
+                stdin.write(raw);
+            }
+            // Drain diagnostics before waitFor, including failures during runtime startup.
+            try (InputStream output = process.getInputStream()) {
+                byte[] buffer = new byte[1024];
+                while (output.read(buffer) != -1) { }
+            }
+            int result = process.waitFor();
+            if (result == 3) return null;  // signed, already installed or incompatible
+            if (result != 0) throw new IOException("APK manifest verification failed (" + result + ")");
+            return new ApkUpdates(ctx, new JSONObject(new String(raw, StandardCharsets.UTF_8)));
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IOException("APK verification interrupted", e);
+        } finally {
+            process.destroy();
+        }
     }
 
     private static long code(PackageInfo info) {
         return Build.VERSION.SDK_INT >= 28 ? info.getLongVersionCode() : info.versionCode;
     }
 
-    private boolean matches(Context ctx, File candidate) {
-        if (!verifier(ctx).callAttr("matches", candidate.getPath(), size, hash).toBoolean()) return false;
+    private boolean matches(Context ctx, File candidate) throws IOException {
+        if (!candidate.isFile() || candidate.length() != size) return false;
+        MessageDigest digest;
+        try {
+            digest = MessageDigest.getInstance("SHA-256");
+        } catch (NoSuchAlgorithmException e) {
+            throw new IOException(e);  // SHA-256 is required on all supported SDK levels.
+        }
+        try (InputStream in = new FileInputStream(candidate)) {
+            byte[] buffer = new byte[32768];
+            int count;
+            while ((count = in.read(buffer)) != -1) digest.update(buffer, 0, count);
+        }
+        StringBuilder actual = new StringBuilder(64);
+        for (byte b : digest.digest()) {
+            actual.append(Character.forDigit((b & 0xff) >>> 4, 16));
+            actual.append(Character.forDigit(b & 15, 16));
+        }
+        if (!hash.contentEquals(actual)) return false;
         PackageInfo info = ctx.getPackageManager().getPackageArchiveInfo(candidate.getPath(), 0);
         return info != null && ctx.getPackageName().equals(info.packageName) && code(info) == versionCode;
     }
@@ -110,8 +147,8 @@ final class ApkUpdates {
     static void check(Context ctx) {
         ready = verifiedCache(ctx);
         try {
-            byte[] raw = ReleaseDownload.metadata(ReleaseDownload.MANIFEST, 16384);
-            byte[] sig = ReleaseDownload.metadata(ReleaseDownload.MANIFEST + ".sig", 16384);
+            byte[] raw = ReleaseDownload.metadata(ReleaseDownload.MANIFEST, METADATA_LIMIT);
+            byte[] sig = ReleaseDownload.metadata(ReleaseDownload.MANIFEST + ".sig", METADATA_LIMIT);
             ApkUpdates update = read(ctx, raw, sig);
             if (update == null) {
                 clear(ctx);

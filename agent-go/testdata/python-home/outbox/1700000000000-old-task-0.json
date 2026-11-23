@@ -1,0 +1,48 @@
+{
+  "approved": true,
+  "created": 1700000000,
+  "issue": 0,
+  "kind": "compute",
+  "net_record": {
+    "body": {
+      "author": "03a107bff3ce10be1d70dd18e74bc09967e4d6309ba50d5f1ddc8664125531b8",
+      "created": 1700000000,
+      "net": "skynet-architecture/core-v1",
+      "payload": {
+        "record": {
+          "agent": "0.3.0",
+          "elapsed_s": 1.0,
+          "kernel": "selftest@1",
+          "result": {
+            "example": true
+          },
+          "result_sha256": "bba2d36669004a3ef16764b0dfe370dfc0c22263976dfd3d896370b3fa39be0d",
+          "seq": 5,
+          "task": "old-task",
+          "unit": 0,
+          "units": 1,
+          "v": 1
+        }
+      },
+      "type": "result",
+      "v": 1
+    },
+    "id": "30544d061003188fad0b7fb3a6f8baa805886dbfd5be4d259f0e7394af39ddb3",
+    "sig": "a6ff3c3792265d31da0386c0b047869495ba27dc125cc482509ed820c7d6ebf87306a14744877824094da24bf9abda1f13b876c2c447e24c6e3e3d15cec0ab03"
+  },
+  "record": {
+    "agent": "0.3.0",
+    "elapsed_s": 1.0,
+    "kernel": "selftest@1",
+    "result": {
+      "example": true
+    },
+    "result_sha256": "bba2d36669004a3ef16764b0dfe370dfc0c22263976dfd3d896370b3fa39be0d",
+    "seq": 5,
+    "task": "old-task",
+    "unit": 0,
+    "units": 1,
+    "v": 1
+  },
+  "text": null
+}

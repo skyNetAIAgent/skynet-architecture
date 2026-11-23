@@ -1,10 +1,4 @@
-"""The Python part of the Android app (android/app/src/main/python/skynet_android.py),
-run on this computer with a stand-in for the Android service.
-
-It is the same loop the phone runs: take signed tasks, compute them in the app's own
-process, publish, install a newer signed agent version, and survive a broken one.
-The Java part of the app is not covered here.
-"""
+"""Compatibility tests for the Android 0.2.0 shell shipped to existing devices."""
 
 import json
 import os
@@ -18,7 +12,7 @@ from pathlib import Path
 import helpers
 from skynet_agent import ed25519, signed, submit, updater
 
-GLUE_DIR = os.path.join(helpers.REPO_ROOT, "android", "app", "src", "main", "python")
+GLUE_DIR = os.path.join(os.path.dirname(__file__), "fixtures", "android-0.2.0")
 
 INDEX = {
     "format": 1, "seq": 1, "issued": "2026-11-22",
@@ -58,7 +52,6 @@ sys.exit(skynet_android.run(home, Host(), {"idle_sleep": 0.2, "no_watchdog": Tru
 """
 
 
-@unittest.skipUnless(os.path.isdir(GLUE_DIR), "the Android app sources are not here")
 class AndroidGlue(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -149,7 +142,7 @@ class AndroidGlue(unittest.TestCase):
     def test_files_not_in_the_signed_release_are_found(self):
         vdir = os.path.join(self.tmp, "vcheck")
         shutil.copytree(os.path.join(self.repo, "agent"), vdir,
-                        ignore=shutil.ignore_patterns("install.*", "linux_setup.py", "README.md", "LICENSE", "__pycache__"))
+                        ignore=shutil.ignore_patterns("install.*", "linux_setup.py", "v2", "README.md", "LICENSE", "__pycache__"))
         self.assertEqual(updater.verify_installed(vdir, keys=[helpers.TEST_PUBLIC_HEX]), [])
         with open(os.path.join(vdir, "skynet_agent", "json.py"), "w") as f:        # a planted module
             f.write("raise SystemExit\n")

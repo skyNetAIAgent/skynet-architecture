@@ -1,0 +1,118 @@
+{
+  "now": 1700100000,
+  "records": [
+    {
+      "body": {
+        "author": "712651f450ba05b63898b99ef5f7ba45632e8e2527f7f715cd671ec4024cc51e",
+        "created": 1700090002,
+        "net": "skynet-architecture/core-v1",
+        "payload": {
+          "report": "b23aef8035b30883b05ea4286bb77255507476a5f2ae1bb7dd2fb68285c85088",
+          "task": "64740e54c94264379beb3214f387ad475c5d00460e4888705ee9ca8090209a27"
+        },
+        "type": "accept",
+        "v": 1
+      },
+      "id": "ec1331bc8a83a1799a2a5090f16668f896da2a2d67026787776652a47dee54a2",
+      "sig": "5b19897ffe76af93988b53cea2c17db6c8c2d41dc56a1c4409cc08d155b2fef2ed021fca2c925a649ee58887dd41ab56d9340a36ce6bef411b729f4deee30405"
+    },
+    {
+      "body": {
+        "author": "03a107bff3ce10be1d70dd18e74bc09967e4d6309ba50d5f1ddc8664125531b8",
+        "created": 1700090001,
+        "net": "skynet-architecture/core-v1",
+        "payload": {
+          "report": "b23aef8035b30883b05ea4286bb77255507476a5f2ae1bb7dd2fb68285c85088",
+          "task": "64740e54c94264379beb3214f387ad475c5d00460e4888705ee9ca8090209a27"
+        },
+        "type": "revise",
+        "v": 1
+      },
+      "id": "58e41e69b7e3aed2b651e0b696e91049f02e86225402b005ec0f74827b0c72ee",
+      "sig": "8c070443110732c12325fa1abdb325e10fa3178dfee8b9425dd0bc1d4ecbfc7cb15346fc2b3432f19566852b767880d57ccdd1bb8218f469849ba20045f18608"
+    },
+    {
+      "body": {
+        "author": "712651f450ba05b63898b99ef5f7ba45632e8e2527f7f715cd671ec4024cc51e",
+        "created": 1700090000,
+        "net": "skynet-architecture/core-v1",
+        "payload": {
+          "report": "b23aef8035b30883b05ea4286bb77255507476a5f2ae1bb7dd2fb68285c85088",
+          "task": "64740e54c94264379beb3214f387ad475c5d00460e4888705ee9ca8090209a27"
+        },
+        "type": "accept",
+        "v": 1
+      },
+      "id": "0c616e8904b99e6b6abc40c922cc48e132b8b007cdfccd0b6facb3dcfa403abe",
+      "sig": "534b879c105c06fb3d9bfc1398510f6ca90f63b9c1dc1a24e9a45f4ff96d06aa4e7c2f3a064c22f2f0dc7acdbb502bce7d5151bb052ef1b0ee88d8678098920a"
+    },
+    {
+      "body": {
+        "author": "712651f450ba05b63898b99ef5f7ba45632e8e2527f7f715cd671ec4024cc51e",
+        "created": 1700000100,
+        "net": "skynet-architecture/core-v1",
+        "payload": {
+          "report": "b23aef8035b30883b05ea4286bb77255507476a5f2ae1bb7dd2fb68285c85088",
+          "task": "64740e54c94264379beb3214f387ad475c5d00460e4888705ee9ca8090209a27"
+        },
+        "type": "accept",
+        "v": 1
+      },
+      "id": "8f2ee160d67f4587a499ed4ca9b3fbeb4ca658d4462abfb38180f01b308f3a07",
+      "sig": "ec0b1b65d55eff0965860695bffaccee0e8c009b4af617395db5595a8bb302d7b8a7fd56524b3e59b144969f71f924745e759dacee48ba3c9eeaa4de8bd87601"
+    },
+    {
+      "body": {
+        "author": "712651f450ba05b63898b99ef5f7ba45632e8e2527f7f715cd671ec4024cc51e",
+        "created": 1700000002,
+        "net": "skynet-architecture/core-v1",
+        "payload": {
+          "task": "64740e54c94264379beb3214f387ad475c5d00460e4888705ee9ca8090209a27",
+          "until": 1700200000
+        },
+        "type": "claim",
+        "v": 1
+      },
+      "id": "d722fd8024965dca29d1d2a36e990b7a120b9216d29140ad4eef6ae41d36199f",
+      "sig": "e99e61dd02d2176e32841c9c97ca6c52fcc3d9eafe63d927b23b7a7616b20fbdca705747c4be6bcf1678ef5ff1ef12db6d32912c47c247e0cad64a916df04d08"
+    },
+    {
+      "body": {
+        "author": "712651f450ba05b63898b99ef5f7ba45632e8e2527f7f715cd671ec4024cc51e",
+        "created": 1700000001,
+        "net": "skynet-architecture/core-v1",
+        "payload": {
+          "summary": "Done",
+          "task": "64740e54c94264379beb3214f387ad475c5d00460e4888705ee9ca8090209a27",
+          "text": "Result"
+        },
+        "type": "report",
+        "v": 1
+      },
+      "id": "b23aef8035b30883b05ea4286bb77255507476a5f2ae1bb7dd2fb68285c85088",
+      "sig": "6f35d6250d1a2fce151d7031995e552e2da81903cbb62fe423e0ea9a9c3fd9d459267971b5e62a067999673ecd4c94cbb3ce68ae39b89fda5e503d61af80d70a"
+    },
+    {
+      "body": {
+        "author": "03a107bff3ce10be1d70dd18e74bc09967e4d6309ba50d5f1ddc8664125531b8",
+        "created": 1700000000,
+        "net": "skynet-architecture/core-v1",
+        "payload": {
+          "accept": "Checks pass",
+          "deputies": [
+            "712651f450ba05b63898b99ef5f7ba45632e8e2527f7f715cd671ec4024cc51e"
+          ],
+          "handover_days": 1,
+          "text": "Test",
+          "title": "First"
+        },
+        "type": "task",
+        "v": 1
+      },
+      "id": "64740e54c94264379beb3214f387ad475c5d00460e4888705ee9ca8090209a27",
+      "sig": "37c8a9734441fd727e826bc3464865e414321fd9f722bc49bc042c96b32d149f5146941d01b7865ddd84c1ee558f0eecf984da03c69e4ddc1b17332026bbaa04"
+    }
+  ],
+  "status": "reported",
+  "verdict": "58e41e69b7e3aed2b651e0b696e91049f02e86225402b005ec0f74827b0c72ee"
+}

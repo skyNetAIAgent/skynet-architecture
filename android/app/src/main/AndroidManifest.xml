@@ -12,6 +12,7 @@
 
     <application
         android:allowBackup="false"
+        android:extractNativeLibs="true"
         android:supportsRtl="true"
         android:icon="@drawable/ic_agent"
         android:label="@string/app_name"
@@ -43,7 +44,7 @@
             </intent-filter>
         </receiver>
 
-        <!-- Its own process: a unit that runs too long is ended without closing the screen. -->
+        <!-- The service manages a native child independently of the UI. -->
         <service
             android:name=".AgentService"
             android:exported="false"

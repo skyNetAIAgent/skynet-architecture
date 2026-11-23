@@ -8,12 +8,6 @@
     <string name="start">Запустить</string>
     <string name="stop">Остановить</string>
     <string name="run_on_battery">Также работать от батареи</string>
-    <string name="token_help">Результаты публикуются комментариями на GitHub от вашей учётной записи. Создайте в GitHub токен (Настройки → Настройки разработчика → Персональные токены доступа), с правом записи в Issues публичных репозиториев, и вставьте его сюда. Он хранится только внутри этого приложения. Без токена результаты ждут на устройстве.</string>
-    <string name="token_hint">Токен GitHub</string>
-    <string name="save_token">Сохранить токен</string>
-    <string name="token_saved">Токен сохранён</string>
-    <string name="token_removed">Токен удалён</string>
-    <string name="token_not_saved">Не удалось сохранить токен</string>
     <string name="setting_not_saved">Не удалось сохранить настройку</string>
     <string name="about">Что это? (открывает страницу проекта)</string>
     <string name="about_url">https://github.com/skyNetAIAgent/skynet-architecture/blob/main/i18n/ru/ANDROID.md</string>
@@ -27,8 +21,6 @@
     <string name="label_version">Версия агента: %1$s (выпуск %2$d)</string>
     <string name="label_units">Готово порций: %1$d, неудачных: %2$d</string>
     <string name="label_published">Опубликовано: %1$d, ждёт: %2$d</string>
-    <string name="label_token_set">Токен GitHub: задан</string>
-    <string name="label_token_missing">Токен GitHub: не задан</string>
     <string name="label_problem">Последняя неполадка: %1$s</string>
 
     <!-- Состояния, сообщаемые агентом (поле «code» файла status.json). -->
@@ -36,14 +28,14 @@
     <string name="state_expired">срок списка заданий истёк; ждём новый</string>
     <string name="state_halted">приостановлено ведущими проекта</string>
     <string name="state_paused">пауза</string>
-    <string name="state_outbox_full">слишком много результатов ждут публикации; добавьте токен GitHub</string>
     <string name="state_not_charging">не заряжается, ждём зарядное устройство</string>
     <string name="state_all_done">все доступные задания на этом устройстве выполнены</string>
     <string name="state_working">работаю</string>
     <string name="state_stopped">остановлено</string>
     <string name="state_error">ошибка</string>
-    <string name="problem_no_token">токена GitHub ещё нет: вставьте его ниже, чтобы публиковать результаты</string>
 
+    <string name="github_unsupported">Эта версия не поддерживает публикацию в GitHub. Результаты из очереди сохранены на устройстве.</string>
+    <string name="engine_stopped">Агент остановился. Нажмите «Запустить», чтобы повторить попытку.</string>
     <string name="queue_full">Очередь результатов заполнена. Ожидается публикация.</string>
     <string name="start_on_boot">Запускать после перезагрузки</string>
     <string name="app_updates">Обновления приложения</string>

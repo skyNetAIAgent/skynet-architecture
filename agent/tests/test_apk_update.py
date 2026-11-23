@@ -1,8 +1,7 @@
-"""Exercise the APK's built-in verifier and the maintainer CLI without sockets."""
+"""Exercise the APK manifest release tools without sockets."""
 
 import hashlib
 import json
-import shutil
 import subprocess
 import sys
 import tempfile
@@ -14,8 +13,7 @@ import helpers
 from skynet_agent import ed25519, signed, trust
 
 ROOT = Path(helpers.REPO_ROOT)
-GLUE = Path("android/app/src/main/python")
-sys.path.insert(0, str(ROOT / GLUE))
+sys.path.insert(0, str(ROOT / "tools"))
 import apk_update
 
 
@@ -82,8 +80,7 @@ class ApkManifest(unittest.TestCase):
     def test_maintainer_cli_matches_the_app(self):
         with tempfile.TemporaryDirectory() as tmp:
             repo = Path(helpers.copy_repo(Path(tmp, "repo")))
-            (repo / GLUE).mkdir(parents=True)
-            shutil.copy(ROOT / GLUE / "apk_update.py", repo / GLUE)
+            (repo / "android").mkdir()
             apk = repo / "SkyNet Agent.apk"
             apk.write_bytes(b"apk")
             cmd = [sys.executable, "-IB", str(repo / "tools/make_apk_manifest.py"), "--apk", str(apk),

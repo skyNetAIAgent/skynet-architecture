@@ -8,12 +8,6 @@
     <string name="start">Start</string>
     <string name="stop">Stop</string>
     <string name="run_on_battery">Also work on battery power</string>
-    <string name="token_help">Results are published as comments on GitHub under your account. Create a token in GitHub (Settings → Developer settings → Personal access tokens) that may write issues of public repositories and paste it here. It is kept only inside this app. Without a token the results wait on the device.</string>
-    <string name="token_hint">GitHub token</string>
-    <string name="save_token">Save token</string>
-    <string name="token_saved">Token saved</string>
-    <string name="token_removed">Token removed</string>
-    <string name="token_not_saved">Could not save the token</string>
     <string name="setting_not_saved">Could not save the setting</string>
     <string name="about">What is this? (opens the project page)</string>
     <string name="about_url">https://github.com/skyNetAIAgent/skynet-architecture/blob/main/android/README.md</string>
@@ -27,8 +21,6 @@
     <string name="label_version">Agent version: %1$s (release %2$d)</string>
     <string name="label_units">Units done: %1$d, failed: %2$d</string>
     <string name="label_published">Published: %1$d, waiting: %2$d</string>
-    <string name="label_token_set">GitHub token: set</string>
-    <string name="label_token_missing">GitHub token: not set</string>
     <string name="label_problem">Last problem: %1$s</string>
 
     <!-- States reported by the agent (the "code" field of status.json). -->
@@ -36,14 +28,14 @@
     <string name="state_expired">the task list has expired; waiting for a new one</string>
     <string name="state_halted">paused by the maintainers</string>
     <string name="state_paused">paused</string>
-    <string name="state_outbox_full">too many results are waiting to be published; add a GitHub token</string>
     <string name="state_not_charging">not charging, waiting for the charger</string>
     <string name="state_all_done">all available tasks are done on this device</string>
     <string name="state_working">working</string>
     <string name="state_stopped">stopped</string>
     <string name="state_error">error</string>
-    <string name="problem_no_token">no GitHub token yet: paste one below to publish the results</string>
 
+    <string name="github_unsupported">This version cannot publish to GitHub. Your queued results are saved on this device.</string>
+    <string name="engine_stopped">The agent stopped. Tap Start to try again.</string>
     <string name="queue_full">The result queue is full. Waiting to publish.</string>
     <string name="start_on_boot">Start after reboot</string>
     <string name="app_updates">App updates</string>

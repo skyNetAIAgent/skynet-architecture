@@ -1,10 +1,10 @@
 {
   "format": 1,
-  "version_code": 2,
-  "version_name": "0.2.0",
+  "version_code": 3,
+  "version_name": "0.3.0",
   "min_sdk": 24,
-  "notes": "Results without a GitHub token, signed app updates, optional start after reboot.",
-  "url": "https://github.com/skyNetAIAgent/skynet-architecture/releases/download/v0.2.2/skynet-agent.apk",
-  "size": 40889677,
-  "sha256": "204188b564e9892b5f69e8973f03ad9b35fe6f830ff9cf5cc8927d0d2f3f26da"
+  "notes": "Go engine instead of Python: about 8 MB instead of 40 MB.",
+  "url": "https://github.com/skyNetAIAgent/skynet-architecture/releases/download/v1.0.0/skynet-agent.apk",
+  "size": 8080197,
+  "sha256": "21101664049c974195f92c0d206e279e91d77e4f8b6e0006d1f8dcf6f6c64fd8"
 }

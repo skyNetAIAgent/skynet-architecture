@@ -4,7 +4,6 @@ import contextlib
 import io
 import json
 from pathlib import Path
-import shutil
 import tempfile
 import unittest
 from unittest import mock
@@ -20,12 +19,10 @@ class LocalInstall(unittest.TestCase):
         self.addCleanup(tmp.cleanup)
         self.bundle = Path(tmp.name, "release")
         self.home = Path(tmp.name, "home")
-        agent = Path(helpers.AGENT_DIR)
-        self.rel = json.loads((agent / "release.json").read_bytes())
-        for name in ["release.json", "release.json.sig", *self.rel["files"]]:
-            target = self.bundle / name
-            target.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copyfile(agent / name, target)
+        self.rel = helpers.make_local_bundle(self.bundle)
+        keys = mock.patch.object(install, "RELEASE_KEYS", [helpers.TEST_PUBLIC_HEX])
+        keys.start()
+        self.addCleanup(keys.stop)
         self.args = ["--from-dir", str(self.bundle), "--home", str(self.home), "--no-shim"]
         network = mock.patch.object(install, "fetch", side_effect=AssertionError("unexpected download"))
         network.start()
@@ -54,7 +51,7 @@ class LocalInstall(unittest.TestCase):
         self.rejected("changed file")
 
     def test_foreign_signature(self):
-        seed = bytes.fromhex(helpers.TEST_SEED_HEX)
+        seed = bytes(32)
         raw = (self.bundle / "release.json").read_bytes()
         signature = signed.format_sig_line(ed25519.public_key(seed), ed25519.sign(seed, raw))
         (self.bundle / "release.json.sig").write_bytes(signature.encode("ascii"))

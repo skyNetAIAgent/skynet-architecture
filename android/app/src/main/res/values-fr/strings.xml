@@ -7,12 +7,6 @@
     <string name="start">Démarrer</string>
     <string name="stop">Arrêter</string>
     <string name="run_on_battery">Travailler aussi sur batterie</string>
-    <string name="token_help">Les résultats sont publiés comme commentaires sur GitHub sous votre compte. Créez un jeton dans GitHub (Paramètres → Paramètres de développement → Jetons d\'accès personnel) pouvant écrire des tickets de dépôts publics et collez-le ici. Il n\'est conservé que dans cette application. Sans jeton, les résultats attendent sur l\'appareil.</string>
-    <string name="token_hint">Jeton GitHub</string>
-    <string name="save_token">Enregistrer le jeton</string>
-    <string name="token_saved">Jeton enregistré</string>
-    <string name="token_removed">Jeton supprimé</string>
-    <string name="token_not_saved">Impossible d\'enregistrer le jeton</string>
     <string name="setting_not_saved">Impossible d\'enregistrer le réglage</string>
     <string name="about">Qu\'est-ce que c\'est ? (ouvre la page du projet)</string>
     <string name="about_url">https://github.com/skyNetAIAgent/skynet-architecture/blob/main/i18n/fr/ANDROID.md</string>
@@ -26,8 +20,6 @@
     <string name="label_version">Version de l\'agent : %1$s (publication n° %2$d)</string>
     <string name="label_units">Portions terminées : %1$d, échouées : %2$d</string>
     <string name="label_published">Publiés : %1$d, en attente : %2$d</string>
-    <string name="label_token_set">Jeton GitHub : défini</string>
-    <string name="label_token_missing">Jeton GitHub : non défini</string>
     <string name="label_problem">Dernier problème : %1$s</string>
 
     <!-- États signalés par l'agent (le champ « code » de status.json). -->
@@ -35,14 +27,14 @@
     <string name="state_expired">la liste de tâches a expiré ; en attente d\'une nouvelle</string>
     <string name="state_halted">en pause à la demande des mainteneurs</string>
     <string name="state_paused">en pause</string>
-    <string name="state_outbox_full">trop de résultats attendent d\'être publiés ; ajoutez un jeton GitHub</string>
     <string name="state_not_charging">pas en charge, en attente du chargeur</string>
     <string name="state_all_done">toutes les tâches disponibles sont terminées sur cet appareil</string>
     <string name="state_working">travail en cours</string>
     <string name="state_stopped">arrêté</string>
     <string name="state_error">erreur</string>
-    <string name="problem_no_token">pas encore de jeton GitHub : collez-en un ci-dessous pour publier les résultats</string>
 
+    <string name="github_unsupported">Cette version ne peut pas publier sur GitHub. Les résultats en attente sont conservés sur cet appareil.</string>
+    <string name="engine_stopped">L’agent s’est arrêté. Appuyez sur Démarrer pour réessayer.</string>
     <string name="queue_full">La file des résultats est pleine. Publication en attente.</string>
     <string name="start_on_boot">Démarrer après le redémarrage</string>
     <string name="app_updates">Mises à jour de l\'application</string>

@@ -71,6 +71,9 @@ def main(argv=None):
     parser.add_argument("--seq", type=int, required=True)
     parser.add_argument("--version", required=True)
     parser.add_argument("--key")
+    parser.add_argument("--v2", action="store_true")
+    parser.add_argument("--dir", help="directory containing Go release assets")
+    parser.add_argument("--tag", help="immutable GitHub release tag")
     parser.add_argument("--root", default=os.path.join(HERE, ".."))
     parser.add_argument("--set-trust", action="store_true")
     parser.add_argument("--halt-through", type=int)
@@ -79,6 +82,12 @@ def main(argv=None):
     args = parser.parse_args(argv)
 
     import keytool
+    if args.v2:
+        import desktop_release
+        if not args.dir or not args.tag:
+            parser.error('--v2 requires --dir and --tag')
+        return desktop_release.build(args.root, args.dir, args.seq, args.version, args.tag,
+                                     keytool.load_seed(args.key), args.halt_through, args.halt_reason)
     return build_release(args.root, args.seq, args.version, keytool.load_seed(args.key),
                          args.set_trust, args.date, args.halt_through, args.halt_reason)
 

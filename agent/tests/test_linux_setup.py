@@ -1,6 +1,5 @@
 """Linux installer tests with local files and stand-ins for user services."""
 
-import hashlib
 import io
 import json
 import os
@@ -9,7 +8,6 @@ import shlex
 import shutil
 import subprocess
 import sys
-import tarfile
 import tempfile
 import unittest
 from unittest import mock
@@ -17,7 +15,7 @@ from unittest import mock
 import helpers
 import install
 import linux_setup
-from skynet_agent import autostart
+from skynet_agent import autostart, bridge, ed25519, signed, trust
 
 AGENT = Path(helpers.AGENT_DIR)
 LINUX = AGENT.parent / "installer" / "linux"
@@ -73,52 +71,54 @@ class LinuxSetup(unittest.TestCase):
             self.assertEqual([call.args[0][0] for call in run.call_args_list], ["systemctl", "systemctl"])
 
 
-@unittest.skipUnless(sys.platform.startswith("linux"), "Linux dash bootstrap")
-class PortableBootstrap(unittest.TestCase):
-    def setUp(self):
-        tmp = tempfile.TemporaryDirectory()
-        self.addCleanup(tmp.cleanup)
-        self.root = Path(tmp.name)
-        bin_dir = self.root / "bin"
-        bin_dir.mkdir()
-        for cmd in ("cp", "getconf", "mkdir", "mktemp", "mv", "rm", "sed", "sha256sum", "tar", "gzip"):
-            (bin_dir / cmd).symlink_to(shutil.which(cmd))
-        for cmd, script in {
-            "uname": 'if [ "$1" = -s ]; then echo Linux; else echo "$ARCH"; fi',
-            "curl": 'case "$2" in */python.lock) cp "$FIX/lock" "$4";; */*.gz) cp "$FIX/archive" "$4";; *) : > "$4";; esac',
-        }.items():
-            (bin_dir / cmd).write_text("#!/bin/sh\n" + script + "\n")
-            (bin_dir / cmd).chmod(0o755)
-        archive = self.root / "archive"
-        with tarfile.open(archive, "w:gz") as tar:
-            code = b'#!/bin/sh\nprintf "%s\\n" "$0" "$@" > "$FIX/trace"\n'
-            info = tarfile.TarInfo("python/bin/python3")
-            info.mode, info.size = 0o755, len(code)
-            tar.addfile(info, io.BytesIO(code))
-        self.digest = hashlib.sha256(archive.read_bytes()).hexdigest()
-        self.env = dict(os.environ, HOME=tmp.name, PATH=str(bin_dir), FIX=tmp.name, TMPDIR=tmp.name,
-                        PREFIX="", TERMUX_VERSION="")
 
-    def setup_with(self, arch, digest):
-        lock = json.loads((LINUX / "python.lock").read_bytes())
-        lock[arch + "_sha256"] = digest
-        (self.root / "lock").write_text(json.dumps(lock, indent=2))
-        home = self.root / arch
-        return subprocess.run(["/bin/dash", str(AGENT / "install.sh"), "--home", str(home), "--no-autostart"],
-                              env=dict(self.env, ARCH=arch), capture_output=True, text=True)
-
-    def test_verified_runtime_is_selected(self):
-        for arch in ("x86_64", "aarch64"):
-            result = self.setup_with(arch, self.digest)
-            self.assertEqual(result.returncode, 0, result.stderr)
-            trace = (self.root / "trace").read_text().splitlines()
-            self.assertEqual(trace[0], str(self.root / arch / "python" / self.digest / "bin/python3"))
-            self.assertIn("--no-autostart", trace)
-
-    def test_null_and_wrong_hash_stop_before_extraction(self):
-        for pin, message in ((None, "system Python"), ("0" * 64, "SHA-256 mismatch")):
-            result = self.setup_with("x86_64", pin)
-            self.assertNotEqual(result.returncode, 0)
-            self.assertIn(message, result.stderr)
-            self.assertFalse((self.root / "x86_64").exists())
-            self.assertFalse((self.root / "trace").exists())
+@unittest.skipUnless(sys.platform.startswith("linux") and all(shutil.which(tool) for tool in
+                     ("jq", "openssl", "xxd", "dash")), "Linux bootstrap tools required")
+class NativeBootstrap(unittest.TestCase):
+    def test_signature_and_asset_before_execution(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            script = root / "install.sh"
+            script.write_text((AGENT / "install.sh").read_text().replace(trust.RELEASE_KEYS[0], helpers.TEST_PUBLIC_HEX))
+            asset = root / "asset"
+            asset.write_text("""#!/bin/sh
+set -eu
+printf '%s\\n' "$@" > "$FIX/executed"
+if [ "$1" = install-bundle ]; then cp "$0" "$3/skynet-agent"; fi
+""")
+            target = dict(name="skynet-agent", url="https://github.com/test/asset", **bridge.meta(asset.read_bytes()))
+            raw = json.dumps(dict(format=2, seq=7, version="1.0.0", min_bridge_seq=6,
+                                  targets={"linux-amd64": target})).encode()
+            seed = bytes.fromhex(helpers.TEST_SEED_HEX)
+            signature = signed.format_sig_line(ed25519.public_key(seed), ed25519.sign(seed, raw))
+            (root / "release.json").write_bytes(raw)
+            (root / "uname").write_text('#!/bin/sh\nif [ "$1" = -s ]; then echo Linux; else echo x86_64; fi\n')
+            (root / "curl").write_text("""#!/bin/sh
+while [ "$#" -gt 0 ]; do
+    case $1 in -o) shift; dest=$1 ;; https://*) file=${1##*/} ;; esac
+    shift
+done
+cp "$FIX/$file" "$dest" || exit 1
+if [ "$file" = asset ]; then printf '200 '; fi
+""")
+            for tool in ("uname", "curl"):
+                (root / tool).chmod(0o700)
+            env = dict(os.environ, PATH=tmp + ":" + os.environ["PATH"], HOME=tmp,
+                       FIX=tmp, TMPDIR=tmp, TERMUX_VERSION="", SKYNET_AGENT_HOME=str(root / "profile"))
+            marker = root / "executed"
+            for proof, corrupt, ok in [("invalid", False, False), (signature, False, True), (signature, True, False)]:
+                with self.subTest(valid=ok, corrupt=corrupt):
+                    (root / "release.json.sig").write_text(proof)
+                    if corrupt:
+                        asset.write_bytes(asset.read_bytes() + b"x")
+                    call = subprocess.run(["dash", str(script)], env=env, capture_output=True, timeout=20)
+                    self.assertEqual(call.returncode == 0, ok, call.stderr)
+                    self.assertEqual(marker.exists(), ok)
+                    if ok:
+                        argv = marker.read_text().splitlines()
+                        self.assertEqual(argv[0], "install-bundle")
+                        self.assertEqual(argv[2], env["SKYNET_AGENT_HOME"])
+                        shim = root / ".local/bin/skynet-agent"
+                        subprocess.run([str(shim), "version"], env=env, check=True, timeout=20)
+                        self.assertEqual(marker.read_text().splitlines(), ["launch", "version"])
+                        marker.unlink()

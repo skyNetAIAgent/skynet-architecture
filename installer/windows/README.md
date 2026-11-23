@@ -1,56 +1,16 @@
-# Windows x64 installer
+# Windows desktop installer
 
 **English** · [中文](../../i18n/zh/WINDOWS_INSTALLER.md) · [Español](../../i18n/es/WINDOWS_INSTALLER.md) · [Français](../../i18n/fr/WINDOWS_INSTALLER.md) · [Deutsch](../../i18n/de/WINDOWS_INSTALLER.md) · [Italiano](../../i18n/it/WINDOWS_INSTALLER.md) · [Русский](../../i18n/ru/WINDOWS_INSTALLER.md) · [Português](../../i18n/pt/WINDOWS_INSTALLER.md) · [العربية](../../i18n/ar/WINDOWS_INSTALLER.md)
 
-Download the EXE and the matching `.exe.sha256` from the same project release. In
-PowerShell, open the download folder and compare the checksum. [GitHub Releases](https://github.com/skyNetAIAgent/skynet-architecture/releases)
+Choose the amd64 or arm64 installer for your computer. Verify its SHA-256 using a checksum obtained through a trusted channel. Setup installs the signed native release in the current user’s profile. Login startup and immediate launch are optional. Start menu shortcuts invoke the permanent launcher.
 
-```powershell
-$file = 'SkyNetAgentSetup-0.2.2.exe'
-$expected = ((Get-Content -Raw "$file.sha256") -split '\s+')[0]
-if ((Get-FileHash $file -Algorithm SHA256).Hash -ne $expected) { throw 'Checksum mismatch.' }
-```
-
-Open the verified EXE. SmartScreen may show **Windows protected your PC** because the
-installer has no code signature. Choose **More info**, confirm the filename, then choose
-**Run anyway**. Setup installs for the current user. Clear either startup checkbox to
-change when the agent runs.
-
-The agent accepts signed updates to its own files. A newer installer updates the bundled
-Python. Install over the existing copy to keep the device identity and waiting results.
-The Start menu uninstaller also keeps these by default. Its optional data deletion
-checkbox includes the outbox and pending signed records.
+The uninstaller keeps the identity, queues and release history by default. Select the data deletion option to remove them. During migration the previous signed Python bridge and its interpreter are kept for rollback.
 
 ## Build and test
 
-Use a clean checkout with LF line endings for the signed files. From the repository root
-on x64 Windows, run PowerShell 7 with a fresh build directory. The build checks for Inno
-Setup 6.3.3 or newer on PATH or in its usual location. It uses Chocolatey to install
-6.3.3 if the compiler is missing.
+Use Python 3.9+ and Inno Setup 6 on the build machine. Stage the release manifest and detached signature under `agent/v2` and its matching release binaries under `dist`. Use a fresh build directory. The smoke test needs a disposable Windows account.
 
-```powershell
-./installer/windows/build.ps1 -BuildDir build
-```
-
-`python.lock` must contain the exact 3.12 patch version and 64-digit SHA-256 of its
-official `python-<version>-embed-amd64.zip`. For a new pin, authenticate the archive using
-the instructions and Sigstore bundle linked from the Python release page, then record
-its SHA-256. An empty or invalid pin stops the build before download. [Python 3.12.10 release](https://www.python.org/downloads/release/python-31210/)
-
-The build verifies the archive before extraction. The embedded interpreter stages only
-files from the authenticated release manifest. At install time it checks the bundle
-again, including its file list, before executing the candidate. The stock
-`python312._pth` supplies the standard library. The launcher and candidate check add
-the selected release directory to `sys.path` under `-I`.
-
-On a disposable Windows profile with no existing SkyNet installation, run the smoke
-test. It installs silently, checks sign-in registration and the CLI without system
-Python on PATH, then uninstalls and checks the retained data.
-
-```powershell
+~~~powershell
+./installer/windows/build.ps1 -BuildDir build -AssetDir dist -Arch amd64
 ./installer/windows/smoke.ps1 -BuildDir build
-```
-
-Alternatively, run **Actions → Windows installer → Run workflow**. After the smoke
-test passes, download the `SkyNetAgentSetup-x64` artifact. Its `SkyNetAgentSetup-<version>.exe`
-and `.exe.sha256` are the two assets to attach manually to the matching GitHub Release.
+~~~

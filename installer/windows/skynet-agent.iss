@@ -9,10 +9,10 @@ UsePreviousAppDir=no
 DefaultGroupName=SkyNet Agent
 DisableProgramGroupPage=yes
 PrivilegesRequired=lowest
-ArchitecturesAllowed=x64os
-ArchitecturesInstallIn64BitMode=x64os
+ArchitecturesAllowed={#TargetArch}
+ArchitecturesInstallIn64BitMode={#TargetArch}
 OutputDir={#BuildDir}\dist
-OutputBaseFilename=SkyNetAgentSetup-{#AgentVersion}
+OutputBaseFilename=SkyNetAgentSetup-{#AgentVersion}-{#AssetArch}
 Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern
@@ -40,20 +40,18 @@ Name: "ar"; MessagesFile: "compiler:Languages\Unofficial\Arabic.isl"
 #endif
 
 [Tasks]
-Name: "autostart"; Description: "Start at Windows sign-in"
-Name: "startnow"; Description: "Start the agent now"
+Name: "autostart"; Description: "Start at Windows sign-in"; Flags: unchecked
+Name: "startnow"; Description: "Start the agent now"; Flags: unchecked
 
 [Files]
-Source: "{#BuildDir}\python\*"; DestDir: "{app}\python"; Flags: recursesubdirs ignoreversion; Check: InstallRuntime
-Source: "{#BuildDir}\release\*"; DestDir: "{tmp}\release"; Flags: recursesubdirs deleteafterinstall
-Source: "..\..\agent\LICENSE"; DestDir: "{app}"
-Source: "..\..\agent\install.py"; DestDir: "{tmp}"; Flags: deleteafterinstall; AfterInstall: InstallAgent
+Source: "{#BuildDir}\release\*"; DestDir: "{tmp}\release"; Flags: deleteafterinstall
+Source: "..\..\agent\LICENSE"; DestDir: "{app}"; Flags: ignoreversion; AfterInstall: InstallAgent
 
 [Icons]
-Name: "{group}\Agent status"; Filename: "{cmd}"; Parameters: "/D /V:OFF /C "".\skynet-agent.cmd status & pause"""; WorkingDir: "{app}"
-Name: "{group}\Pause"; Filename: "{app}\python\pythonw.exe"; Parameters: "-I ""{app}\launcher.py"" pause"
-Name: "{group}\Resume"; Filename: "{app}\python\pythonw.exe"; Parameters: "-I ""{app}\launcher.py"" resume"
-Name: "{group}\Stop"; Filename: "{app}\python\pythonw.exe"; Parameters: "-I ""{app}\launcher.py"" stop"
+Name: "{group}\Agent status"; Filename: "{app}\skynet-agent.exe"; Parameters: "launch status"; WorkingDir: "{app}"
+Name: "{group}\Pause"; Filename: "{app}\skynet-agent.exe"; Parameters: "launch pause"; WorkingDir: "{app}"
+Name: "{group}\Resume"; Filename: "{app}\skynet-agent.exe"; Parameters: "launch resume"; WorkingDir: "{app}"
+Name: "{group}\Stop"; Filename: "{app}\skynet-agent.exe"; Parameters: "launch stop"; WorkingDir: "{app}"
 Name: "{group}\Agent folder"; Filename: "{app}"
 Name: "{group}\Uninstall"; Filename: "{uninstallexe}"
 
@@ -62,10 +60,13 @@ Type: filesandordirs; Name: "{app}\python"
 Type: filesandordirs; Name: "{app}\versions"
 Type: files; Name: "{app}\launcher.py"
 Type: files; Name: "{app}\skynet-agent.cmd"
+Type: files; Name: "{app}\skynet-agent.exe"
+Type: files; Name: "{app}\launch-trial.json"
+Type: files; Name: "{app}\release-policy.json"; Check: PurgeData
+Type: files; Name: "{app}\release-history.json"; Check: PurgeData
 Type: files; Name: "{app}\current.json"
-Type: files; Name: "{app}\bad_seqs.json"
-Type: files; Name: "{app}\max_seq.json"
-Type: files; Name: "{app}\update.lock"
+Type: files; Name: "{app}\bad_seqs.json"; Check: PurgeData
+Type: files; Name: "{app}\max_seq.json"; Check: PurgeData
 Type: files; Name: "{app}\agent.lock"
 Type: files; Name: "{app}\stop"
 Type: files; Name: "{app}\identity.key"; Check: PurgeData
@@ -81,12 +82,8 @@ Type: dirifempty; Name: "{app}"
 
 [Code]
 var
-  KeepRuntime, DeleteData: Boolean;
-
-function InstallRuntime: Boolean;
-begin
-  Result := not KeepRuntime;
-end;
+  DeleteData: Boolean;
+  UpdateGuard: TFileStream;
 
 function AgentBusy: Boolean;
 var
@@ -120,35 +117,27 @@ begin
 end;
 
 function PrepareToInstall(var NeedsRestart: Boolean): String;
-var
-  Installed, Bundled: Int64;
 begin
-  if not StopAgent then begin
+  Result := '';
+  if not StopAgent then
     Result := 'The agent is still working. Wait for it to stop and retry.';
-    exit;
-  end;
-  if GetPackedVersion(ExpandConstant('{app}\python\python.exe'), Installed) and
-     StrToVersion('{#RuntimeFileVersion}', Bundled) then
-    KeepRuntime := ComparePackedVersion(Installed, Bundled) > 0;
-end;
-
-procedure RunPython(const Args: String);
-var
-  Code: Integer;
-begin
-  if not Exec(ExpandConstant('{app}\python\python.exe'), Args,
-              ExpandConstant('{app}'), SW_HIDE, ewWaitUntilTerminated, Code) or (Code <> 0) then
-    RaiseException(Format('Python failed (%d). See the setup log.', [Code]));
 end;
 
 procedure InstallAgent;
 var
-  Launcher: String;
+  Code: Integer;
+  Args: String;
 begin
-  RunPython(ExpandConstant('-I "{tmp}\install.py" --from-dir "{tmp}\release" --keep-newer --home "{app}"'));
-  Launcher := ExpandConstant('-I "{app}\launcher.py" ');
-  if WizardIsTaskSelected('autostart') then RunPython(Launcher + 'autostart enable')
-  else RunPython(Launcher + 'autostart disable');
+  Args := ExpandConstant('install-bundle "{tmp}\release" "{app}"');
+  if FileExists(ExpandConstant('{app}\python\python.exe')) then
+    Args := Args + ExpandConstant(' "{app}\python\python.exe"');
+  if not Exec(ExpandConstant('{tmp}\release\skynet-agent.exe'), Args, ExpandConstant('{app}'),
+              SW_HIDE, ewWaitUntilTerminated, Code) or (Code <> 0) then
+    RaiseException(Format('Signed installation failed (%d).', [Code]));
+  if WizardIsTaskSelected('autostart') then
+    if not Exec(ExpandConstant('{app}\skynet-agent.exe'), 'launch autostart enable', ExpandConstant('{app}'),
+                SW_HIDE, ewWaitUntilTerminated, Code) or (Code <> 0) then
+      RaiseException('Could not enable autostart.');
 end;
 
 procedure CurStepChanged(CurStep: TSetupStep);
@@ -156,7 +145,7 @@ var
   Code: Integer;
 begin
   if (CurStep = ssPostInstall) and WizardIsTaskSelected('startnow') then
-    if not Exec(ExpandConstant('{app}\python\pythonw.exe'), ExpandConstant('-I "{app}\launcher.py" run'),
+    if not Exec(ExpandConstant('{app}\skynet-agent.exe'), 'launch run',
                 ExpandConstant('{app}'), SW_HIDE, ewNoWait, Code) then
       RaiseException(Format('Could not start the agent (%d).', [Code]));
 end;
@@ -209,8 +198,11 @@ begin
   RunKey := 'Software\Microsoft\Windows\CurrentVersion\Run';
   if CurUninstallStep = usUninstall then begin
     if not StopAgent then RaiseException('The agent is still working. Retry after it stops.');
+    if FileExists(ExpandConstant('{app}\update.lock')) then
+      UpdateGuard := TFileStream.Create(ExpandConstant('{app}\update.lock'), fmOpenReadWrite or fmShareExclusive);
     if RegValueExists(HKCU, RunKey, 'SkyNetAgent') and
        not RegDeleteValue(HKCU, RunKey, 'SkyNetAgent') then
       RaiseException('Could not disable autostart.');
-  end;
+  end else if CurUninstallStep = usPostUninstall then
+    UpdateGuard.Free;
 end;

@@ -17,7 +17,7 @@ import os
 import re
 import sys
 
-from . import RELEASE_SEQ, __version__, config, deployment, net, signed, trust
+from . import RELEASE_SEQ, __version__, bridge, config, deployment, net, signed, trust
 from .deployment import ReleaseError
 
 RELEASE_PATH = "agent/release.json"
@@ -140,7 +140,7 @@ def activate(home, rel, rel_dir, *, local_check=None, allow_downgrade=False):
     validate_release(rel)
     if rel_dir != "versions/" + version_dir_name(rel):
         raise ReleaseError("unexpected version directory")
-    if not allow_downgrade and rel["seq"] < deployment.sequence_floor(home):
+    if rel["seq"] < deployment.sequence_floor(home):
         raise ReleaseError("release is below the local maximum")
     directory = os.path.join(home, *rel_dir.split("/"))
     problems = verify_installed(directory, expected=rel)
@@ -187,6 +187,7 @@ def confirm_legacy_install(home):
 
 class UpdateResult:
     def __init__(self):
+        self.through = 0
         self.halt = ""          # non-empty: stop taking tasks
         self.available = None   # (seq, version) of a newer release, if any
         self.installed = False  # True: a new version is in place, restart needed
@@ -199,7 +200,58 @@ def bad_seqs(home):
     return [x for x in data if _is_int(x)] if isinstance(data, list) else []
 
 
-def check_and_apply(home, base_url, cfg, *, allow_downgrade=False):
+def check_and_apply(home, base_url, cfg, *, allow_downgrade=False, manual=False):
+    if allow_downgrade:
+        raise ReleaseError("downgrade is disabled")
+    # Format 1 remains the signed bridge channel for late and unsupported clients.
+    try:
+        v1 = fetch_release(base_url)
+    except net.NetError:
+        v1 = None
+    try:
+        rel, raw, sig = signed.fetch_signed_json(base_url, bridge.CHANNEL, max_bytes=MAX_RELEASE_BYTES)
+    except net.NetError:
+        # An unavailable optional channel cannot clear a previously signed pause.
+        old = bridge.stored_policy(home)
+        if old and halt_reason(old):
+            result = UpdateResult()
+            result.halt = halt_reason(old)
+            result.through = old["halt"]["through_seq"]
+            return result
+        if v1 is None:
+            raise net.NetError("release channels unavailable")
+        return _apply_v1(home, base_url, cfg, v1)
+
+    bridge.validate(rel)
+    bridge.remember(home, rel, raw, sig)
+    result = UpdateResult()
+    for channel in ([v1[0], rel] if v1 and v1[0]["seq"] >= deployment.sequence_floor(home) else [rel]):
+        if halt_reason(channel):
+            result.halt = halt_reason(channel)
+            result.through = max(result.through, channel["halt"]["through_seq"])
+    if result.halt or cfg.get("update") == "off":
+        return result
+    if bridge.target() not in rel["targets"] or rel["min_bridge_seq"] > RELEASE_SEQ:
+        # This release cannot apply the Go bundle yet (unsupported platform or a
+        # bridge older than the required one). A newer signed v1 bridge must be
+        # taken first; otherwise a device that slept on 5 would stay on 5 while
+        # both channels carry newer releases.
+        if v1 is not None:
+            return _apply_v1(home, base_url, cfg, v1)
+        result.note = "no compatible Go release"
+        return result
+    result.available = rel["seq"], rel["version"]
+    if (rel["seq"] <= RELEASE_SEQ or rel["seq"] < deployment.sequence_floor(home)
+            or rel["seq"] in bad_seqs(home) or rel.get("halt", {}).get("through_seq", -1) >= rel["seq"]):
+        result.note = "release paused or already tried"
+        return result
+    if cfg.get("update") == "auto" and is_installed_layout(home):
+        bridge.install(home, rel, raw, sig, automatic=not manual)
+        result.installed = True
+    return result
+
+
+def _apply_v1(home, base_url, cfg, release):
     """Look for a newer signed release and, in "auto" mode, install it.
 
     The release description is read in every update mode, because it also carries the
@@ -207,7 +259,11 @@ def check_and_apply(home, base_url, cfg, *, allow_downgrade=False):
     newer version.
     """
     result = UpdateResult()
-    rel, raw, sig = fetch_release(base_url)
+    rel, raw, sig = release
+    floor = max(RELEASE_SEQ, deployment.sequence_floor(home))
+    if rel["seq"] < floor:
+        raise ReleaseError("release %d is older than %d" % (rel["seq"], floor))
+    result.through = rel.get('halt', {}).get('through_seq', 0)
     result.halt = halt_reason(rel)
     if cfg.get("update") == "off" or result.halt:
         return result
@@ -215,9 +271,6 @@ def check_and_apply(home, base_url, cfg, *, allow_downgrade=False):
         result.available = (rel["seq"], rel["version"])
         result.note = "release paused by the maintainers"
         return result
-    floor = max(RELEASE_SEQ, deployment.sequence_floor(home))
-    if rel["seq"] < floor and not allow_downgrade:
-        raise ReleaseError("release %d is older than %d" % (rel["seq"], floor))
     if rel["seq"] == RELEASE_SEQ and (read_current(home) or {}).get("seq", RELEASE_SEQ) == RELEASE_SEQ:
         return result
     result.available = (rel["seq"], rel["version"])
@@ -237,9 +290,7 @@ def check_and_apply(home, base_url, cfg, *, allow_downgrade=False):
     with deployment.update_lock(home):
         floor = max(RELEASE_SEQ, deployment.sequence_floor(home))
         if rel["seq"] < floor:
-            if not allow_downgrade:
-                raise ReleaseError("release %d is older than %d" % (rel["seq"], floor))
-            print("WARNING: installing release %d below %d" % (rel["seq"], floor), file=sys.stderr)
+            raise ReleaseError("release %d is older than %d" % (rel["seq"], floor))
         target = "versions/" + version_dir_name(rel)
         cur = read_current(home)
         if cur and cur.get("seq") == rel["seq"] and cur.get("dir") == target:
@@ -252,7 +303,7 @@ def check_and_apply(home, base_url, cfg, *, allow_downgrade=False):
                 return result
         else:
             rel_dir = download_release(home, base_url, rel, raw, sig)
-            activate(home, rel, rel_dir, allow_downgrade=allow_downgrade)
+            activate(home, rel, rel_dir)
         result.installed = True
     return result
 

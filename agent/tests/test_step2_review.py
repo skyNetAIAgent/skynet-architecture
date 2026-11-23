@@ -1,14 +1,14 @@
 """Adversarial tests for the step-2 APK update verifier (strict review).
 
 These checks attack the Python side of the APK-update pipeline
-(android/app/src/main/python/apk_update.py) and the maintainer CLI
+(tools/apk_update.py) and the maintainer CLI
 (tools/make_apk_manifest.py). They do not use sockets. Run them with:
 
     python -I -m unittest discover -s agent/tests -t agent/tests -p test_step2_review.py -v
 
 The contract under attack: a signed android/latest.json is accepted only when
 
-  * the detached signature verifies with a key from the APK's built-in
+  * the detached signature verifies with a key from the release tools' pinned
     trust.RELEASE_KEYS (never a downloaded key),
   * the JSON is strict (no duplicate keys, no NaN),
   * every field has the exact type and bounds,
@@ -20,7 +20,6 @@ The contract under attack: a signed android/latest.json is accepted only when
 
 import hashlib
 import json
-import shutil
 import subprocess
 import sys
 import tempfile
@@ -32,8 +31,7 @@ import helpers
 from skynet_agent import ed25519, signed, trust
 
 ROOT = Path(helpers.REPO_ROOT)
-GLUE = Path("android/app/src/main/python")
-sys.path.insert(0, str(ROOT / GLUE))
+sys.path.insert(0, str(ROOT / "tools"))
 import apk_update
 
 
@@ -210,8 +208,7 @@ class Step2Review(unittest.TestCase):
     def test_cli_tag_is_encoded_and_roundtrips(self):
         with tempfile.TemporaryDirectory() as tmp:
             repo = Path(helpers.copy_repo(Path(tmp, "repo")))
-            (repo / GLUE).mkdir(parents=True)
-            shutil.copy(ROOT / GLUE / "apk_update.py", repo / GLUE)
+            (repo / "android").mkdir()
             apk = repo / "SkyNet Agent.apk"
             apk.write_bytes(b"apk")
             helpers.build_test_release(str(repo), 1, "0.1.0")
@@ -229,8 +226,7 @@ class Step2Review(unittest.TestCase):
     def test_cli_rejects_invalid_inputs(self):
         with tempfile.TemporaryDirectory() as tmp:
             repo = Path(helpers.copy_repo(Path(tmp, "repo")))
-            (repo / GLUE).mkdir(parents=True)
-            shutil.copy(ROOT / GLUE / "apk_update.py", repo / GLUE)
+            (repo / "android").mkdir()
             apk = repo / "a.apk"
             apk.write_bytes(b"apk")
             helpers.build_test_release(str(repo), 1, "0.1.0")

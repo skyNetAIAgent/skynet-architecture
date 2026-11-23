@@ -79,7 +79,10 @@ def sequence_floor(home):
             if not isinstance(entry, dict) or type(entry.get("seq")) is not int:
                 raise ReleaseError("invalid local release number")
             highest = max(highest, entry["seq"])
-    return highest
+    history = read_local(os.path.join(home, "release-history.json"), {})
+    if not isinstance(history, dict) or type(history.get("seq", 0)) is not int:
+        raise ReleaseError("invalid durable release history")
+    return max(highest, history.get("seq", 0))
 
 
 def write_local(home, name, value):
@@ -192,8 +195,8 @@ def switch_version(home, rel, relative, confirmed=True):
     cur = read_local(os.path.join(home, "current.json"), {})
     previous = cur.get("previous")
     if cur and cur["dir"] != relative:
-        previous = {k: cur[k] for k in ("seq", "version", "dir")}
-    new = dict(seq=rel["seq"], version=rel["version"], dir=relative,
+        previous = {k: cur[k] for k in ("seq", "version", "dir", "runtime", "python", "compat", "manifest_sha256") if k in cur}
+    new = dict(runtime="python", python=sys.executable, seq=rel["seq"], version=rel["version"], dir=relative,
                previous=previous, activated=int(time.time()))
     highest = sequence_floor(home)
     if confirmed:
@@ -534,6 +537,8 @@ class NewerInstalled(InstallError):
 
 
 def install(home, base, *, from_dir=None, allow_local_http=False, allow_downgrade=False, test_key=None):
+    if allow_downgrade:
+        raise InstallError('downgrade is disabled')
     if from_dir is None:
         def get(path, limit=MAX_FILE_BYTES):
             return fetch(base.rstrip("/") + "/agent/" + path, limit, allow_local_http=allow_local_http)
@@ -547,13 +552,15 @@ def install(home, base, *, from_dir=None, allow_local_http=False, allow_downgrad
     with update_lock(home):
         floor = sequence_floor(home)
         if rel["seq"] < floor:
-            if from_dir is not None or not allow_downgrade:
-                message = "release %d is older than %d" % (rel["seq"], floor)
-                current = read_local(os.path.join(home, "current.json"), {})
-                if from_dir is not None and current.get("seq", 0) > rel["seq"]:
-                    raise NewerInstalled(message)
-                raise InstallError(message)
-            print("WARNING: installing release %d below %d" % (rel["seq"], floor), file=sys.stderr)
+            message = "release %d is older than %d" % (rel["seq"], floor)
+            current = read_local(os.path.join(home, "current.json"), {})
+            if from_dir is not None and current.get("seq", 0) > rel["seq"]:
+                raise NewerInstalled(message)
+            raise InstallError(message)
+        history = read_local(os.path.join(home, "release-history.json"), {})
+        bad = read_local(os.path.join(home, "bad_seqs.json"), [])
+        if rel["seq"] in bad or rel["seq"] in (history.get("bad_seqs") or []):
+            raise InstallError("release previously failed on this device")
         relative = prepare(home, rel, raw, sig, get)
         check_candidate(home, os.path.join(home, *relative.split("/")), rel)
         switch_version(home, rel, relative)
@@ -576,7 +583,6 @@ def main(argv=None):
     parser.add_argument("--linger", action="store_true", help="allow the Linux user service to run before login")
     parser.add_argument("--allow-local-http", action="store_true", help="allow HTTP on loopback for tests")
     parser.add_argument("--test-release-key", help="test public key for a development installer with empty pins")
-    parser.add_argument("--allow-downgrade", action="store_true", help="allow a release below the local maximum")
     args = parser.parse_args(argv)
     if args.linger and args.autostart is False:
         parser.error("--linger conflicts with --no-autostart")
@@ -592,7 +598,7 @@ def main(argv=None):
         os.makedirs(home, exist_ok=True)
         try:
             rel = install(home, base, from_dir=args.from_dir, allow_local_http=args.allow_local_http,
-                          allow_downgrade=args.allow_downgrade, test_key=args.test_release_key)
+                          test_key=args.test_release_key)
             message = "Installed version %s." % rel["version"]
         except NewerInstalled as e:
             if not args.keep_newer:

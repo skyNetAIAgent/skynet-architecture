@@ -67,8 +67,8 @@ class EndToEnd(unittest.TestCase):
 
     # The two tests share one repository and run in name order: the installer script first,
     # because the long test ends by publishing a deliberately broken release.
-    def test_1_platform_installer_script(self):
-        """install.ps1 on Windows, install.sh elsewhere: the first thing a participant runs."""
+    def test_1_python_installer_script(self):
+        """Install the signed Python release with its standalone installer."""
         home = os.path.join(self.tmp, "home-script")
         env = dict(self.env, SKYNET_AGENT_HOME=home)
         if os.name == "nt":
@@ -80,9 +80,12 @@ class EndToEnd(unittest.TestCase):
             cmd = [shell, "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", script, "--allow-local-http"]
             shim = os.path.join(home, "skynet-agent.cmd")
         else:
-            script = os.path.join(self.repo, "agent", "install.sh")
+            # install.sh now bootstraps the native v2 format (see test_linux_setup).
+            # Run the v1 installer independently of the source tree, as after download.
+            script = shutil.copyfile(os.path.join(self.repo, "agent", "install.py"),
+                                     os.path.join(self.tmp, "install.py"))
             bin_dir = os.path.join(self.tmp, "bin-script")
-            cmd = ["sh", script, "--allow-local-http", "--bin-dir", bin_dir]
+            cmd = [sys.executable, "-I", script, "--allow-local-http", "--bin-dir", bin_dir]
             shim = os.path.join(bin_dir, "skynet-agent")
         done = subprocess.run(cmd, env=env, capture_output=True, timeout=300)
         out = (done.stdout + done.stderr).decode("utf-8", "replace")

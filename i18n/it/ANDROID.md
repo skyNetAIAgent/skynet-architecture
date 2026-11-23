@@ -1,18 +1,17 @@
-<!-- translation of android/README.md, source sha256: 3fd07398dc6f1c3ed1d7c21b1315b13e43cdbf629cf72aab3887e8ebbd602e2b -->
+<!-- translation of android/README.md, source sha256: e6e5eb4a3358a14712c3c5b2e0efee2cd483b0009e7378ef16b31cc789c0d054 -->
 
 # Agente di ricerca SkyNet per Android (sperimentale)
 
 [English](../../android/README.md) · [中文](../zh/ANDROID.md) · [Español](../es/ANDROID.md) · [Français](../fr/ANDROID.md) · [Deutsch](../de/ANDROID.md) · **Italiano** · [Русский](../ru/ANDROID.md) · [Português](../pt/ANDROID.md) · [العربية](../ar/ANDROID.md)
 
-Un'app Android che porta lo stesso [agente di ricerca](../../agent/README.md) della versione
-desktop. Installate un file e premete Avvia. Per impostazione predefinita l'agente firma ogni
-risultato sul dispositivo e lo pubblica senza un account o un token.
+Un'app Android che porta gli stessi [kernel di calcolo Go](../../agent-go/README.md) della
+versione desktop. Installate un file e premete Avvia. Per impostazione predefinita l'agente
+firma ogni risultato sul dispositivo e lo pubblica senza un account o un token.
 In questa fase non sono previste ricompense.
 
-**Sperimentale.** Il 22 novembre 2026 la shell precedente è stata provata su un emulatore
-Android 14. Ha completato tutte e sette le unità di test, ha atteso la ricarica e ha mantenuto
-il proprio stato tra arresti e avvii. La shell 0.2.0 include l'agente 0.2.2. I suoi flussi di
-installazione e riavvio devono ancora essere verificati su Android.
+**Sperimentale.** La shell 0.3.0 include l'agente Go 1.0.0 (rilascio 7 del motore) nell'APK.
+L'installazione sopra la 0.2.0, il ciclo di vita del servizio e il riavvio devono ancora
+essere verificati su Android.
 
 ## Per i partecipanti
 
@@ -24,75 +23,68 @@ installazione e riavvio devono ancora essere verificati su Android.
    esecuzione.
 
 - Funziona solo mentre il dispositivo è in carica, a meno che non spuntiate "Lavora anche a
-  batteria". Il caricatore viene controllato tra una porzione di lavoro e l'altra: una
-  porzione già iniziata (di solito meno di un minuto) viene completata anche se scollegate il
-  dispositivo.
+  batteria". Scollegare il caricatore annulla l'unità corrente e la lascia disponibile per
+  un'esecuzione successiva.
 - Per riprendere dopo aver riavviato il dispositivo, attivate **Avvio dopo il riavvio**.
   L'opzione è disattivata per impostazione predefinita. Se premete **Arresta**, l'agente resta
   fermo anche dopo un riavvio.
 - Su Android 13 e versioni successive, se rifiutate le notifiche, l'app funziona comunque;
   Android la mostra allora solo nell'elenco delle app in esecuzione.
-- Gli utenti avanzati che selezionano `submit_via=github` possono inserire un token GitHub
-  nella schermata principale.
-- Android 7.0 o successivo, un dispositivo a 64 bit, circa 40 MB.
+- Se un profilo esistente usa `submit_via=github`, i suoi risultati restano in coda. Questa
+  versione supporta la pubblicazione tramite record di rete firmati.
+- Android 7.0 o successivo su arm64-v8a o x86_64.
 - La modalità IA facoltativa non è disponibile nell'app.
 - Per rimuoverla, disinstallate l'app; sul dispositivo non resta nient'altro.
 
 ## Aggiornamento dell'app
 
-Se avete la versione 0.1.0, installate la 0.2.0 da Releases sopra l'app esistente per
-mantenere le impostazioni e i risultati in coda. Dalla 0.2.0 in poi, aprendo la schermata
-viene controllata la presenza di un nuovo APK. Android pianifica anche un controllo
-giornaliero quando è disponibile una rete, anche se l'agente è fermo. Le restrizioni sulla
-batteria possono ritardare quel controllo.
+Installate la 0.3.0 sopra l'app esistente con la stessa firma del pacchetto per mantenere
+l'identità del dispositivo, le impostazioni, i progressi e i risultati in coda. Dalla 0.2.0
+in poi, aprendo la schermata viene controllata la presenza di un nuovo APK. Android pianifica
+anche un controllo giornaliero quando è disponibile una rete, anche se l'agente è fermo. Le
+restrizioni sulla batteria possono ritardare quel controllo.
 
 L'app verifica il manifest di rilascio firmato con la chiave incorporata nell'APK. Per una
 versione compatibile più recente, scarica il file di rilascio nella cache privata e ne
 controlla le dimensioni e lo SHA-256. Toccate il pulsante di aggiornamento o la notifica per
-installare l'aggiornamento. Su Android 8 e versioni successive, consentite l'installazione da
-SkyNet Agent se vi viene chiesto, tornate all'app e confermate nel programma di installazione
-di Android. Con le notifiche disattivate, usate il pulsante nella schermata principale.
+installarla. Su Android 8 e versioni successive, consentite l'installazione da SkyNet Agent se
+vi viene chiesto, tornate all'app e confermate nel programma di installazione di Android. Con
+le notifiche disattivate, usate il pulsante nella schermata principale.
 
-## Come si differenzia dall'agente desktop
+## Agente e aggiornamenti
 
-| | Desktop | App Android |
-|---|---|---|
-| Codice dell'agente | `agent/skynet_agent` | lo stesso pacchetto, incorporato nell'APK |
-| Lavoro | processi separati a bassa priorità | un'unità alla volta nel processo in background dell'app |
-| Limite di tempo | il processo worker viene terminato | un watchdog termina il processo in background; Android lo riavvia e il compito viene lasciato ai dispositivi più veloci |
-| Aggiornamenti dell'agente | versione firmata dal repository | l'APK verifica i file firmati e il numero di rilascio. Un nuovo agente ha tre avvii per superare un autocontrollo locale e completare un passo del ciclo |
-| L'app stessa | programma di avvio e programma di installazione | un APK verificato installato con la vostra conferma |
-| Pubblicazione | record firmati per impostazione predefinita | record firmati per impostazione predefinita |
+Il servizio in primo piano avvia l'eseguibile estratto nella directory delle librerie native.
+Esegue un solo worker a bassa priorità alla volta e mantiene un wake lock durante il calcolo.
+Un worker che supera il limite di tempo viene arrestato e l'agente salta temporaneamente quel
+compito. I nuovi compiti arrivano tramite l'indice dei compiti firmato. Il nuovo codice
+eseguibile arriva con un aggiornamento dell'app.
 
-Limiti, onestamente. L'APK è firmato con una chiave detenuta dai manutentori del progetto; Android
-accetta un aggiornamento dell'app solo se è firmato con la stessa chiave. La chiave di rilascio
-(per il codice dell'agente e gli elenchi dei compiti) e questa chiave dell'APK sono due singoli
-punti di fiducia che la rete SkyNet finale non deve avere. L'app carica codice Python firmato
-in fase di esecuzione, cosa che le regole di Google Play non consentono, quindi è distribuita
-come file.
+Android verifica il certificato di firma dell'APK durante l'installazione. La chiave di
+rilascio separata autentica l'indice dei compiti e il manifest di download dell'APK. L'app
+controlla dimensioni, SHA-256, nome del pacchetto e codice di versione dell'APK prima di
+aprire il programma di installazione.
 
 ## Compilatela da soli
 
-Servono JDK 17, l'Android SDK (platform 34, build-tools 34), Gradle 8.7 e Python 3.12 sul
-computer di compilazione.
+Su Linux, installate Go 1.27.4 con i sorgenti, Bash, GNU patch, coreutils, file e readelf
+(binutils). Per compilare l'APK servono anche JDK 17, Gradle 8.7 e Android SDK 34.
 
 ```sh
 cd android
 gradle assembleRelease
 ```
 
-Il risultato è `app/build/outputs/apk/release/app-release-unsigned.apk`. Firmatelo con la
-vostra chiave (`zipalign`, poi `apksigner sign`) prima di installarlo. Un APK firmato da voi
-non può essere installato sopra quello del progetto, e viceversa.
+Gradle richiama `./build-go.sh`. Eseguite quello script direttamente per compilare solo i due
+eseguibili `app/src/main/jniLibs/<abi>/libskynet.so`. Usa `GOOS=android`,
+`CGO_ENABLED=0` e PIE per entrambe le ABI. La build arm64 usa il Go standard. Per la build
+x86_64 per emulatore lo script abilita il linking interno in una copia temporanea degli
+strumenti di compilazione host di Go 1.27.4. Verifica l'architettura, il punto di ingresso e
+l'interprete `/system/bin/linker64` prima di installare uno dei due file.
 
-Compilate l'app solo da un commit in cui `agent/skynet_agent/trust.py` elenca la chiave di
-rilascio: un agente senza chiave di rilascio non accetta compiti. La build di rilascio si
-ferma con un errore in quel caso; `-PallowNoReleaseKey` compila comunque un APK del genere,
-solo per i test.
-
-Il bridge dell'agente e il verificatore dell'APK hanno test Python separati sul desktop.
-[Test dell'agente](../../agent/tests/test_android_glue.py) · [Test degli aggiornamenti dell'APK](../../agent/tests/test_apk_update.py)
-Python è incorporato con [Chaquopy](https://chaquo.com/chaquopy/) (licenza MIT).
+L'APK di rilascio è `app/build/outputs/apk/release/app-release-unsigned.apk`. Usate
+`zipalign`, poi `apksigner sign` con la stessa chiave dell'APK precedente per gli
+aggiornamenti sul posto. Generate e firmate `android/latest.json` dall'APK firmato finale con
+`tools/make_apk_manifest.py`.
 
 ## Licenza
 

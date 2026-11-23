@@ -7,12 +7,6 @@
     <string name="start">Iniciar</string>
     <string name="stop">Detener</string>
     <string name="run_on_battery">Trabajar también con batería</string>
-    <string name="token_help">Los resultados se publican como comentarios en GitHub con su cuenta. Cree un token en GitHub (Configuración → Configuración de desarrollador → Tokens de acceso personal) que pueda escribir incidencias de repositorios públicos y péguelo aquí. Se guarda solo dentro de esta aplicación. Sin token, los resultados esperan en el dispositivo.</string>
-    <string name="token_hint">Token de GitHub</string>
-    <string name="save_token">Guardar token</string>
-    <string name="token_saved">Token guardado</string>
-    <string name="token_removed">Token eliminado</string>
-    <string name="token_not_saved">No se pudo guardar el token</string>
     <string name="setting_not_saved">No se pudo guardar el ajuste</string>
     <string name="about">¿Qué es esto? (abre la página del proyecto)</string>
     <string name="about_url">https://github.com/skyNetAIAgent/skynet-architecture/blob/main/i18n/es/ANDROID.md</string>
@@ -26,8 +20,6 @@
     <string name="label_version">Versión del agente: %1$s (publicación n.º %2$d)</string>
     <string name="label_units">Unidades hechas: %1$d, fallidas: %2$d</string>
     <string name="label_published">Publicados: %1$d, en espera: %2$d</string>
-    <string name="label_token_set">Token de GitHub: configurado</string>
-    <string name="label_token_missing">Token de GitHub: no configurado</string>
     <string name="label_problem">Último problema: %1$s</string>
 
     <!-- Estados que informa el agente (el campo «code» de status.json). -->
@@ -35,14 +27,14 @@
     <string name="state_expired">la lista de tareas ha caducado; esperando una nueva</string>
     <string name="state_halted">en pausa por los responsables</string>
     <string name="state_paused">en pausa</string>
-    <string name="state_outbox_full">hay demasiados resultados esperando a publicarse; añada un token de GitHub</string>
     <string name="state_not_charging">no se está cargando, esperando el cargador</string>
     <string name="state_all_done">todas las tareas disponibles están hechas en este dispositivo</string>
     <string name="state_working">trabajando</string>
     <string name="state_stopped">detenido</string>
     <string name="state_error">error</string>
-    <string name="problem_no_token">aún no hay token de GitHub: pegue uno abajo para publicar los resultados</string>
 
+    <string name="github_unsupported">Esta versión no puede publicar en GitHub. Los resultados pendientes se conservan en este dispositivo.</string>
+    <string name="engine_stopped">El agente se ha detenido. Pulsa Iniciar para volver a intentarlo.</string>
     <string name="queue_full">La cola de resultados está llena. Esperando para publicar.</string>
     <string name="start_on_boot">Iniciar después de reiniciar el dispositivo</string>
     <string name="app_updates">Actualizaciones de la aplicación</string>
