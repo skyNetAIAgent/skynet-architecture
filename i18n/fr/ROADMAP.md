@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: 179a6350fb2d665a7c94f5f2cfa6b2e520f28c4174e3b619f3a31299f63f53ff -->
+<!-- translation of docs/ROADMAP.md, source sha256: 399e88d066220832181ce47481154752f855bc304a3f7a497fc20b1fe5c6bcf5 -->
 
 # Feuille de route : protection contre la fraude
 
@@ -12,7 +12,7 @@ est mise à jour à chaque changement de statut.
 ## 1. Objectif et critères d'achèvement
 
 **Objectif de l'étape actuelle du projet :** trouver un moyen de vérifier l'honnêteté qui satisfasse en
-même temps les exigences obligatoires ([REQUIREMENTS](../ru/REQUIREMENTS.md)) :
+même temps les exigences obligatoires ([REQUIREMENTS](REQUIREMENTS.md)) :
 
 - il est impossible de tromper le réseau : la fraude est inutile ou déficitaire, y compris pour un débutant
   avec un compte vide, en cas de collusion et avec de nombreuses clés ;
@@ -289,13 +289,18 @@ version Windows est publiée sans signature de code.
 - [ ] Pour une requête ouverte et une étape d'apprentissage sont consignés : la règle d'acceptation,
       l'arithmétique, le fondement de l'émission de crédits, le moment de fixation du résultat par rapport au
       tirage au sort et le moment où le résultat peut être utilisé.
-- [ ] Le modèle de l'adversaire en un seul document : collusion, nombreuses clés, départ, location de
-      puissance ; ce qui compte comme gain du fraudeur et ce qui compte comme dommage au réseau.
-- [ ] Le tableau des attaques analysées est publié dans le dépôt en neuf langues avec le statut de chaque
-      attaque pour les variantes A et B. Avant publication, vérifier les lignes : dans le résumé de
-      CURRENT_DESIGN, la somme des catégories 18 + 6 + 19 + 16 = 59 alors que 60 sont annoncées.
-- [ ] Pour chaque attaque, il est consigné à partir de quelles données vérifiables indépendamment le nœud
-      rejettera la fausse déclaration en cas de collusion de l'exécutant et des vérificateurs.
+- [x] Le modèle de l'adversaire en un seul document : [THREAT_MODEL](THREAT_MODEL.md), section 1 (conseil
+      de six modèles et de trois critiques, 24 novembre 2026).
+- [x] Le tableau des attaques analysées est publié en neuf langues avec le statut de chaque attaque pour
+      les variantes A et B : 60 attaques de la spécification et 32 nouvelles. L'écart entre 59 et 60 est
+      expliqué : la ligne 1.9 (« pas une attaque ») a été omise dans le résumé.
+- [x] Pour chaque attaque, il est consigné à partir de quelles données vérifiables indépendamment le nœud
+      rejettera la fausse déclaration en cas de collusion de l'exécutant et des vérificateurs. Bilan : ni la
+      variante A ni la variante B ne satisfont D1 littéralement ; un gain pécuniaire est possible dans
+      24 lignes de A et 25 lignes de B [calcul].
+- [ ] Les réponses du propriétaire aux questions de la section 5 de [THREAT_MODEL](THREAT_MODEL.md) (ce qui
+      entre dans D1, litige depuis un compte à zéro, composition du noyau, approbation du plan
+      d'apprentissage et autres).
 
 Terminé quand : tout participant peut, à l'aide du tableau, identifier une attaque qui reste sans parade et vérifier que c’est bien le cas.
 

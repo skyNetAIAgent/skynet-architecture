@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: 179a6350fb2d665a7c94f5f2cfa6b2e520f28c4174e3b619f3a31299f63f53ff -->
+<!-- translation of docs/ROADMAP.md, source sha256: 399e88d066220832181ce47481154752f855bc304a3f7a497fc20b1fe5c6bcf5 -->
 
 # Tabella di marcia: difesa dall'inganno
 
@@ -13,7 +13,7 @@ marcia viene aggiornata a ogni cambiamento di stato.
 ## 1. Obiettivo e segni di completamento
 
 **Obiettivo della fase attuale del progetto:** trovare un modo di verificare l'onestà per il quale siano
-soddisfatti insieme i requisiti obbligatori ([REQUIREMENTS](../ru/REQUIREMENTS.md)):
+soddisfatti insieme i requisiti obbligatori ([REQUIREMENTS](REQUIREMENTS.md)):
 
 - ingannare la rete è impossibile: l'inganno è inutile o in perdita, anche per un novizio con il conto
   vuoto, in caso di collusione e con molte chiavi;
@@ -292,13 +292,18 @@ la versione Windows viene rilasciata senza firma del codice.
 - [ ] Per una richiesta aperta e un passo di addestramento sono scritti: la regola di accettazione,
       l'aritmetica, il fondamento dell'emissione di crediti, il momento di fissazione del risultato
       rispetto al sorteggio e il momento in cui il risultato si può usare.
-- [ ] Modello dell'avversario in un unico documento: collusione, molte chiavi, uscita, noleggio di potenza;
-      che cosa conta come guadagno dell'ingannatore e che cosa conta come danno alla rete.
-- [ ] La tabella degli attacchi analizzati è pubblicata nel repository in nove lingue con lo stato di ogni
-      attacco per le varianti A e B. Prima della pubblicazione verificare le righe: nel riepilogo di
-      CURRENT_DESIGN la somma delle categorie è 18 + 6 + 19 + 16 = 59 contro 60 dichiarati.
-- [ ] Per ogni attacco è scritto in base a quali dati verificabili in modo indipendente il nodo rifiuterà
-      una dichiarazione falsa in caso di collusione dell'esecutore e dei verificatori.
+- [x] Modello dell'avversario in un unico documento: [THREAT_MODEL](THREAT_MODEL.md), sezione 1
+      (consiglio di sei modelli e tre critici, 24 novembre 2026).
+- [x] La tabella degli attacchi analizzati è pubblicata in nove lingue con lo stato di ogni attacco
+      per le varianti A e B: 60 attacchi della specifica e 32 nuovi. La discrepanza tra 59 e 60 è
+      spiegata: nel riepilogo mancava la riga 1.9 («non un attacco»).
+- [x] Per ogni attacco è scritto in base a quali dati verificabili in modo indipendente il nodo
+      rifiuterà una dichiarazione falsa in caso di collusione dell'esecutore e dei verificatori.
+      Esito: né la variante A né la variante B soddisfano D1 alla lettera; un guadagno monetario è
+      possibile in 24 righe della A e 25 righe della B [calcolo].
+- [ ] Risposte del proprietario alle domande della sezione 5 di [THREAT_MODEL](THREAT_MODEL.md)
+      (che cosa rientra in D1, controversia dal conto vuoto, composizione del nucleo,
+      approvazione del piano di addestramento e altre).
 
 Completato quando: qualsiasi partecipante può indicare in base alla tabella un attacco non chiuso e
 verificarlo.

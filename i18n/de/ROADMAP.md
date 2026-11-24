@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: 179a6350fb2d665a7c94f5f2cfa6b2e520f28c4174e3b619f3a31299f63f53ff -->
+<!-- translation of docs/ROADMAP.md, source sha256: 399e88d066220832181ce47481154752f855bc304a3f7a497fc20b1fe5c6bcf5 -->
 
 # Roadmap: Schutz vor Betrug
 
@@ -13,7 +13,7 @@ ermittelt, nicht gemessen. Die Roadmap wird bei jeder Statusänderung aktualisie
 ## 1. Ziel und Fertigstellungskriterien
 
 **Ziel der aktuellen Projektphase:** eine Methode zur Ehrlichkeitsprüfung zu finden, bei der
-zugleich die verbindlichen Anforderungen erfüllt sind ([REQUIREMENTS](../ru/REQUIREMENTS.md)):
+zugleich die verbindlichen Anforderungen erfüllt sind ([REQUIREMENTS](REQUIREMENTS.md)):
 
 - das Netz lässt sich nicht betrügen: Betrug ist nutzlos oder unrentabel, auch für einen Neuling
   mit leerem Konto, bei Absprache und bei vielen Schlüsseln;
@@ -302,14 +302,19 @@ gemacht; die Windows-Version wird ohne Codesignatur veröffentlicht.
 - [x] Die Entscheidungen D1 und D2 sind getroffen und aufgeschrieben (Abschnitt 3).
 - [ ] Für eine offene Anfrage und einen Lernschritt sind aufgeschrieben: Annahmeregel, Arithmetik,
       Grundlage der Ausgabe von Credits, der Zeitpunkt, zu dem das Ergebnis im Verhältnis zur Auslosung festgelegt wird und der Zeitpunkt, ab dem das Ergebnis genutzt werden darf.
-- [ ] Gegnermodell in einem Dokument: Absprache, viele Schlüssel, Weggang, gemietete
-      Rechenleistung; was als Gewinn des Betrügers gilt und was als Schaden für das Netz.
-- [ ] Die Tabelle der analysierten Angriffe ist im Repositorium in neun Sprachen veröffentlicht,
-      mit dem Status jedes Angriffs für die Varianten A und B. Vor der Veröffentlichung die Zeilen
-      abgleichen: In der Zusammenfassung von CURRENT_DESIGN ergibt die Summe der Kategorien
-      18 + 6 + 19 + 16 = 59 bei angegebenen 60.
-- [ ] Für jeden Angriff ist aufgeschrieben, anhand welcher unabhängig prüfbaren Daten ein Knoten
-      eine falsche Meldung bei Absprache von Ausführendem und Prüfern verwirft.
+- [x] Gegnermodell in einem Dokument: [THREAT_MODEL](THREAT_MODEL.md), Abschnitt 1 (Modellrat aus
+      sechs Modellen und drei Kritikern, 24. November 2026).
+- [x] Die Tabelle der analysierten Angriffe ist in neun Sprachen veröffentlicht, mit dem Status
+      jedes Angriffs für die Varianten A und B: 60 Angriffe der Spezifikation und 32 neue. Die
+      Abweichung zwischen 59 und 60 ist erklärt: In der Zusammenfassung fehlte die Zeile 1.9
+      („kein Angriff“).
+- [x] Für jeden Angriff ist aufgeschrieben, anhand welcher unabhängig prüfbaren Daten ein Knoten
+      eine falsche Meldung bei Absprache von Ausführendem und Prüfern verwirft. Ergebnis: Weder
+      Variante A noch Variante B erfüllt D1 wörtlich; ein Geldgewinn ist in 24 Zeilen von A und 25
+      Zeilen von B möglich [Berechnung].
+- [ ] Antworten des Eigentümers auf die Fragen aus Abschnitt 5 von [THREAT_MODEL](THREAT_MODEL.md)
+      (was D1 umfasst, Streitfall ab leerem Konto, Zusammensetzung des Kerns, Genehmigung des
+      Trainingsplans und weitere).
 
 Fertig, wenn: jeder Teilnehmer anhand der Tabelle einen nicht geschlossenen Angriff nennen und
 dies prüfen kann.
@@ -383,7 +388,7 @@ schließen.
 
 - [ ] **Aufgaben mit billigem exaktem Richtigkeitsmerkmal.** Beispiel: Bei der Ridge-Regression
       prüft ein Knoten die Optimalitätsbedingung in einem Durchlauf über die Daten. Frage: Welcher
-      Anteil der Netzarbeit passt in solche Aufgaben. Mit dieser Richtung beginnen: Sie schließt unberechtigte Auszahlungen aus.
+      Anteil der Netzarbeit passt in solche Aufgaben. Mit dieser Richtung beginnen: Sie führt zu null unberechtigten Auszahlungen.
 - [ ] **Prüfung jeder Matrixmultiplikation mit einem Zufallsvektor** statt Neuberechnung. Der
       Vektor wird nach der Fixierung des Ergebnisses gewählt; die Wahrscheinlichkeit, einen Fehler
       zu übersehen, hängt nicht von der Absprache ab. Vorteilhaft für große Batches; bei der

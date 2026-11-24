@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: 179a6350fb2d665a7c94f5f2cfa6b2e520f28c4174e3b619f3a31299f63f53ff -->
+<!-- translation of docs/ROADMAP.md, source sha256: 399e88d066220832181ce47481154752f855bc304a3f7a497fc20b1fe5c6bcf5 -->
 
 # Roteiro: defesa contra fraude
 
@@ -12,7 +12,7 @@ a cada mudança de status.
 ## 1. Objetivo e critérios de prontidão
 
 **Objetivo da etapa atual do projeto:** encontrar um modo de verificar a honestidade em que sejam cumpridos
-ao mesmo tempo os requisitos obrigatórios ([REQUIREMENTS](../ru/REQUIREMENTS.md)):
+ao mesmo tempo os requisitos obrigatórios ([REQUIREMENTS](REQUIREMENTS.md)):
 
 - não se pode fraudar a rede: a fraude é inútil ou dá prejuízo, inclusive para um novato com conta vazia,
   em conluio e com muitas chaves;
@@ -281,13 +281,17 @@ para Windows é lançada sem assinatura de código.
 - [ ] Para uma solicitação aberta e uma etapa de treinamento, estão registrados: a regra de aceitação,
       a aritmética, a base da emissão de créditos, o momento de fixação do resultado em relação ao sorteio
       e o momento em que o resultado pode ser usado.
-- [ ] Modelo do adversário em um único documento: conluio, muitas chaves, saída, aluguel de capacidade;
-      o que conta como ganho do fraudador e o que conta como dano à rede.
-- [ ] A tabela de ataques analisados foi publicada no repositório em nove idiomas com o status de cada
-      ataque para as variantes A e B. Antes da publicação, conferir as linhas: no resumo do CURRENT_DESIGN
-      a soma das categorias é 18 + 6 + 19 + 16 = 59, enquanto são declarados 60.
-- [ ] Para cada ataque está registrado por quais dados verificáveis de forma independente o nó rejeitará
-      a declaração falsa em conluio do executor e dos verificadores.
+- [x] Modelo do adversário em um único documento: [THREAT_MODEL](THREAT_MODEL.md), seção 1 (conselho de
+      seis modelos e três críticos, 24 de novembro de 2026).
+- [x] A tabela de ataques analisados foi publicada em nove idiomas com o status de cada ataque para as
+      variantes A e B: 60 ataques da especificação e 32 novos. A discrepância entre 59 e 60 foi
+      explicada: no resumo faltou a linha 1.9 («não é ataque»).
+- [x] Para cada ataque está registrado por quais dados verificáveis de forma independente o nó rejeitará
+      a declaração falsa em conluio do executor e dos verificadores. Resultado: nem a variante A nem a
+      variante B cumprem D1 literalmente; o ganho monetário é possível em 24 linhas de A e 25 linhas de B
+      [cálculo].
+- [ ] Respostas do dono às perguntas da seção 5 do [THREAT_MODEL](THREAT_MODEL.md) (o que entra em D1,
+      disputa a partir de conta zero, composição do núcleo, aprovação do plano de treinamento e outras).
 
 Pronto quando: qualquer participante puder nomear pela tabela um ataque não fechado e conferir isso.
 

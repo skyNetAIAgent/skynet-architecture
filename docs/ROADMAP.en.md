@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: 179a6350fb2d665a7c94f5f2cfa6b2e520f28c4174e3b619f3a31299f63f53ff -->
+<!-- translation of docs/ROADMAP.md, source sha256: 399e88d066220832181ce47481154752f855bc304a3f7a497fc20b1fe5c6bcf5 -->
 
 # Roadmap: protection against cheating
 
@@ -12,7 +12,7 @@ updated on every status change.
 ## 1. Goal and readiness criteria
 
 **The goal of the current project stage:** to find a way to check honesty under which the mandatory
-requirements ([REQUIREMENTS](../i18n/ru/REQUIREMENTS.md)) are met at the same time:
+requirements ([REQUIREMENTS](../REQUIREMENTS.md)) are met at the same time:
 
 - the network cannot be cheated: cheating is useless or unprofitable, including for a newcomer
   with an empty account, under collusion, and with many keys;
@@ -57,13 +57,13 @@ of ideas.
 
 | What | Status | Where it is recorded |
 |---|---|---|
-| From signatures and short answers it cannot be established which device worked and for how long: a proxy, a cache, and an idle card give the same data | Established by reasoning | [OPEN_QUESTIONS](OPEN_QUESTIONS.md), "What has already been rejected" |
-| The network pays for a verifiable result, not for a resource | Accepted (D2); the unit of result and the acceptance condition are not yet defined | [CURRENT_DESIGN](CURRENT_DESIGN.md), section 1 |
+| From signatures and short answers it cannot be established which device worked and for how long: a proxy, a cache, and an idle card give the same data | Established by reasoning | [OPEN_QUESTIONS](OPEN_QUESTIONS.en.md), "What has already been rejected" |
+| The network pays for a verifiable result, not for a resource | Accepted (D2); the unit of result and the acceptance condition are not yet defined | [CURRENT_DESIGN](CURRENT_DESIGN.en.md), section 1 |
 | Deferred payment instead of a deposit: a participant can lose only the pending amount | Accepted | CURRENT_DESIGN, section 2 |
 | Variant A: verification by sampling, with cancellation of pending rewards when fraud is detected | Current specification | CURRENT_DESIGN, section 3 |
 | Variant B: the network pays only for verified tasks, paying `1/p` times the base price for each | Main candidate; the choice after comparison (D3) | CURRENT_DESIGN, section 3 |
 | Bit-for-bit match of the result through integer arithmetic | Candidate, not measured | OPEN_QUESTIONS, Q2 |
-| Dispute by halving with recomputation of one step in the ledger | Measured for one row of the model; not built for the full model | [PILOT_RESULTS](PILOT_RESULTS.md) |
+| Dispute by halving with recomputation of one step in the ledger | Measured for one row of the model; not built for the full model | [PILOT_RESULTS](PILOT_RESULTS.en.md) |
 | Verification of matrix multiplication with a random vector inside a dispute | Candidate, only a calculated estimate exists | CURRENT_DESIGN, section 3 |
 | An unchangeable verification core that cannot be revoked by a vote | Accepted (D4) | CURRENT_DESIGN, section 8 |
 
@@ -146,7 +146,7 @@ Already done:
 - [x] An agent program for Windows and Linux: signed tasks and updates, automatic
       checks in CI (release 0.2.0). Installation with one command
       in the terminal; Python 3.9+ is required.
-- [x] Results and the [task board](BOARD.md) without an account.
+- [x] Results and the [task board](BOARD.en.md) without an account.
 - [x] The first full node storing the history of records.
 - [x] The first research task "Defense against cheaters" on the board, in nine languages.
 - [x] A trial Android app 0.1.0 (checked only on the emulator).
@@ -270,15 +270,20 @@ removed.
 - [ ] For one public request and one training step the following are recorded: the acceptance rule,
       the arithmetic, the basis for issuing credits, the moment the result is fixed relative to the
       draw, and the moment when the result may be used.
-- [ ] The adversary model in one document: collusion, many keys, leaving, renting capacity; what
-      counts as the cheater's gain and what counts as damage to the network.
-- [ ] The table of analyzed attacks is published in the repository in nine languages with the status
-      of each attack for Variants A and B. Before publication, check the rows: in the CURRENT_DESIGN
-      summary the sum of the categories is 18 + 6 + 19 + 16 = 59 against the claimed 60.
-- [ ] For each attack it is recorded from which independently checkable data a node will reject a
-      false claim under collusion of the performer and the verifiers.
+- [x] The adversary model in one document: [THREAT_MODEL](THREAT_MODEL.en.md), section 1 (a council of
+      six models and three critics, 24 November 2026).
+- [x] The table of analyzed attacks is published in nine languages with the status of each attack
+      for Variants A and B: 60 attacks from the specification and 32 new ones. The discrepancy
+      between 59 and 60 is explained: row 1.9 ("not an attack") was missing from the summary.
+- [x] For each attack it is recorded from which independently checkable data a node will reject a
+      false claim under collusion of the performer and the verifiers. Result: neither Variant A nor
+      Variant B satisfies D1 literally; a monetary gain is possible in 24 rows of A and 25 rows of B
+      [calculated].
+- [ ] The owner's answers to the questions in section 5 of [THREAT_MODEL](THREAT_MODEL.en.md) (what D1
+      covers, a dispute from a zero account, the composition of the core, approval of the training
+      plan, and others).
 
-Done when: any participant can use the table to name an attack the defenses do not yet cover and verify that it remains unaddressed.
+Done when: any participant can use the table to name an attack that is still open and verify this.
 
 ### Stage 2. Economics: calculations performed by mini-agents
 

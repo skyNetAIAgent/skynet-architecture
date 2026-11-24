@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: 179a6350fb2d665a7c94f5f2cfa6b2e520f28c4174e3b619f3a31299f63f53ff -->
+<!-- translation of docs/ROADMAP.md, source sha256: 399e88d066220832181ce47481154752f855bc304a3f7a497fc20b1fe5c6bcf5 -->
 
 # Hoja de ruta: defensa contra el engaño
 
@@ -12,7 +12,7 @@ con cada cambio de estado.
 ## 1. Objetivo y criterios de finalización
 
 **Objetivo de la etapa actual del proyecto:** encontrar una forma de verificar la honestidad que cumpla
-a la vez los requisitos obligatorios ([REQUIREMENTS](../ru/REQUIREMENTS.md)):
+a la vez los requisitos obligatorios ([REQUIREMENTS](REQUIREMENTS.md)):
 
 - no se puede engañar a la red: el engaño es inútil o deficitario, también para un novato con la cuenta vacía,
   con colusión y con muchas claves;
@@ -284,13 +284,18 @@ hacen; la versión para Windows se publica sin firma de código.
 - [ ] Para una petición abierta y un paso de entrenamiento están escritos: la regla de aceptación, la aritmética,
       la base de la emisión de créditos, el momento de fijación del resultado respecto al sorteo y el momento en que
       el resultado se puede usar.
-- [ ] Modelo del adversario en un solo documento: colusión, muchas claves, abandono, alquiler de potencia; qué
-      se considera ganancia del defraudador y qué se considera daño a la red.
-- [ ] La tabla de ataques analizados está publicada en el repositorio en nueve idiomas con el estado de cada
-      ataque para las variantes A y B. Antes de publicar, comprobar las filas: en el resumen de CURRENT_DESIGN la suma
-      de las categorías 18 + 6 + 19 + 16 = 59 frente a los 60 declarados.
-- [ ] Para cada ataque está escrito con qué datos verificables de forma independiente rechazará el nodo una
-      declaración falsa en caso de colusión del ejecutor y de los verificadores.
+- [x] Modelo del adversario en un solo documento: [THREAT_MODEL](THREAT_MODEL.md), sección 1 (consejo de
+      seis modelos y tres críticos, 24 de noviembre de 2026).
+- [x] La tabla de ataques analizados está publicada en nueve idiomas con el estado de cada ataque para
+      las variantes A y B: 60 ataques de la especificación y 32 nuevos. La discrepancia entre 59 y 60 está
+      explicada: en el resumen se omitió la fila 1.9 («no es un ataque»).
+- [x] Para cada ataque está escrito con qué datos verificables de forma independiente rechazará el nodo
+      una declaración falsa en caso de colusión del ejecutor y de los verificadores. Resultado: ni la
+      variante A ni la variante B cumplen D1 literalmente; la ganancia monetaria es posible en 24 filas
+      de A y 25 filas de B [cálculo].
+- [ ] Respuestas del propietario a las preguntas de la sección 5 de [THREAT_MODEL](THREAT_MODEL.md) (qué
+      entra en D1, disputa desde una cuenta a cero, composición del núcleo, aprobación del plan de
+      entrenamiento y otras).
 
 Terminado cuando: cualquier participante puede nombrar a partir de la tabla un ataque que sigue sin mitigarse y comprobar que es así.
 
