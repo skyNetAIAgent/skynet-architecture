@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: 93653f04265bb06c4c65bc040601db4a37aeabccf6d2a88155b16231d6e81734 -->
+<!-- translation of docs/ROADMAP.md, source sha256: 12b7bca8ea86e93bfc2e59f9b55ac57a13e76ffa228340f784c320b126825db8 -->
 
 # Tabella di marcia: difesa dall'inganno
 
@@ -440,6 +440,9 @@ un limite dimostrato. È considerata trovata la costruzione che soddisfa tutti i
 
 ### Fase 5. Fondamenti che si stabiliscono solo con l'esperienza (consentito da D5)
 
+- [x] Piano dell'esperimento: profilo ad aritmetica intera di Qwen3.5-4B, protocolli O1–O5 e criteri
+      di confutazione prima dell'avvio — [EXPERIMENT_D5](EXPERIMENT_D5.md), 24 novembre 2026. La seconda
+      scheda video è una RTX 4070 Laptop sul computer del proprietario.
 - [ ] Qwen3.5-4B ad aritmetica intera su due schede video diverse: se i bit coincidono.
 - [ ] La sua velocità rispetto al profilo normale sulle stesse schede.
 - [ ] La sua qualità rispetto al profilo normale sullo stesso insieme di compiti.

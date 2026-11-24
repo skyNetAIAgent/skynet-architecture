@@ -1,0 +1,107 @@
+<!-- translation of docs/EXPERIMENT_D5.md, source sha256: 8c74b11b335ebd7a0797e908c40ed9e4c2b98395835bb319e3272b464224875d -->
+
+# Experimento D5: Qwen3.5-4B entero
+
+[English](../../docs/EXPERIMENT_D5.en.md) · [中文](../zh/EXPERIMENT_D5.md) · **Español** · [Français](../fr/EXPERIMENT_D5.md) · [Deutsch](../de/EXPERIMENT_D5.md) · [Italiano](../it/EXPERIMENT_D5.md) · [Русский](../../docs/EXPERIMENT_D5.md) · [Português](../pt/EXPERIMENT_D5.md) · [العربية](../ar/EXPERIMENT_D5.md)
+
+Estado a 24 de noviembre de 2026: **plan del experimento, todavía no hay mediciones.** El experimento está autorizado por la decisión D5
+([ROADMAP](ROADMAP.md), sección 3) y forma parte de la etapa 5 de la hoja de ruta. Comprueba el principal supuesto no medido
+del mejor candidato de la etapa 4 — la verificación de la respuesta por el propio pagador (PPS,
+[VERIFICATION_SEARCH](VERIFICATION_SEARCH.md), secciones 3.2 y 5.2).
+
+## 1. Qué se comprueba
+
+El pagador que tiene el modelo debe recalcular en una sola pasada la petición y la respuesta recibida
+y obtener **los mismos bits** que el ejecutor al generar. Esto es posible solo si toda
+la aritmética del modelo está definida con números enteros con redondeo fijado: la suma de enteros no depende
+del orden de la suma mientras no haya desbordamiento. El experimento responde a cinco preguntas; los criterios
+de refutación se fijan antes del lanzamiento:
+
+| Experimento | Pregunta | Qué lo refuta |
+|---|---|---|
+| O1 | ¿Coinciden los bits en tarjetas gráficas distintas y en el procesador | Al menos un bit distinto de los logits, del token elegido, de la causa de parada o de los hashes de control con la misma entrada. Antes de la conclusión — búsqueda de la primera discrepancia y repetición con la entrada más corta. La conclusión se refiere solo a los dispositivos probados y a la versión de la implementación |
+| O2 | ¿Coinciden los bits al generar token a token y en una sola pasada sobre la secuencia completa en una misma tarjeta | Cualquier bit distinto, incluido el hash del estado recurrente de las capas Gated DeltaNet en los puntos de control |
+| O3 | ¿Cuánto cuesta la verificación de la respuesta en comparación con su generación | La mediana de la proporción `ρ(1)` mayor que 5% al menos para uno de los cuatro pares de longitudes de petición y respuesta nombrados de antemano con lote 1. Los lotes 8 y 32 se miden por separado |
+| O4 | ¿Cuánto más lento es el perfil entero que el habitual de 8 bits en la misma tarjeta | La mediana de la ralentización mayor que 1,25 veces en la celda comparable (el umbral es diagnóstico: deciden O3 y O5) |
+| O5 | ¿Cuánta calidad se pierde | La pérdida de precisión mayor que 3 puntos porcentuales en 320 tareas elegidas de antemano (64 de cada uno de los cuatro apartados de MMLU y del MGSM ruso) en comparación con el perfil habitual de 8 bits del mismo modelo |
+
+El 1,2–3,8% calculado de la etapa 4 no se considera resultado de O3: solo este experimento lo confirma
+o lo refuta.
+
+## 2. Modelo y equipo
+
+- **Modelo:** repositorio oficial Qwen/Qwen3.5-4B en Hugging Face, revisión fijada
+  `851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a`. Dos archivos de pesos de 5 329 398 688 y 3 990 429 408
+  bytes, en total unos 9,3 GB. Tras la descarga se cotejan los SHA-256 del inventario del repositorio.
+- **Arquitectura** (según el `config.json` publicado): 32 bloques, vector oculto 2560, MLP 9216.
+  Cada cuarto bloque (índices 3, 7, …, 31) es atención completa: 16 cabezas de consulta, 4 cabezas
+  de clave y valor, tamaño de cabeza 256, puerta de salida, rotación de las primeras 64 coordenadas. Los otros
+  24 bloques son Gated DeltaNet: estado recurrente 32 × 128 × 128 por bloque, convolución causal
+  de profundidad 4. Vocabulario 248 320, matrices de entrada y salida compartidas. El «INT-canónico»
+  de transformador habitual de la etapa 4 no le basta; el perfil se define de nuevo (sección 3).
+- **Dispositivos:** RTX 2060 6 GB (Turing) en el Linux doméstico del acompañante; RTX 4070 Laptop
+  8 GB (Ada) en el ordenador del propietario; el procesador como tercer ejecutor independiente. Con su consentimiento —
+  dispositivos de otros participantes mediante un miniagente.
+- **Memoria** [cálculo]: los pesos principales de 8 bits — 4010 MiB. Con lote 1 y longitud de hasta 3000 tokens
+  todo cabe en 6 GB; el lote 32 con longitud 3000 requiere unos 7064 MiB aun antes de los búferes de trabajo
+  y en la RTX 2060 solo es posible con traslado de la historia a la memoria RAM.
+
+## 3. Perfil entero
+
+El perfil recibe un nombre y una versión aparte y se congela antes de O1–O5. La base es el grafo numérico
+del proyecto de ChatGPT con las correcciones de ambos críticos:
+
+1. **Pesos y activaciones.** Pesos de 8 bits por filas, escala de la fila — número binario exacto.
+   Activaciones de 16 bits con coma fija (1024 = unidad). El redondeo es el mismo para todas
+   las operaciones: al más cercano, la mitad — al par, por módulo y con devolución del signo.
+2. **Normalizaciones y no linealidades** (RMSNorm, L2, SiLU, sigmoide, softplus, exponencial) — fórmulas
+   enteras con raíz cuadrada entera y tablas. Las tablas se construyen fuera del programa con redondeo correcto
+   demostrado (MPFR) y se publican con SHA-256.
+3. **Atención completa.** Puntuaciones, exponencial por tabla, proporciones en 16 bits. El crítico ChatGPT encontró
+   en el proyecto original un error: con valores iguales, añadir otra clave igual
+   cambiaba la salida de 1365 a 683. Corrección: dividir la suma ponderada entre la suma de las propias proporciones
+   redondeadas; entonces el valor constante se conserva exactamente.
+4. **Gated DeltaNet.** Decaimiento, corrección y actualización del estado — cinco asignaciones enteras
+   por cada token en un único orden canónico por tiempo. La fórmula del proyecto de DeepSeek
+   describía otra recursión y se rechazó. La forma «por bloques» acelerada solo se admite
+   si reproduce los mismos bits en cada token.
+5. **Elección del token.** Máximo por el par (puntuación, −número) en todo el vocabulario, de forma codiciosa. Un modo aparte —
+   Gumbel-max canónico con pseudoaleatoriedad HMAC-SHA256 a partir de la semilla de la petición (D22).
+   La parada — primera causa: EOS o límite.
+6. **Límites de desbordamiento** definidos para cada acumulador; donde 32 bits no bastan, se usan 64.
+   Pruebas aparte comprueban los valores extremos.
+
+Todos los lugares ambiguos («bifurcaciones») se cierran antes del primer lanzamiento leyendo el código fuente del modelo
+de la versión fijada de Transformers; el hash de ese código fuente entra en el manifiesto del perfil.
+
+## 4. Orden de los trabajos
+
+1. **P0, preparación (2–4 días).** Descarga y cotejo del modelo; inventario de todos los tensores; cierre de las
+   bifurcaciones según el código fuente; tablas; vectores de control con valores manuales.
+2. **Paso recortado (1–1,5 semanas).** Referencia en el procesador para todo el modelo con entradas cortas;
+   cotejo con el cálculo habitual en coma flotante (solo para detectar un error de importación,
+   no para O1/O2). Versión simple para tarjeta gráfica sin núcleos tensoriales. Respuestas de O2 en una tarjeta
+   y de O1 «procesador frente a RTX 2060» con contexto corto. Después, el mismo lote en la RTX 4070
+   Laptop — primera respuesta de O1 para dos tarjetas gráficas distintas.
+3. **Paso completo (3–4 semanas).** Multiplicaciones rápidas de 8 bits, kernel fusionado de la recursión DeltaNet,
+   lotes 1/8/32, experimentos O3, O4, O5, repetición en el segundo dispositivo.
+
+Todo el trabajo se realiza en un directorio aparte en el Linux doméstico, con un entorno Python
+propio (CuPy con las bibliotecas CUDA 12 de los paquetes pip, sin instalación del sistema). Los servicios activos
+y los directorios de otros experimentos no se tocan. La estimación total — 4–6 semanas de trabajo de un
+desarrollador; los riesgos principales — el precio de la recursión DeltaNet (lo mostrará O3), las ambigüedades
+hasta P0 y el soporte de Qwen3.5 en los motores habituales para O4/O5.
+
+## 5. Qué se publicará
+
+Para cada ejecución: manifiesto del perfil y de las versiones, entradas, hashes de logits y de estados por capas,
+tiempos brutos y condiciones de medición, fallos originales junto con sus correcciones. La coincidencia de bits
+se refiere solo a los dispositivos y versiones probados. El resultado de cada experimento se anota en la hoja de ruta
+(etapa 5) y en este documento; el experimento se considera terminado cuando lo ha repetido un segundo participante.
+
+## 6. Quién hizo qué
+
+- **Proyectos del experimento:** dos proyectos independientes — ChatGPT y DeepSeek.
+- **Crítica cruzada:** ChatGPT analizó ambos proyectos, DeepSeek analizó ambos proyectos;
+  recálculos de memoria y de límites, comprobación de la recursión corta y de la corrección de la atención con pequeñas búsquedas exhaustivas.
+- **Consolidación y decisiones sobre el plan:** Claude.

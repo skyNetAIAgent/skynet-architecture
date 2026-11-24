@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: 93653f04265bb06c4c65bc040601db4a37aeabccf6d2a88155b16231d6e81734 -->
+<!-- translation of docs/ROADMAP.md, source sha256: 12b7bca8ea86e93bfc2e59f9b55ac57a13e76ffa228340f784c320b126825db8 -->
 
 # 路线图：防范作弊
 
@@ -353,6 +353,10 @@
 的构造即视为已找到。
 
 ### 阶段 5. 只能通过实验确定的事项（已由 D5 批准）
+
+- [x] 实验计划：Qwen3.5-4B 的整数配置、O1–O5 协议以及启动前的证伪标准——
+      [EXPERIMENT_D5](EXPERIMENT_D5.md)，2026 年 11 月 24 日。第二块显卡是所有者计算机上的
+      RTX 4070 Laptop。
 
 - [ ] 整数 Qwen3.5-4B 在两块不同显卡上：比特是否一致。
 - [ ] 其在相同显卡上相对于常规配置的速度。

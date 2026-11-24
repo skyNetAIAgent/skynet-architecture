@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: 93653f04265bb06c4c65bc040601db4a37aeabccf6d2a88155b16231d6e81734 -->
+<!-- translation of docs/ROADMAP.md, source sha256: 12b7bca8ea86e93bfc2e59f9b55ac57a13e76ffa228340f784c320b126825db8 -->
 
 # Roadmap: protection against cheating
 
@@ -419,6 +419,9 @@ or a proven bound. A construction is considered found if it satisfies all the cr
 
 ### Stage 5. Grounds established only by experiment (permitted by D5)
 
+- [x] Experiment plan: integer Qwen3.5-4B profile, protocols O1–O5 and refutation criteria
+      before the run — [EXPERIMENT_D5](EXPERIMENT_D5.en.md), 24 November 2026. The second GPU is
+      an RTX 4070 Laptop on the owner's computer.
 - [ ] Integer Qwen3.5-4B on two different GPUs: whether the bits match.
 - [ ] Its speed relative to the usual profile on the same cards.
 - [ ] Its quality relative to the usual profile on the same set of tasks.

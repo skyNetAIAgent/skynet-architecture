@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: 93653f04265bb06c4c65bc040601db4a37aeabccf6d2a88155b16231d6e81734 -->
+<!-- translation of docs/ROADMAP.md, source sha256: 12b7bca8ea86e93bfc2e59f9b55ac57a13e76ffa228340f784c320b126825db8 -->
 
 # Roteiro: defesa contra fraude
 
@@ -426,6 +426,9 @@ limite provado. Considera-se encontrada a construção que cumpre todos os crit�
 
 ### Etapa 5. Fundamentos que só se estabelecem por experiência (permitidos por D5)
 
+- [x] Plano da experiência: perfil com aritmética inteira do Qwen3.5-4B, protocolos O1–O5 e critérios de
+      refutação antes da execução — [EXPERIMENT_D5](EXPERIMENT_D5.md), 24 de novembro de 2026. A segunda
+      placa de vídeo é uma RTX 4070 Laptop no computador do dono.
 - [ ] Qwen3.5-4B com aritmética inteira em duas placas de vídeo diferentes: se os bits coincidem.
 - [ ] Sua velocidade em relação ao perfil comum nas mesmas placas.
 - [ ] Sua qualidade em relação ao perfil comum no mesmo conjunto de tarefas.

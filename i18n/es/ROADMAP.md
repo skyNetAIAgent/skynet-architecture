@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: 93653f04265bb06c4c65bc040601db4a37aeabccf6d2a88155b16231d6e81734 -->
+<!-- translation of docs/ROADMAP.md, source sha256: 12b7bca8ea86e93bfc2e59f9b55ac57a13e76ffa228340f784c320b126825db8 -->
 
 # Hoja de ruta: defensa contra el engaño
 
@@ -420,6 +420,9 @@ un límite demostrado. Se considera encontrada la construcción que cumple todos
 
 ### Etapa 5. Fundamentos que solo se establecen mediante experimentos (autorizado por D5)
 
+- [x] Plan del experimento: perfil Qwen3.5-4B con aritmética entera, protocolos O1–O5 y criterios de refutación
+      antes de la ejecución — [EXPERIMENT_D5](EXPERIMENT_D5.md), 24 de noviembre de 2026. La segunda tarjeta gráfica es
+      una RTX 4070 Laptop en el ordenador del propietario.
 - [ ] Qwen3.5-4B con aritmética entera en dos tarjetas gráficas distintas: si coinciden los bits.
 - [ ] Su velocidad respecto al perfil normal en las mismas tarjetas.
 - [ ] Su calidad respecto al perfil normal en el mismo conjunto de tareas.

@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: 93653f04265bb06c4c65bc040601db4a37aeabccf6d2a88155b16231d6e81734 -->
+<!-- translation of docs/ROADMAP.md, source sha256: 12b7bca8ea86e93bfc2e59f9b55ac57a13e76ffa228340f784c320b126825db8 -->
 
 # Roadmap: Schutz vor Betrug
 
@@ -457,6 +457,9 @@ aus Abschnitt 1 erfüllt.
 
 ### Phase 5. Grundlagen, die sich nur durch Erfahrung feststellen lassen (durch D5 erlaubt)
 
+- [x] Versuchsplan: ganzzahliges Profil Qwen3.5-4B, Protokolle O1–O5 und Widerlegungskriterien
+      vor dem Start — [EXPERIMENT_D5](EXPERIMENT_D5.md), 24. November 2026. Die zweite Grafikkarte —
+      RTX 4070 Laptop auf dem Computer des Eigentümers.
 - [ ] Ganzzahliges Qwen3.5-4B auf zwei verschiedenen Grafikkarten: ob die Bits übereinstimmen.
 - [ ] Seine Geschwindigkeit gegenüber dem gewöhnlichen Profil auf denselben Karten.
 - [ ] Seine Qualität gegenüber dem gewöhnlichen Profil auf derselben Aufgabensammlung.

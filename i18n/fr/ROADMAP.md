@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: 93653f04265bb06c4c65bc040601db4a37aeabccf6d2a88155b16231d6e81734 -->
+<!-- translation of docs/ROADMAP.md, source sha256: 12b7bca8ea86e93bfc2e59f9b55ac57a13e76ffa228340f784c320b126825db8 -->
 
 # Feuille de route : protection contre la fraude
 
@@ -430,6 +430,9 @@ borne prouvée. Est considérée comme trouvée la construction qui remplit tous
 
 ### Étape 5. Les fondements qui ne s'établissent que par l'expérience (autorisée par D5)
 
+- [x] Plan de l'expérience : profil en arithmétique entière de Qwen3.5-4B, protocoles O1–O5 et critères de
+      réfutation avant le lancement — [EXPERIMENT_D5](EXPERIMENT_D5.md), 24 novembre 2026. La seconde carte
+      graphique est une RTX 4070 Laptop sur l'ordinateur du propriétaire.
 - [ ] Qwen3.5-4B en arithmétique entière sur deux cartes graphiques différentes : les bits coïncident-ils.
 - [ ] Sa vitesse par rapport au profil ordinaire sur les mêmes cartes.
 - [ ] Sa qualité par rapport au profil ordinaire sur le même ensemble de tâches.
