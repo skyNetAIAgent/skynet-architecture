@@ -2,245 +2,172 @@
 
 **English** · [中文](../i18n/zh/AGENT.md) · [Español](../i18n/es/AGENT.md) · [Français](../i18n/fr/AGENT.md) · [Deutsch](../i18n/de/AGENT.md) · [Italiano](../i18n/it/AGENT.md) · [Русский](../i18n/ru/AGENT.md) · [Português](../i18n/pt/AGENT.md) · [العربية](../i18n/ar/AGENT.md)
 
-You do not need an AI assistant to help design SkyNet. The research agent is a small
-open-source program. It periodically looks at this repository, takes research tasks,
-computes them on your computer in its spare time and publishes the results. It also gives you
-a [task board](../docs/BOARD.en.md) where people and their AI assistants post research tasks and
-answer them. No account anywhere is needed.
+You can help design SkyNet by letting your computer do some of the research. The agent is a small open-source program. It checks this repository for tasks, does a piece of a calculation and shares the result. You can also post a research question or answer someone else's on the task board. You do not need an account or an AI assistant. [Task board guide](https://github.com/skyNetAIAgent/skynet-architecture/blob/main/docs/BOARD.en.md)
 
-**No rewards are provided at this stage**: no credits, no money and no promise of
-future payments. This is volunteer help for the research. The agent is not the SkyNet
-network; it is a tool for designing it.
+**No rewards are provided at this stage.** There are no credits, payments or promises of future payments. This is volunteer research to help design the SkyNet network.
 
 ## What it does and what it never does
 
 | It does | It never does |
 |---|---|
-| Reads the signed task list and the signed release description from this repository | Runs code that comes from a task. A task is a name of a built-in computation plus numbers |
-| Runs built-in computations at the lowest CPU priority, one at a time by default | Works on battery power, unless you allow it |
-| Publishes each result as a record signed with this device's own key, through public relays and full nodes | Sends your files, your hardware identifiers or anything else from your computer |
-| Updates itself, but only to a version signed with the project's release key | Installs an update with a wrong signature, a wrong file hash or an older number |
-| Installs in your profile and lets you choose whether to start at sign-in | Needs administrator rights |
+| Reads a signed list of tasks. Each task names a built-in calculation and supplies its inputs | Runs code from a task or a board post |
+| Runs one piece of work at a time by default, at low CPU priority | Starts a new piece on detected battery power by default |
+| Signs results with this device's key and, by default, sends them to public relays and a full node | Includes your personal files or hardware identifiers in an automatic result |
+| Checks the project signature before installing a desktop update | Accepts a downloaded update with an invalid signature, a wrong file hash or an older release number |
+| Installs for your user account and lets you choose whether to start at sign-in | Requires administrator rights for a normal desktop installation |
 
-The first tasks are exact calculations about SkyNet's payment rules, for example: "can a
-participant who leaves the network profit from a burst of fake results, and from what share
-of colluding verifiers?" Every device must get the same digits, and different people's
-results are compared. See [tasks/README.md](../tasks/README.md).
+One research question is whether a participant who is about to leave can profit from a burst of fake results. How many verifiers would have to help? Different devices given the same piece of that calculation should get exactly the same answer, so their results can be compared. [Research tasks](https://github.com/skyNetAIAgent/skynet-architecture/blob/main/tasks/README.md)
 
 ## Requirements
 
-- The Windows x64 installer includes Python. Linux uses Python 3.9+ from your system or a verified portable runtime on glibc x86_64 and aarch64. The current Linux runtime checksums are pending, so this build needs system Python. Other platforms need Python 3.9+.
-- An Internet connection to receive tasks and publish results. The single-file Linux installer works offline.
+- Windows on x64 (amd64) or ARM64, or Linux on amd64, arm64 or ARMv7. The desktop agent in 1.0.1 is a single Go program. The installers from Releases include the executable, ready to run. macOS is unsupported.
+- For the experimental Android app, Android 7.0 or newer on arm64-v8a or x86_64.
+- An Internet connection to receive new tasks and publish results. The Linux installer from Releases can install offline.
 
 ## Install
 
-**Windows x64**
+**Windows**
 
-1. Download `SkyNetAgentSetup-<version>.exe` from [Releases](https://github.com/skyNetAIAgent/skynet-architecture/releases) and run it. Setup offers to start the agent now and at Windows sign-in. Both boxes are checked by default. For checksum and SmartScreen instructions, see the [Windows installer guide](../installer/windows/README.md).
-2. If you already have Python, you can install from PowerShell.
-
-```powershell
-irm https://raw.githubusercontent.com/skyNetAIAgent/skynet-architecture/main/agent/install.ps1 | iex
-```
+1. Choose the Windows installer (`.exe`) for your computer, amd64 or arm64, from [Releases](https://github.com/skyNetAIAgent/skynet-architecture/releases).
+2. Compare the file's SHA-256 checksum with the checksum from a source you trust, then run the installer. You can choose to start the agent now and to start it at sign-in. Setup adds shortcuts to the Start menu. [Windows installer guide](https://github.com/skyNetAIAgent/skynet-architecture/blob/main/installer/windows/README.md)
 
 **Linux**
 
-Download `skynet-agent-install.sh` from the project's [Releases](https://github.com/skyNetAIAgent/skynet-architecture/releases) and run `sh skynet-agent-install.sh`. To install directly from the repository, run:
+Download `skynet-agent-install.sh` from [Releases](https://github.com/skyNetAIAgent/skynet-architecture/releases) and run `sh skynet-agent-install.sh` as your regular user. The file includes executables for all three supported Linux architectures.
+
+You can also install over the network with the command below. It needs `curl`, `jq`, `xxd`, `sha256sum` and OpenSSL with Ed25519 support.
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/skyNetAIAgent/skynet-architecture/main/agent/install.sh | sh
 ```
 
-At the first prompt, press Enter to run the agent now and at sign-in using your systemd user service. The second prompt offers to run it from boot, even before you sign in. For unattended setup, use `--autostart`, `--autostart --linger`, or `--no-autostart`. If your shell cannot find `skynet-agent`, use `~/.local/bin/skynet-agent`. See the [Linux installer guide](../installer/linux/README.md).
+By default, setup keeps your existing sign-in setting. On a fresh install, start the agent yourself with `skynet-agent run`. To start it now and at sign-in, run `sh skynet-agent-install.sh --autostart`. This uses your systemd user service. Add `--linger` to run from boot and after logout, or use `--no-autostart` to turn the service off. If your shell cannot find the command, use `~/.local/bin/skynet-agent`. [Linux installer guide](https://github.com/skyNetAIAgent/skynet-architecture/blob/main/installer/linux/README.md)
 
-**macOS** (terminal):
+**Android (experimental)**
 
-```sh
-curl -fsSL https://raw.githubusercontent.com/skyNetAIAgent/skynet-architecture/main/agent/install.sh | sh
-```
+Download `skynet-agent.apk` from [Releases](https://github.com/skyNetAIAgent/skynet-architecture/releases). Open the file and allow installation from your browser or file manager when Android asks. Open **SkyNet Agent** and tap **Start**. By default it computes only while charging. **Start after reboot** is off by default.
 
-**Android, the app (experimental)**: download `skynet-agent.apk` from the [Releases](https://github.com/skyNetAIAgent/skynet-architecture/releases) page, allow your browser to install apps and open the file. The app works only while the device is charging; results are published as signed records, no account needed. Not yet verified on a real device. Source and details: [android/README.md](../android/README.md).
+The APK has its own version number. App version 0.3.0 includes Go agent 1.0.0. The app offers updates on its screen or in a notification. It checks the signed release description and the APK's size and SHA-256 before asking you to confirm installation in Android. [Android guide](https://github.com/skyNetAIAgent/skynet-architecture/blob/main/android/README.md)
 
-**Android**: install the [Termux](https://termux.dev) app from F-Droid, open it and run:
+Your device key, settings and results live in your agent folder. The default is `%LOCALAPPDATA%\SkyNetAgent` on Windows and `~/.local/share/skynet-agent` on Linux (or `$XDG_DATA_HOME/skynet-agent` if set). The Linux installer also accepts `SKYNET_AGENT_HOME` or `--home DIR` to select another folder. Android keeps its profile in the app's private storage.
 
-```sh
-pkg install python curl
-curl -fsSL https://raw.githubusercontent.com/skyNetAIAgent/skynet-architecture/main/agent/install.sh | sh
-```
-
-On a phone the agent works only while the phone is charging. If it cannot tell whether the
-phone is charging, it waits and says so; in that case install the Termux:API app together with
-`pkg install termux-api`, or allow battery use: `skynet-agent config set run_on_battery true`.
-
-If you prefer to read before you run: download
-[`install.py`](install.py), read it (it is short), and run `python3 -I install.py`.
-
-The installer puts the agent into one folder (`%LOCALAPPDATA%\SkyNetAgent` on Windows,
-`~/Library/Application Support/SkyNetAgent` on macOS, `~/.local/share/skynet-agent` on Linux
-and Android) and creates a `skynet-agent` command. Use `skynet-agent run` to start it manually.
+If you already run the Python agent on a supported desktop with automatic updates on, it switches to Go by itself through the signed **0.4.0** bridge release. It keeps your device key, progress and unsent results. The previous bridge and its interpreter are kept for rollback.
 
 ## First steps
 
+On Linux, use the commands below. On Windows, open PowerShell in the agent folder and use `.\skynet-agent.exe launch` in place of `skynet-agent`. For example, `.\skynet-agent.exe launch status` shows your status through the permanent launcher.
+
 ```sh
-skynet-agent selftest --online    # check the device and the signatures
-skynet-agent net id               # this device's public key: its name on the network
-skynet-agent run                  # work until you press Ctrl+C
-skynet-agent autostart enable     # optional: start when you log in
+skynet-agent verify-install       # check the installed release files and run a test calculation
+skynet-agent selftest --online    # run the calculation and check signed documents online
+skynet-agent net id               # show this device's public key, its name on the board
+skynet-agent run                  # if it isn't running already, work until you press Ctrl+C
 ```
 
-On Windows, run `.\skynet-agent.cmd` from the agent folder. The EXE installer adds status,
-pause, resume and stop shortcuts under **SkyNet Agent** in the Start menu. The agent updates
-its own files from signed releases. Run a newer installer to update its bundled Python.
+Use `skynet-agent autostart status` to see whether sign-in startup is on. To turn it on, use `skynet-agent autostart enable`.
 
 ### Publishing results
 
-When the agent starts, it creates a key for this device (the file `identity.key` in the agent
-folder). Every result is a small record signed with that key. The agent sends it at once to
-several public Nostr relays of different owners and to the full nodes listed in the agent; a
-result counts as delivered when two relays or one node confirmed it. Otherwise it stays in the
-outbox and is sent again later, the very same record, so it is never counted twice.
+The agent saves each finished result in the outbox. It uses the signing key in `identity.key` in your agent folder and creates one on first use if the file is missing. By default it sends the signed result to public Nostr relays and a full node. One node or two distinct relays must confirm receipt before the agent moves the result to `sent`. Otherwise it stays in the outbox. Each retry uses the same signed record with the same ID.
 
-Records are public and carry this device's public key, so results of one device can be linked
-to each other. If you prefer the older way, comments in the task's GitHub issue under your
-own account, run `skynet-agent config set submit_via github` and log in with
-[GitHub CLI](https://cli.github.com) (`gh auth login`), then check with `skynet-agent github`.
-
-A published result looks like this and contains nothing else:
+Here is part of a result for a task that uses the built-in test calculation. The full result also gives the task name, elapsed seconds, format version, agent release number and, by default, a platform tag. The signed record around it carries the device's public key, a timestamp, the record ID and the signature.
 
 ```json
-{"agent":"0.2.0","elapsed_s":41.2,"kernel":"exit-scam-a@1","platform":"linux-amd64-py3.12",
- "result":{"count":364838,"digest":"…","hits":0,"…":"…"},"result_sha256":"…","seq":1,
- "task":"exit-a-honest-check","unit":17,"units":256,"v":1}
+{
+  "agent": "1.0.1", "kernel": "selftest@1", "unit": 0, "units": 1,
+  "result": {
+    "kernel": "selftest@1", "rounds": 8, "ok": true,
+    "digest": "a2e8f2c45179bfccb6a01d61ab527a86277215a6ee85ff824910fe27d3e9fe26"
+  },
+  "result_sha256": "7823a03918e86a7046e437fdf001dc40ff05fb1d241a8917baeae4d88b5629fa"
+}
 ```
 
 ## Commands
 
-| Command | What it does |
+| Desktop command | What it does |
 |---|---|
-| `skynet-agent run` | Work until stopped. `--once` does one piece of work and exits |
-| `skynet-agent status` | Version, settings, counters, waiting results, last problem |
-| `skynet-agent tasks` | The tasks published now and what this device has done |
-| `skynet-agent pause` / `resume` | Stop taking new tasks / take them again |
-| `skynet-agent stop` | Ask the running agent to exit |
-| `skynet-agent outbox` | Results waiting to be published (`list`, `show`, `send`, `link`, `approve`, `drop`) |
-| `skynet-agent net ...` | The task board: `tasks`, `show`, `post-task`, `claim`, `report`, `accept`, `revise`, `sync`, `id`; see [the board guide](../docs/BOARD.en.md) |
-| `skynet-agent config show` / `set KEY VALUE` | Settings |
-| `skynet-agent update` | Install the newest signed version now |
-| `skynet-agent selftest [--online]` | Check the device, the installed files and the signatures |
-| `skynet-agent autostart enable` / `disable` | Start at login, or not |
-| `skynet-agent uninstall --yes` | Turn autostart off and stop the agent. The Linux shell installation also removes its program files |
+| `skynet-agent run` | Work until stopped. `--once` attempts at most one unit. `--no-submit` keeps results local for this run. `--no-update` skips update installation. `--verbose` adds detail to the log. |
+| `skynet-agent status` | Show the version, agent folder, power status, work counters, waiting results and recent problems. |
+| `skynet-agent tasks` | List the automatic research tasks, which are ready and how many units this device has finished. |
+| `skynet-agent pause` / `resume` | Let active units finish and stop starting new ones, or allow new units again. |
+| `skynet-agent stop` | Ask the running agent to exit. |
+| `skynet-agent outbox` | `list` shows waiting results, `show NAME` displays one, `send` tries to publish eligible results and `drop NAME` deletes a queued result. |
+| `skynet-agent net` | Browse the board with `tasks` or `show`. Use `post-task`, `claim`, `report`, `accept` or `revise` to participate. `sync` retries pending board posts and fetches records. `id` shows your public key. [Board guide](https://github.com/skyNetAIAgent/skynet-architecture/blob/main/docs/BOARD.en.md) |
+| `skynet-agent config` | `show` lists settings, `get KEY` shows one and `set KEY VALUE` changes it. |
+| `skynet-agent update` | Check for a newer signed desktop release and install it if it is eligible for this device. |
+| `skynet-agent selftest [--online]` | Check a calculation against its known answer. Add `--online` to check the signatures on the task list and the project’s older release description. |
+| `skynet-agent verify-install` | Verify the installed release files and run the test calculation. |
+| `skynet-agent version` | Show the agent version, release number, Go version and platform. |
+| `skynet-agent autostart` | `status` shows whether startup at sign-in is on. `enable` turns it on and `disable` turns it off. |
+| `skynet-agent uninstall --yes` | Remove a Linux installation. Add `--purge` to delete saved data too. |
 
 ## Settings
 
 | Setting | Default | Meaning |
 |---|---|---|
-| `workers` | 1 | Tasks run at the same time; each uses about one CPU core |
-| `run_on_battery` | false | Work while on battery power |
-| `poll_minutes` | 30 | How often to look at the repository |
-| `update` | auto | `auto` installs signed updates, `notify` only reports them, `off` ignores them. A pause requested by the maintainers applies in every mode |
-| `submit` | auto | `auto` publishes results, `manual` keeps them in the outbox |
-| `submit_via` | net | `net`: signed records, no account; `github`: comments under your GitHub account |
-| `max_task_minutes` | 120 | The longest one piece of work may take |
-| `batch_minutes` | 60 | With `submit_via github`: results of one task are published together, at most one comment per this many minutes |
-| `max_submissions_per_day` | 48 | With `submit_via github`: the most comments published per day from this device |
-| `report_platform` | true | Add a coarse tag like `windows-amd64-py3.12` to results |
-| `ai.enabled` | false | Optional AI mode, see below |
+| `workers` | 1 | Number of units the desktop agent can run at once, from 1 to 256. Android runs one. |
+| `run_on_battery` | false | Allow computation on battery power. |
+| `paused` | false | Wait before starting new units. The `pause` and `resume` commands change this setting. |
+| `poll_minutes` | 30 | Approximate interval between repository checks, from 5 to 1440 minutes. Failed checks have their own retry schedule. |
+| `update` | auto | On desktop, `auto` installs eligible signed updates, `notify` logs when one is available and `off` skips installation and notices. All three still check for a signed pause from the maintainers. |
+| `submit` | auto | `auto` sends results as work proceeds. `manual` keeps them in the outbox until you run `skynet-agent outbox send`. |
+| `submit_via` | net | Publish signed records through relays and nodes. This is the only working channel in 1.0. |
+| `max_task_minutes` | 120 | Time limit per unit, from 1 to 1440 minutes. A shorter limit in the task takes precedence. |
+| `report_platform` | true | Include the operating system, processor architecture and Go version in new results, for example `linux-amd64-` followed by the Go version. |
 
-Example: `skynet-agent config set workers 4`.
+For example, `skynet-agent config set workers 4` allows up to four desktop workers. For compatibility with older installations, `skynet-agent config show` also lists the old comment limits and AI settings. These have no effect on Go computations or network publishing.
 
 ## Optional: answer research questions with your own local AI model
 
-If you run an open model on your computer (for example with Ollama, the llama.cpp server or
-LM Studio), the agent can pass it research questions from the task list and publish the
-answers. This is off by default and experimental.
-
-```sh
-skynet-agent ai                               # shows the local server and the model it would use
-skynet-agent config set ai.enabled true
-```
-
-- The agent does not download or start a model. It talks only to a server on your own
-  computer, unless you set `ai.allow_remote`.
-- The question and the documents it quotes come from the signed task list; each document is
-  checked against a hash before the model sees it.
-- Each answer waits in the outbox until you look at it: `skynet-agent outbox show NAME`, then
-  `skynet-agent outbox approve NAME`. To publish without review:
-  `skynet-agent config set ai.review_before_submit false`.
-- Answers are published as machine-generated and unverified.
+Local AI mode is not available in 1.0. You can still write and post your own answer on the task board.
 
 ## Security, honestly
 
-- **Updates and task lists are signed** (Ed25519). The agent accepts them only if the
-  signature matches a release key built into the installed copy, the release number is higher
-  than the current one, and every file matches its SHA-256. A download from a mirror or over a
-  bad connection cannot change this.
-- **Tasks are data, not programs.** New kinds of computation arrive only inside a signed
-  release, as readable Python source in [`skynet_agent/kernels`](skynet_agent/kernels).
-- **The agent runs in Python's isolated mode**, with a time limit for every piece of work, in a
-  separate low-priority process.
-- **If a new version cannot start**, the launcher returns to the previous one and remembers
-  not to install that release again.
-- **Your device key** is a plain file in the agent folder. Whoever copies it can sign as this
-  device; keep a copy if you want to keep your name on the board after reinstalling.
-- **What you have to trust.** Whoever holds the release key can ship code to every installed
-  agent. At this research stage the key is held by the project maintainers. If you do not want
-  automatic updates, run `skynet-agent config set update notify` and update by hand after
-  reading the changes. The very first installation trusts the HTTPS connection to GitHub.
-  The target SkyNet network must not have such a key at all; this agent is a research tool
-  and does not yet meet SkyNet's own requirements. Details and the threat table:
-  [docs/RESEARCH_AGENT.md](../docs/RESEARCH_AGENT.md) (in Russian).
+- **Updates and task lists are signed.** The agent checks their Ed25519 signatures against the project release key built into the program. Before switching to a desktop update, it checks the release number, verifies the size and SHA-256 of the executable and runs a test calculation. It rejects older task lists and stops starting work from an expired list.
+- **Tasks supply data.** The only calculations a task can select are built into the executable. Adding a new kind of calculation takes a new desktop release or an Android app update. [Go source for the calculations](https://github.com/skyNetAIAgent/skynet-architecture/tree/main/agent-go/kernels)
+- **Each unit runs in a separate process** under your account. The worker asks for low CPU priority. The agent stops the worker if it reaches the time limit.
+- **A desktop update can roll back.** The launcher checks the active release before starting it. If that check fails, or three attempts to run the agent in a row crash within their first minute, the launcher can restore a verified previous release if one is available. It remembers the failed release number.
+- **Your device key is an unencrypted file.** Anyone who copies `identity.key` can sign as this device. A private backup lets you keep your name on the board after reinstalling.
+- **The first installation depends on where you get the installer or script.** After installation, whoever controls the project's release key can sign new code that runs with your user permissions. The maintainers hold that key during this research stage. To review desktop updates first, use `skynet-agent config set update notify` and run `skynet-agent update` when you are ready. The proposed SkyNet network is intended to work without a central release key. [Research agent design and threat table, in Russian](https://github.com/skyNetAIAgent/skynet-architecture/blob/main/docs/RESEARCH_AGENT.md)
 
 ## Privacy
 
-The agent downloads public files from this repository (GitHub sees your IP address, as for any
-visit) and sends results and board records to the relays and nodes listed in the agent (they see
-your IP address too). A result holds the task name, the piece number, the computed numbers, how
-long it took and, unless you switch `report_platform` off, a coarse platform tag. It is public and
-signed with this device's key. Nothing about your files, your network or your hardware is collected.
+GitHub sees your IP address when you download tasks or updates. Relays and full nodes you contact also see your IP address. The built-in full node uses unencrypted HTTP. Results and board posts are public. Their public key lets readers link records from the same device.
+
+Automatic results contain calculation data and the fields described above. Use `skynet-agent config set report_platform false` to omit the platform tag from future results. The agent does not scan your personal files or include hardware serial numbers. When you post a board task or report, the text you choose to submit becomes public.
 
 ## Cost for you
 
-Electricity for one busy CPU core by default, at the lowest priority, so other programs are
-not slowed down. On a phone the battery is not used unless you allow it; keep the phone on a
-charger.
+A busy worker can use about one CPU core. Low priority helps other programs get CPU time when they need it. The work still uses electricity and can produce heat. On a laptop the agent checks power about once a minute. By default it waits to start new units when it detects battery power. A unit already running can finish, and the desktop agent can start work if the power source is unknown.
+
+On Android, unplugging cancels the current unit and leaves it available to try again. Select **Also work on battery power** in the app if you want it to keep computing unplugged.
 
 ## Remove
 
-For an EXE installation, choose **SkyNet Agent → Uninstall** in the Start menu. The
-uninstaller keeps your device key and unsent results by default. Select the data deletion
-checkbox to remove them as well. For a command-line installation, run the following command.
+On Windows, use the **SkyNet Agent** uninstaller. It keeps your device key, queues and release history by default. Choose the data deletion option during uninstall to remove them too.
+
+On Linux, run the following command. It turns off the user service, stops the agent and removes the installed programs. Your key, settings, progress and queues are kept.
 
 ```sh
 skynet-agent uninstall --yes
 ```
 
-The Linux shell installer keeps the device key, settings and saved results. To delete those too, use `skynet-agent uninstall --yes --purge` when uninstalling. For other command-line installations, delete the agent folder after the command exits.
+To remove the saved agent data as well, use `skynet-agent uninstall --yes --purge` when you uninstall. On Android, uninstall **SkyNet Agent** through Android settings to remove the app and its local data. Published records remain public.
 
 ## Troubleshooting
 
-- **"no valid signature from a trusted release key"**: the downloaded file is not what the
-  maintainers signed. The agent refuses it and keeps working with what it has. If it repeats
-  for days, look at the repository's issues.
-- **`CERTIFICATE_VERIFY_FAILED` on macOS** with Python from python.org: the agent then tries
-  the system's certificate file by itself. If the error stays, run the
-  `Install Certificates.command` that comes with that Python.
-- **Python from the Microsoft Store (Windows)** keeps a private copy of `AppData` and of the
-  registry. With it the agent folder is `SkyNetAgent` in your profile folder, and autostart has
-  to be added by hand: `skynet-agent autostart enable` prints how. Not yet verified on a real
-  device.
-- **Results stay in the outbox**: run `skynet-agent status`. With `submit_via net` the relays or
-  nodes were not reachable (a firewall?); with `submit_via github`, usually `gh auth login` is missing.
-- **Android stops the agent in the background**: run `termux-wake-lock` in Termux and exclude
-  Termux from battery optimisation.
+- **“no valid signature from a trusted key”** means the downloaded document failed verification. The agent rejects it. It can still use a previously verified task list until that list expires. On desktop, `skynet-agent status` shows the last repository error. The run log is `logs/agent.log` inside the agent folder.
+- **Results stay in the outbox.** Use `skynet-agent status` or `skynet-agent outbox list` to see what is waiting. In manual mode, run `skynet-agent outbox send`. If too few relays or nodes answer, the result stays queued for another attempt.
+- **An older installation shows “GitHub submission is unsupported”.** Run `skynet-agent config set submit_via net` to use signed records for new results. Entries already marked for GitHub and old AI answers stay in the outbox for inspection.
+- **The agent is running but no new work starts.** Check `skynet-agent tasks` and the run log. It may be paused, waiting for power, out of eligible tasks or waiting for space in its outbox. On Android, connect the charger and tap **Start** if you previously stopped the app.
 
 ## Tested so far
 
-The test suite ([`tests/`](tests)) covers signatures, updates, rollback, tasks, publishing, signed records, the task board, a full
-node and an end-to-end run, and is executed automatically on Windows, Linux and macOS for every change
-(see the repository's Actions tab). By hand it has been verified on Windows 11. Not yet
-verified on a real device: Android (Termux), and autostart on macOS, Linux and Android. If
-something does not work on your system, please open an issue.
+Agent tests run automatically on Windows and Linux. They cover signed task lists, calculations with known answers, updates and rollback, signed records, delivery, the task board and a run that starts a worker and delivers its result to a simulated node.
+
+Live installations have been tried on Windows 11, Linux Mint, Ubuntu Server and an Android 14 emulator. The Android app has yet to be verified on a physical device. If something does not work on your system, please open an issue.
 
 ## License
 
-The agent's code is under the [MIT license](LICENSE).
+The agent's code is under the [MIT license](https://github.com/skyNetAIAgent/skynet-architecture/blob/main/agent-go/LICENSE).

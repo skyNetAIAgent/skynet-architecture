@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: abdb6f18f1052fd01d01bf76bcf63b29c7a9faf1b0d0e61d26d3803068d46b5c -->
+<!-- translation of docs/ROADMAP.md, source sha256: 179a6350fb2d665a7c94f5f2cfa6b2e520f28c4174e3b619f3a31299f63f53ff -->
 
 # Feuille de route : protection contre la fraude
 
@@ -12,7 +12,7 @@ est mise à jour à chaque changement de statut.
 ## 1. Objectif et critères d'achèvement
 
 **Objectif de l'étape actuelle du projet :** trouver un moyen de vérifier l'honnêteté qui satisfasse en
-même temps les exigences obligatoires ([REQUIREMENTS](REQUIREMENTS.md)) :
+même temps les exigences obligatoires ([REQUIREMENTS](../ru/REQUIREMENTS.md)) :
 
 - il est impossible de tromper le réseau : la fraude est inutile ou déficitaire, y compris pour un débutant
   avec un compte vide, en cas de collusion et avec de nombreuses clés ;
@@ -79,8 +79,10 @@ vérificateur, et non par l'absence d'idées.
 - Variante B, collusion : `q` est la fraction du poids total des vérificateurs de ce modèle que détient la coalition.
   Un faux n'est payé que si la tâche est choisie et que tous les `k` vérificateurs sont en collusion. Le
   paiement moyen pour un faux soumis est égal à `R·q^k` (`R` est le prix de la tâche) et ne dépend pas de
-  `p` [calcul]. Pour `q = 1`, c'est le prix complet. Un débutant dont le compte est vide n’a aucune récompense en attente à perdre.
-- Si tous les vérificateurs s’entendent, l’absence de paiements pour des résultats falsifiés n’a été démontrée pour aucune des deux variantes. On obtient cette garantie en vérifiant chaque résultat rémunéré à partir de données que tout nœud peut contrôler lui-même. Le recalcul complet ajoute environ 100% de travail. Mesures du pilote : la preuve
+  `p` [calcul]. Pour `q = 1`, c'est le prix complet. Sur le compte vide d'un débutant, il n'y a rien à débiter.
+- L'absence de paiement indu en cas de collusion totale des vérificateurs n'est démontrée ni pour la variante A
+  ni pour la variante B. Elle s'obtient en vérifiant chaque résultat rémunéré à partir de données que tout
+  nœud vérifie lui-même. Le recalcul complet ajoute environ 100% de travail. Mesures du pilote : la preuve
   RISC Zero pour une ligne du modèle a mis 22 min 10 s à être construite ; l'exécution de huit lignes dans
   la zkVM a duré environ 17 700 fois plus longtemps que la normale, sans construction de preuve. Ces mesures
   ne donnent pas de borne inférieure générale du coût.
@@ -178,8 +180,8 @@ Déjà fait :
       à 0.2.2 le 23 novembre 2026, la clé de l'appareil et la progression sont conservées. Sur le Linux
       domestique, l'agent a été réinstallé avec le nouvel installateur (0.2.2) ; sa mise à jour
       automatique sera vérifiée par la prochaine version.
-- [ ] Vérification en conditions réelles de la mise à jour automatique sous Windows (après installation
-      par le propriétaire au moyen de l'installateur).
+- [x] Vérification en conditions réelles de la mise à jour automatique sous Windows : l'installation du
+      propriétaire est passée d'elle-même 0.2.2 → 0.3.0 → Go 1.0.1 (23 novembre 2026).
 
 **Point 2. Android : application sans jeton**
 
@@ -212,8 +214,8 @@ Déjà fait :
       l'appareil.
 - [x] Vérification automatique dans la CI sur un Windows propre sans Python : installation,
       auto-vérification, désinstallation.
-- [ ] Vérification en conditions réelles sur l'ordinateur d'une personne : le propriétaire la passe en
-      premier (version v0.2.2).
+- [x] Vérification en conditions réelles sur l'ordinateur d'une personne : le propriétaire a installé
+      l'agent depuis les Releases (version v0.2.2).
 
 **Point 4. Linux**
 
@@ -226,11 +228,24 @@ Déjà fait :
       conditions réelles sur Linux Mint.
 - [ ] Vérification en conditions réelles chez un participant sans lien avec les mainteneurs.
 
-**Point 5. Mise à jour du Python embarqué et des shells**
+**Point 5. Agent en Go au lieu de Python (décision du propriétaire du 23 novembre 2026)**
 
-- [ ] Description signée de l'ensemble pour chaque système et architecture : versions et empreintes de
-      Python, de l'installateur et des shells. L'agent met à jour aussi Python, et pas seulement ses
-      propres fichiers.
+L'agent est réécrit en Go : un seul petit programme, Python n'est pas nécessaire. Le Python embarqué et sa
+mise à jour ne sont plus requis, c'est pourquoi l'ancien point « mise à jour du Python embarqué » est retiré.
+
+- [x] Signatures, tâches, sept noyaux de calcul, enregistrements, Nostr, tableau, cycle de travail, mise à
+      jour par le second canal (`agent/v2/release.json`), lanceur, démarrage automatique — en Go, uniquement
+      la bibliothèque standard (code écrit par ChatGPT, vérifié par DeepSeek).
+- [x] Les résultats Go coïncident avec Python bit à bit sur toutes les portions rapides de la référence et
+      sur toutes les portions lourdes vérifiées ; la comparaison des 1 199 portions se poursuit.
+- [x] Construction reproductible : empreintes identiques des programmes lors d'une construction sous
+      Windows et Linux.
+- [x] Le pont en Python 0.4.0 transfère lui-même les agents installés vers Go en conservant la clé de
+      l'appareil, la progression et la file d'attente. Transition en conditions réelles : le serveur, le
+      Linux domestique et le Windows du propriétaire sont passés d'eux-mêmes à Go 1.0.1.
+- [x] Installateurs en Go : Windows 4,7 Mo, Linux en un seul fichier ; application Android 0.3.0 avec
+      moteur Go, environ 8 Mo au lieu de 40 (vérifié sur l'émulateur Android 14).
+- [ ] Supprimer le pont et les copies Python après deux versions Go vérifiées.
 
 **Point 6. Flux des tâches**
 

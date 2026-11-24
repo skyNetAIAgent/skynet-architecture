@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: abdb6f18f1052fd01d01bf76bcf63b29c7a9faf1b0d0e61d26d3803068d46b5c -->
+<!-- translation of docs/ROADMAP.md, source sha256: 179a6350fb2d665a7c94f5f2cfa6b2e520f28c4174e3b619f3a31299f63f53ff -->
 
 # Roadmap: Schutz vor Betrug
 
@@ -13,7 +13,7 @@ ermittelt, nicht gemessen. Die Roadmap wird bei jeder Statusänderung aktualisie
 ## 1. Ziel und Fertigstellungskriterien
 
 **Ziel der aktuellen Projektphase:** eine Methode zur Ehrlichkeitsprüfung zu finden, bei der
-zugleich die verbindlichen Anforderungen erfüllt sind ([REQUIREMENTS](REQUIREMENTS.md)):
+zugleich die verbindlichen Anforderungen erfüllt sind ([REQUIREMENTS](../ru/REQUIREMENTS.md)):
 
 - das Netz lässt sich nicht betrügen: Betrug ist nutzlos oder unrentabel, auch für einen Neuling
   mit leerem Konto, bei Absprache und bei vielen Schlüsseln;
@@ -195,8 +195,8 @@ Bereits erledigt:
       0.2.2 übergegangen, Geräteschlüssel und Fortschritt sind erhalten. Auf dem heimischen Linux
       wurde der Agent mit dem neuen Installer (0.2.2) neu installiert; seine Selbstaktualisierung
       wird der nächste Release prüfen.
-- [ ] Live-Prüfung der Selbstaktualisierung unter Windows (nach der Installation durch den
-      Eigentümer mit dem Installer).
+- [x] Live-Prüfung der Selbstaktualisierung unter Windows: Die Installation des Eigentümers ging
+      selbst von 0.2.2 → 0.3.0 → Go 1.0.1 über (23. November 2026).
 
 **Schritt 2. Android: Anwendung ohne Token**
 
@@ -228,8 +228,8 @@ Bereits erledigt:
       werden.
 - [x] Automatische Prüfung in CI auf einem sauberen Windows ohne Python: Installation,
       Selbstprüfung, Deinstallation.
-- [ ] Live-Prüfung auf dem Computer einer Person: Als Erster durchläuft sie der Eigentümer
-      (Release v0.2.2).
+- [x] Live-Prüfung auf dem Computer einer Person: Der Eigentümer hat den Agenten aus den Releases
+      installiert (Release v0.2.2).
 
 **Schritt 4. Linux**
 
@@ -241,11 +241,24 @@ Bereits erledigt:
 - [x] Prüfung in CI: Debian 12 ohne Python und Ubuntu 24.04 mit Python; Live-Installation auf Linux Mint.
 - [ ] Live-Prüfung bei einem Teilnehmer, der nicht mit den Betreuern verbunden ist.
 
-**Schritt 5. Aktualisierung des eingebetteten Python und der Shells**
+**Schritt 5. Agent in Go statt Python (Entscheidung des Eigentümers vom 23. November 2026)**
 
-- [ ] Signierte Beschreibung des Satzes für jedes System und jede Architektur: Versionen und
-      Hashes von Python, Installer und Shell. Der Agent aktualisiert auch Python, nicht nur seine
-      eigenen Dateien.
+Der Agent ist in Go neu geschrieben: ein kleines Programm, Python ist nicht nötig. Das eingebettete
+Python und seine Aktualisierung werden nicht mehr benötigt, deshalb ist der frühere Schritt
+„Aktualisierung des eingebetteten Python“ entfallen.
+
+- [x] Signaturen, Aufgaben, sieben Rechenkerne, Einträge, Nostr, Brett, Arbeitszyklus, Aktualisierung
+      über den zweiten Kanal (`agent/v2/release.json`), Starter, Autostart — in Go, nur die
+      Standardbibliothek (Code schrieb ChatGPT, geprüft hat DeepSeek).
+- [x] Die Ergebnisse von Go stimmen mit Python Bit für Bit überein bei allen schnellen Portionen der
+      Referenz und bei allen geprüften schweren; der Abgleich aller 1 199 Portionen läuft weiter.
+- [x] Reproduzierbarer Build: gleiche Hashes der Programme beim Bauen unter Windows und Linux.
+- [x] Die Brücke auf Python 0.4.0 stellt installierte Agenten selbst auf Go um und behält dabei
+      Geräteschlüssel, Fortschritt und Warteschlange. Live-Übergang: Server, heimisches Linux und
+      Windows des Eigentümers sind selbst auf Go 1.0.1 übergegangen.
+- [x] Installer in Go: Windows 4,7 MB, Linux als eine Datei; Android-Anwendung 0.3.0 mit Go-Engine,
+      etwa 8 MB statt 40 (geprüft auf dem Emulator Android 14).
+- [ ] Die Brücke und die Python-Kopien nach zwei geprüften Releases in Go entfernen.
 
 **Schritt 6. Aufgabenstrom**
 

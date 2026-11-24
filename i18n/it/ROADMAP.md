@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: abdb6f18f1052fd01d01bf76bcf63b29c7a9faf1b0d0e61d26d3803068d46b5c -->
+<!-- translation of docs/ROADMAP.md, source sha256: 179a6350fb2d665a7c94f5f2cfa6b2e520f28c4174e3b619f3a31299f63f53ff -->
 
 # Tabella di marcia: difesa dall'inganno
 
@@ -13,7 +13,7 @@ marcia viene aggiornata a ogni cambiamento di stato.
 ## 1. Obiettivo e segni di completamento
 
 **Obiettivo della fase attuale del progetto:** trovare un modo di verificare l'onestà per il quale siano
-soddisfatti insieme i requisiti obbligatori ([REQUIREMENTS](REQUIREMENTS.md)):
+soddisfatti insieme i requisiti obbligatori ([REQUIREMENTS](../ru/REQUIREMENTS.md)):
 
 - ingannare la rete è impossibile: l'inganno è inutile o in perdita, anche per un novizio con il conto
   vuoto, in caso di collusione e con molte chiavi;
@@ -188,8 +188,8 @@ Già fatto:
       novembre 2026, la chiave del dispositivo e il progresso sono conservati. Sul Linux domestico
       l'agente è stato installato di nuovo con il nuovo installatore (0.2.2); il suo
       autoaggiornamento sarà verificato dal rilascio successivo.
-- [ ] Verifica dal vivo dell'autoaggiornamento su Windows (dopo l'installazione da parte del
-      proprietario tramite l'installatore).
+- [x] Verifica dal vivo dell'autoaggiornamento su Windows: l'installazione del proprietario è passata
+      da sola attraverso 0.2.2 → 0.3.0 → Go 1.0.1 (23 novembre 2026).
 
 **Passo 2. Android: app senza token**
 
@@ -219,8 +219,8 @@ Già fatto:
 - [x] Rimozione tramite «App»; alla rimozione si può conservare la chiave del dispositivo.
 - [x] Verifica automatica in CI su un Windows pulito senza Python: installazione, autoverifica,
       rimozione.
-- [ ] Verifica dal vivo sul computer di una persona: l'esegue per primo il proprietario (versione
-      v0.2.2).
+- [x] Verifica dal vivo sul computer di una persona: il proprietario ha installato l'agente dalle
+      Releases (versione v0.2.2).
 
 **Passo 4. Linux**
 
@@ -231,10 +231,24 @@ Già fatto:
 - [x] Verifica in CI: Debian 12 senza Python e Ubuntu 24.04 con Python; installazione dal vivo su Linux Mint.
 - [ ] Verifica dal vivo presso un partecipante non legato ai manutentori.
 
-**Passo 5. Aggiornamento del Python incorporato e delle shell**
+**Passo 5. Agente in Go al posto di Python (decisione del proprietario del 23 novembre 2026)**
 
-- [ ] Descrizione firmata del kit per ogni sistema e architettura: versioni e hash di Python,
-      dell'installatore e della shell. L'agente aggiorna anche Python, non solo i suoi file.
+L'agente è stato riscritto in Go: un solo piccolo programma, Python non serve. Il Python incorporato e il
+suo aggiornamento non servono più, perciò il precedente passo «aggiornamento del Python incorporato» è stato
+rimosso.
+
+- [x] Firme, compiti, sette nuclei di calcolo, registrazioni, Nostr, bacheca, ciclo di lavoro,
+      aggiornamento sul secondo canale (`agent/v2/release.json`), avviatore, avvio automatico — in Go,
+      solo libreria standard (il codice è stato scritto da ChatGPT, verificato da DeepSeek).
+- [x] I risultati Go coincidono con Python bit a bit su tutte le porzioni veloci del riferimento e su
+      tutte quelle pesanti verificate; il confronto di tutte le 1 199 porzioni continua.
+- [x] Build riproducibile: hash dei programmi identici compilando su Windows e Linux.
+- [x] Il ponte in Python 0.4.0 trasferisce da solo gli agenti installati a Go conservando la chiave
+      del dispositivo, il progresso e la coda. Transizione dal vivo: il server, il Linux domestico e il
+      Windows del proprietario sono passati da soli a Go 1.0.1.
+- [x] Installatori in Go: Windows 4,7 MB, Linux in un solo file; app Android 0.3.0 con motore Go,
+      circa 8 MB invece di 40 (verificato sull'emulatore Android 14).
+- [ ] Rimuovere il ponte e le copie Python dopo due rilasci verificati in Go.
 
 **Passo 6. Flusso dei compiti**
 

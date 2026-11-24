@@ -2,182 +2,172 @@
 
 [English](../../agent/README.md) · [中文](../zh/AGENT.md) · [Español](../es/AGENT.md) · [Français](../fr/AGENT.md) · [Deutsch](../de/AGENT.md) · [Italiano](../it/AGENT.md) · [Русский](../ru/AGENT.md) · **Português** · [العربية](../ar/AGENT.md)
 
-Não é preciso ter um assistente de IA para ajudar a projetar a SkyNet. O agente de pesquisa é um pequeno programa de código aberto. Ele consulta periodicamente este repositório, pega tarefas de pesquisa, calcula-as no seu computador no tempo livre e publica os resultados. Ele também oferece um [quadro de tarefas](BOARD.md) onde pessoas e seus assistentes de IA publicam tarefas de pesquisa e as respondem. Não é preciso ter conta em lugar nenhum.
+Você pode ajudar a projetar a SkyNet deixando o seu computador fazer parte da pesquisa. O agente de pesquisa é um pequeno programa de código aberto. Ele consulta este repositório em busca de tarefas, faz uma porção de um cálculo e compartilha o resultado. Você também pode publicar uma pergunta de pesquisa ou responder à de outra pessoa no quadro de tarefas. Não é preciso ter conta nem assistente de IA. [Guia do quadro de tarefas](BOARD.md)
 
-**Nesta etapa não há recompensas**: nem créditos, nem dinheiro, nem promessa de pagamentos futuros. É uma ajuda voluntária à pesquisa. O agente não é a rede SkyNet; é uma ferramenta para projetá-la.
+**Nesta etapa não há recompensas.** Não há créditos, pagamentos nem promessas de pagamentos futuros. Esta é uma pesquisa voluntária para ajudar a projetar a rede SkyNet.
 
 ## O que ele faz e o que nunca faz
 
 | Faz | Nunca faz |
 |---|---|
-| Lê do repositório a lista de tarefas assinada e a descrição assinada da versão | Executar código vindo de uma tarefa. Uma tarefa é o nome de um cálculo embutido mais números |
-| Executa cálculos embutidos com a menor prioridade de CPU, um de cada vez por padrão | Trabalhar na bateria, a menos que você permita |
-| Publica cada resultado como um registro assinado com a chave do próprio dispositivo, por meio de relays públicos e nós completos | Enviar seus arquivos, identificadores de hardware ou qualquer outra coisa do seu computador |
-| Atualiza-se sozinho, mas apenas para uma versão assinada com a chave de lançamento do projeto | Instalar uma atualização com assinatura errada, hash de arquivo errado ou número mais antigo |
-| Instala no seu perfil e deixa você escolher se deve iniciar ao entrar no sistema | Precisa de direitos de administrador |
+| Lê uma lista de tarefas assinada. Cada tarefa indica um cálculo embutido e fornece as suas entradas | Executa código vindo de uma tarefa ou de uma publicação no quadro |
+| Executa uma porção de trabalho de cada vez por padrão, com prioridade baixa de CPU | Inicia uma nova porção quando detecta alimentação pela bateria, por padrão |
+| Assina os resultados com a chave deste dispositivo e, por padrão, os envia para relays públicos e um nó completo | Inclui seus arquivos pessoais ou identificadores de hardware em um resultado automático |
+| Verifica a assinatura do projeto antes de instalar uma atualização de desktop | Aceita uma atualização baixada com assinatura inválida, hash de arquivo errado ou número da versão mais antigo |
+| Instala no seu perfil e deixa você escolher se deve iniciar ao entrar no sistema | Exige direitos de administrador para uma instalação normal de desktop |
 
-As primeiras tarefas são cálculos exatos sobre as regras de pagamento da SkyNet, por exemplo: «um participante que sai da rede consegue lucrar com uma rajada de resultados falsos, e a partir de que parcela de verificadores em conluio?». Todos os dispositivos devem obter os mesmos dígitos, e os resultados de pessoas diferentes são comparados. Veja [tasks/README.md](../../tasks/README.md).
+Uma pergunta de pesquisa é se um participante prestes a sair pode lucrar com uma rajada de resultados falsos. Quantos verificadores teriam de ajudar? Dispositivos diferentes que recebem a mesma porção desse cálculo devem obter exatamente a mesma resposta, para que os seus resultados possam ser comparados. [Tarefas de pesquisa](../../tasks/README.md)
 
 ## Requisitos
 
-- O instalador do Windows x64 inclui o Python. O Linux usa o Python 3.9 ou mais recente do seu sistema ou um ambiente de execução portátil verificado para glibc x86_64 e aarch64. Os checksums atuais do ambiente de execução do Linux estão pendentes, então esta versão precisa do Python do sistema. Outras plataformas exigem Python 3.9 ou mais recente.
-- Uma conexão com a Internet para receber tarefas e publicar resultados. O instalador Linux de arquivo único funciona offline.
+- Windows em x64 (amd64) ou ARM64, ou Linux em amd64, arm64 ou ARMv7. O agente de desktop na versão 1.0.1 é um único programa Go. Os instaladores da página Releases incluem o executável, pronto para executar. O macOS não é suportado.
+- Para o aplicativo experimental para Android, Android 7.0 ou mais recente em arm64-v8a ou x86_64.
+- Uma conexão com a Internet para receber novas tarefas e publicar resultados. O instalador Linux da página Releases pode instalar offline.
 
 ## Instalação
 
-**Windows x64**
+**Windows**
 
-1. Baixe `SkyNetAgentSetup-<version>.exe` da página [Releases](https://github.com/skyNetAIAgent/skynet-architecture/releases) e execute o arquivo. O instalador oferece iniciar o agente agora e ao entrar no Windows. As duas caixas vêm marcadas por padrão. Para instruções sobre checksum e SmartScreen, veja o [guia do instalador do Windows](../../installer/windows/README.md).
-2. Se você já tem Python, pode instalar pelo PowerShell.
-
-```powershell
-irm https://raw.githubusercontent.com/skyNetAIAgent/skynet-architecture/main/agent/install.ps1 | iex
-```
+1. Escolha o instalador do Windows (`.exe`) para o seu computador, amd64 ou arm64, na página [Releases](https://github.com/skyNetAIAgent/skynet-architecture/releases).
+2. Compare o checksum SHA-256 do arquivo com o checksum de uma fonte confiável e execute o instalador. Você pode escolher iniciar o agente agora e iniciá-lo ao entrar no sistema. O instalador adiciona atalhos ao menu Iniciar. [Guia do instalador do Windows](../../installer/windows/README.md)
 
 **Linux**
 
-Baixe `skynet-agent-install.sh` da página [Releases](https://github.com/skyNetAIAgent/skynet-architecture/releases) do projeto e execute `sh skynet-agent-install.sh`. Para instalar diretamente do repositório, execute:
+Baixe `skynet-agent-install.sh` da página [Releases](https://github.com/skyNetAIAgent/skynet-architecture/releases) do projeto e execute `sh skynet-agent-install.sh` como seu usuário normal. O arquivo inclui executáveis para as três arquiteturas Linux suportadas.
+
+Você também pode instalar pela rede com o comando abaixo. Ele precisa de `curl`, `jq`, `xxd`, `sha256sum` e OpenSSL com suporte a Ed25519.
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/skyNetAIAgent/skynet-architecture/main/agent/install.sh | sh
 ```
 
-Na primeira pergunta, pressione Enter para executar o agente agora e ao entrar no sistema, usando o serviço de usuário do systemd. A segunda pergunta oferece executá-lo desde a inicialização, mesmo antes de você entrar no sistema. Para uma instalação sem interação, use `--autostart`, `--autostart --linger` ou `--no-autostart`. Se o seu shell não encontrar `skynet-agent`, use `~/.local/bin/skynet-agent`. Veja o [guia do instalador do Linux](../../installer/linux/README.md).
+Por padrão, o instalador mantém a sua configuração atual de inicialização ao entrar no sistema. Em uma instalação nova, inicie o agente você mesmo com `skynet-agent run`. Para iniciá-lo agora e ao entrar no sistema, execute `sh skynet-agent-install.sh --autostart`. Isso usa o seu serviço de usuário do systemd. Acrescente `--linger` para executar desde a inicialização e após sair da conta, ou use `--no-autostart` para desativar o serviço. Se o seu shell não encontrar o comando, use `~/.local/bin/skynet-agent`. [Guia do instalador do Linux](../../installer/linux/README.md)
 
-**macOS** (terminal):
+**Android (experimental)**
 
-```sh
-curl -fsSL https://raw.githubusercontent.com/skyNetAIAgent/skynet-architecture/main/agent/install.sh | sh
-```
+Baixe `skynet-agent.apk` da página [Releases](https://github.com/skyNetAIAgent/skynet-architecture/releases). Abra o arquivo e permita a instalação pelo navegador ou gerenciador de arquivos quando o Android pedir. Abra o **SkyNet Agent** e toque em **Start**. Por padrão, ele só calcula enquanto o dispositivo está carregando. A opção **Start after reboot** vem desativada por padrão.
 
-**Android, o aplicativo (experimental)**: baixe `skynet-agent.apk` da página [Releases](https://github.com/skyNetAIAgent/skynet-architecture/releases), permita que o navegador instale aplicativos e abra o arquivo. O aplicativo só trabalha enquanto o dispositivo está carregando; os resultados são publicados como registros assinados, sem necessidade de conta. Ainda não verificado em um dispositivo real. Código-fonte e detalhes: [android/README.md](../../android/README.md).
+O APK tem o seu próprio número de versão. A versão 0.3.0 do aplicativo inclui o agente Go 1.0.0. O aplicativo oferece atualizações na sua tela ou em uma notificação. Ele verifica a descrição assinada da versão e o tamanho e o SHA-256 do APK antes de pedir que você confirme a instalação no Android. [Guia do Android](../../android/README.md)
 
-**Android**: instale o aplicativo [Termux](https://termux.dev) pelo F-Droid, abra-o e execute:
+A chave do seu dispositivo, as configurações e os resultados ficam na sua pasta do agente. O padrão é `%LOCALAPPDATA%\SkyNetAgent` no Windows e `~/.local/share/skynet-agent` no Linux (ou `$XDG_DATA_HOME/skynet-agent`, se definido). O instalador do Linux também aceita `SKYNET_AGENT_HOME` ou `--home DIR` para escolher outra pasta. O Android mantém o seu perfil no armazenamento privado do aplicativo.
 
-```sh
-pkg install python curl
-curl -fsSL https://raw.githubusercontent.com/skyNetAIAgent/skynet-architecture/main/agent/install.sh | sh
-```
-
-Em um telefone o agente só trabalha enquanto o telefone está carregando. Se ele não conseguir saber se o telefone está carregando, espera e avisa; nesse caso instale o aplicativo Termux:API junto com `pkg install termux-api`, ou permita o uso da bateria: `skynet-agent config set run_on_battery true`.
-
-Se preferir ler antes de executar: baixe o [`install.py`](../../agent/install.py), leia-o (é curto) e execute `python3 -I install.py`.
-
-O instalador coloca o agente em uma pasta (`%LOCALAPPDATA%\SkyNetAgent` no Windows, `~/Library/Application Support/SkyNetAgent` no macOS, `~/.local/share/skynet-agent` no Linux e no Android) e cria o comando `skynet-agent`. Use `skynet-agent run` para iniciar o agente manualmente.
+Se você já executa o agente Python em um desktop suportado com as atualizações automáticas ativadas, ele passa sozinho para Go por meio da versão ponte **0.4.0** assinada. Ele mantém a chave do seu dispositivo, o progresso e os resultados não enviados. A ponte anterior e o seu interpretador são mantidos para reversão.
 
 ## Primeiros passos
 
+No Linux, use os comandos abaixo. No Windows, abra o PowerShell na pasta do agente e use `.\skynet-agent.exe launch` no lugar de `skynet-agent`. Por exemplo, `.\skynet-agent.exe launch status` mostra o seu status por meio do lançador permanente.
+
 ```sh
-skynet-agent selftest --online    # verificar o dispositivo e as assinaturas
-skynet-agent net id               # a chave pública deste dispositivo: o nome dele na rede
-skynet-agent run                  # trabalhar até você apertar Ctrl+C
-skynet-agent autostart enable     # opcional: iniciar ao entrar no sistema
+skynet-agent verify-install       # verifica os arquivos da versão instalada e executa um cálculo de teste
+skynet-agent selftest --online    # executa o cálculo e confere os documentos assinados online
+skynet-agent net id               # mostra a chave pública deste dispositivo, o seu nome no quadro
+skynet-agent run                  # se ele ainda não estiver em execução, trabalhe até apertar Ctrl+C
 ```
 
-No Windows, execute `.\skynet-agent.cmd` na pasta do agente. O instalador EXE adiciona atalhos de status, pausa, retomada e parada em **SkyNet Agent**, no menu Iniciar. O agente atualiza os próprios arquivos a partir das versões assinadas. Execute um instalador mais recente para atualizar o Python incluído.
+Use `skynet-agent autostart status` para ver se a inicialização ao entrar no sistema está ativa. Para ativá-la, use `skynet-agent autostart enable`.
 
 ### Publicação dos resultados
 
-Quando o agente inicia, ele cria uma chave para este dispositivo (o arquivo `identity.key` na pasta do agente). Cada resultado é um pequeno registro assinado com essa chave. O agente o envia imediatamente para vários relays públicos Nostr de proprietários diferentes e para os nós completos listados no agente; um resultado conta como entregue quando dois relays ou um nó o confirmaram. Caso contrário, ele fica na caixa de saída e é enviado de novo mais tarde, exatamente o mesmo registro, de modo que nunca é contado duas vezes.
+O agente salva cada resultado concluído na caixa de saída. Ele usa a chave de assinatura em `identity.key` na pasta do agente e cria uma na primeira vez, se o arquivo não existir. Por padrão, ele envia o resultado assinado para relays públicos Nostr e um nó completo. Um nó ou dois relays distintos precisam confirmar o recebimento antes de o agente mover o resultado para `sent`. Caso contrário, ele fica na caixa de saída. Cada nova tentativa usa o mesmo registro assinado com o mesmo ID.
 
-Os registros são públicos e carregam a chave pública deste dispositivo, de modo que os resultados de um dispositivo podem ser ligados uns aos outros. Se você preferir o jeito antigo, comentários na issue da tarefa no GitHub com a sua própria conta, execute `skynet-agent config set submit_via github` e entre com o [GitHub CLI](https://cli.github.com) (`gh auth login`); depois confira com `skynet-agent github`.
-
-Um resultado publicado tem esta aparência e não contém mais nada:
+Aqui está parte de um resultado de uma tarefa que usa o cálculo de teste embutido. O resultado completo também traz o nome da tarefa, os segundos decorridos, a versão do formato, o número da versão do agente e, por padrão, uma etiqueta de plataforma. O registro assinado em torno dele carrega a chave pública do dispositivo, um carimbo de data e hora, o ID do registro e a assinatura.
 
 ```json
-{"agent":"0.2.0","elapsed_s":41.2,"kernel":"exit-scam-a@1","platform":"linux-amd64-py3.12",
- "result":{"count":364838,"digest":"…","hits":0,"…":"…"},"result_sha256":"…","seq":1,
- "task":"exit-a-honest-check","unit":17,"units":256,"v":1}
+{
+  "agent": "1.0.1", "kernel": "selftest@1", "unit": 0, "units": 1,
+  "result": {
+    "kernel": "selftest@1", "rounds": 8, "ok": true,
+    "digest": "a2e8f2c45179bfccb6a01d61ab527a86277215a6ee85ff824910fe27d3e9fe26"
+  },
+  "result_sha256": "7823a03918e86a7046e437fdf001dc40ff05fb1d241a8917baeae4d88b5629fa"
+}
 ```
 
 ## Comandos
 
-| Comando | O que faz |
+| Comando de desktop | O que faz |
 |---|---|
-| `skynet-agent run` | Trabalha até ser parado. `--once` faz uma porção de trabalho e sai |
-| `skynet-agent status` | Versão, configurações, contadores, resultados em espera, último problema |
-| `skynet-agent tasks` | As tarefas publicadas agora e o que este dispositivo já fez |
-| `skynet-agent pause` / `resume` | Parar de pegar tarefas novas / voltar a pegar |
-| `skynet-agent stop` | Pedir ao agente em execução que saia |
-| `skynet-agent outbox` | Resultados aguardando publicação (`list`, `show`, `send`, `link`, `approve`, `drop`) |
-| `skynet-agent net ...` | O quadro de tarefas: `tasks`, `show`, `post-task`, `claim`, `report`, `accept`, `revise`, `sync`, `id`; veja [o guia do quadro](BOARD.md) |
-| `skynet-agent config show` / `set CHAVE VALOR` | Configurações |
-| `skynet-agent update` | Instalar agora a versão assinada mais recente |
-| `skynet-agent selftest [--online]` | Verificar o dispositivo, os arquivos instalados e as assinaturas |
-| `skynet-agent autostart enable` / `disable` | Iniciar ao entrar no sistema, ou não |
-| `skynet-agent uninstall --yes` | Desativar a inicialização automática e parar o agente. A instalação do Linux pelo script de shell também remove os arquivos do programa |
+| `skynet-agent run` | Trabalha até ser parado. `--once` tenta no máximo uma unidade. `--no-submit` mantém os resultados locais nesta execução. `--no-update` pula a instalação de atualizações. `--verbose` acrescenta detalhes ao log. |
+| `skynet-agent status` | Mostra a versão, a pasta do agente, o estado da alimentação, os contadores de trabalho, os resultados em espera e os problemas recentes. |
+| `skynet-agent tasks` | Lista as tarefas de pesquisa automáticas, quais estão prontas e quantas unidades este dispositivo concluiu. |
+| `skynet-agent pause` / `resume` | Deixa as unidades ativas terminarem e deixa de iniciar novas, ou volta a permitir novas unidades. |
+| `skynet-agent stop` | Pedir ao agente em execução que saia. |
+| `skynet-agent outbox` | `list` mostra os resultados em espera, `show NAME` exibe um, `send` tenta publicar os resultados elegíveis e `drop NAME` apaga um resultado na fila. |
+| `skynet-agent net` | Navegue pelo quadro com `tasks` ou `show`. Use `post-task`, `claim`, `report`, `accept` ou `revise` para participar. `sync` repete as publicações pendentes no quadro e busca registros. `id` mostra a sua chave pública. [Guia do quadro](BOARD.md) |
+| `skynet-agent config` | `show` lista as configurações, `get KEY` mostra uma e `set KEY VALUE` a altera. |
+| `skynet-agent update` | Verifica se há uma versão de desktop assinada mais recente e a instala, se ela for elegível para este dispositivo. |
+| `skynet-agent selftest [--online]` | Confere um cálculo com a sua resposta conhecida. Acrescente `--online` para conferir as assinaturas da lista de tarefas e da descrição da versão mais antiga do projeto. |
+| `skynet-agent verify-install` | Verifica os arquivos da versão instalada e executa o cálculo de teste. |
+| `skynet-agent version` | Mostra a versão do agente, o número da versão, a versão do Go e a plataforma. |
+| `skynet-agent autostart` | `status` mostra se a inicialização ao entrar no sistema está ativa. `enable` a ativa e `disable` a desativa. |
+| `skynet-agent uninstall --yes` | Remove uma instalação do Linux. Acrescente `--purge` para apagar também os dados salvos. |
 
 ## Configurações
 
 | Configuração | Padrão | Significado |
 |---|---|---|
-| `workers` | 1 | Tarefas executadas ao mesmo tempo; cada uma usa cerca de um núcleo de CPU |
-| `run_on_battery` | false | Trabalhar na bateria |
-| `poll_minutes` | 30 | De quanto em quanto tempo consultar o repositório |
-| `update` | auto | `auto` instala atualizações assinadas, `notify` apenas avisa, `off` as ignora. Uma pausa pedida pelos mantenedores vale em qualquer modo |
-| `submit` | auto | `auto` publica os resultados, `manual` os mantém na caixa de saída |
-| `submit_via` | net | `net`: registros assinados, sem conta; `github`: comentários com a sua conta do GitHub |
-| `max_task_minutes` | 120 | Duração máxima de uma porção de trabalho |
-| `batch_minutes` | 60 | Com `submit_via github`: os resultados de uma tarefa são publicados juntos, no máximo um comentário a cada tantos minutos |
-| `max_submissions_per_day` | 48 | Com `submit_via github`: o máximo de comentários publicados por dia a partir deste dispositivo |
-| `report_platform` | true | Acrescentar aos resultados uma etiqueta aproximada como `windows-amd64-py3.12` |
-| `ai.enabled` | false | Modo de IA opcional, veja abaixo |
+| `workers` | 1 | Número de unidades que o agente de desktop pode executar ao mesmo tempo, de 1 a 256. O Android executa uma. |
+| `run_on_battery` | false | Permite calcular na bateria. |
+| `paused` | false | Aguarda antes de iniciar novas unidades. Os comandos `pause` e `resume` alteram esta configuração. |
+| `poll_minutes` | 30 | Intervalo aproximado entre consultas ao repositório, de 5 a 1440 minutos. As consultas que falham têm o seu próprio intervalo de novas tentativas. |
+| `update` | auto | No desktop, `auto` instala atualizações assinadas elegíveis, `notify` registra no log quando uma está disponível e `off` ignora a instalação e os avisos. Os três modos ainda verificam se há uma pausa assinada dos mantenedores. |
+| `submit` | auto | `auto` envia os resultados conforme o trabalho avança. `manual` os mantém na caixa de saída até você executar `skynet-agent outbox send`. |
+| `submit_via` | net | Publica registros assinados por meio de relays e nós. Este é o único canal que funciona na versão 1.0. |
+| `max_task_minutes` | 120 | Limite de tempo por unidade, de 1 a 1440 minutos. Um limite menor na tarefa tem precedência. |
+| `report_platform` | true | Inclui o sistema operacional, a arquitetura do processador e a versão do Go nos novos resultados, por exemplo `linux-amd64-` seguido da versão do Go. |
 
-Exemplo: `skynet-agent config set workers 4`.
+Por exemplo, `skynet-agent config set workers 4` permite até quatro workers de desktop. Para compatibilidade com instalações mais antigas, `skynet-agent config show` também lista os antigos limites de comentários e configurações de IA. Eles não têm efeito nos cálculos em Go nem na publicação pela rede.
 
 ## Opcional: responder a perguntas de pesquisa com o seu próprio modelo local de IA
 
-Se você roda um modelo aberto no seu computador (por exemplo com Ollama, o servidor llama.cpp ou LM Studio), o agente pode passar a ele perguntas de pesquisa da lista de tarefas e publicar as respostas. Isso vem desativado por padrão e é experimental.
-
-```sh
-skynet-agent ai                               # mostra o servidor local e o modelo que seria usado
-skynet-agent config set ai.enabled true
-```
-
-- O agente não baixa nem inicia nenhum modelo. Ele só fala com um servidor no seu próprio computador, a menos que você ative `ai.allow_remote`.
-- A pergunta e os documentos que ela cita vêm da lista de tarefas assinada; cada documento é conferido com o seu hash antes de o modelo vê-lo.
-- Cada resposta espera na caixa de saída até você olhar: `skynet-agent outbox show NOME`, depois `skynet-agent outbox approve NOME`. Para publicar sem revisão: `skynet-agent config set ai.review_before_submit false`.
-- As respostas são publicadas como geradas por máquina e não verificadas.
+O modo de IA local não está disponível na versão 1.0. Você ainda pode escrever e publicar a sua própria resposta no quadro de tarefas.
 
 ## Segurança, com honestidade
 
-- **As atualizações e as listas de tarefas são assinadas** (Ed25519). O agente só as aceita se a assinatura corresponder a uma chave de lançamento embutida na cópia instalada, o número da versão for maior que o atual e cada arquivo corresponder ao seu SHA-256. Um download de um espelho ou por uma conexão ruim não pode mudar isso.
-- **Tarefas são dados, não programas.** Novos tipos de cálculo chegam apenas dentro de uma versão assinada, como código Python legível em [`skynet_agent/kernels`](../../agent/skynet_agent/kernels).
-- **O agente roda no modo isolado do Python**, com um limite de tempo para cada porção de trabalho, em um processo separado de baixa prioridade.
-- **Se uma versão nova não inicia**, o lançador volta à anterior e lembra de não instalar aquela versão de novo.
-- **A sua chave de dispositivo** é um arquivo comum na pasta do agente. Quem a copiar pode assinar como este dispositivo; guarde uma cópia se quiser manter o seu nome no quadro depois de reinstalar.
-- **Em que é preciso confiar.** Quem tem a chave de lançamento pode enviar código a todos os agentes instalados. Nesta etapa de pesquisa a chave está com os mantenedores do projeto. Se você não quer atualizações automáticas, execute `skynet-agent config set update notify` e atualize à mão depois de ler as mudanças. A primeira instalação confia na conexão HTTPS com o GitHub. A rede SkyNet não deve ter uma chave assim; este agente é uma ferramenta de pesquisa e ainda não cumpre os requisitos da SkyNet. Detalhes e tabela de ameaças: [docs/RESEARCH_AGENT.md](../../docs/RESEARCH_AGENT.md) (em russo).
+- **As atualizações e as listas de tarefas são assinadas.** O agente confere as suas assinaturas Ed25519 com a chave de lançamento do projeto embutida no programa. Antes de passar para uma atualização de desktop, ele verifica o número da versão, confere o tamanho e o SHA-256 do executável e executa um cálculo de teste. Ele recusa listas de tarefas mais antigas e para de iniciar trabalho a partir de uma lista expirada.
+- **Tarefas fornecem dados.** Os únicos cálculos que uma tarefa pode escolher estão embutidos no executável. Adicionar um novo tipo de cálculo exige uma nova versão de desktop ou uma atualização do aplicativo Android. [Código-fonte Go dos cálculos](https://github.com/skyNetAIAgent/skynet-architecture/tree/main/agent-go/kernels)
+- **Cada unidade roda em um processo separado** na sua conta. O worker pede prioridade baixa de CPU. O agente para o worker se ele atingir o limite de tempo.
+- **Uma atualização de desktop pode ser revertida.** O lançador verifica a versão ativa antes de iniciá-la. Se essa verificação falhar, ou se três tentativas seguidas de executar o agente travarem no primeiro minuto, o lançador pode restaurar uma versão anterior verificada, se houver uma disponível. Ele se lembra do número da versão que falhou.
+- **A sua chave de dispositivo é um arquivo não criptografado.** Quem copiar `identity.key` pode assinar como este dispositivo. Uma cópia de segurança privada permite manter o seu nome no quadro depois de reinstalar.
+- **A primeira instalação depende de onde você obtém o instalador ou o script.** Depois da instalação, quem controla a chave de lançamento do projeto pode assinar código novo que roda com as suas permissões de usuário. Os mantenedores detêm essa chave nesta etapa de pesquisa. Para revisar as atualizações de desktop antes, use `skynet-agent config set update notify` e execute `skynet-agent update` quando estiver pronto. A rede SkyNet proposta deve funcionar sem uma chave de lançamento central. [Projeto do agente de pesquisa e tabela de ameaças, em russo](../../docs/RESEARCH_AGENT.md)
 
 ## Privacidade
 
-O agente baixa arquivos públicos deste repositório (o GitHub vê o seu endereço IP, como em qualquer visita) e envia resultados e registros do quadro para os relays e nós listados no agente (eles também veem o seu endereço IP). Um resultado contém o nome da tarefa, o número da porção, os números calculados, quanto tempo levou e, a menos que você desative `report_platform`, uma etiqueta aproximada da plataforma. Ele é público e assinado com a chave deste dispositivo. Nada sobre seus arquivos, sua rede ou seu hardware é coletado.
+O GitHub vê o seu endereço IP quando você baixa tarefas ou atualizações. Os relays e nós completos que você contata também veem o seu endereço IP. O nó completo embutido usa HTTP não criptografado. Os resultados e as publicações no quadro são públicos. A chave pública deles permite que os leitores liguem registros do mesmo dispositivo.
+
+Os resultados automáticos contêm dados do cálculo e os campos descritos acima. Use `skynet-agent config set report_platform false` para omitir a etiqueta de plataforma dos resultados futuros. O agente não examina os seus arquivos pessoais nem inclui números de série de hardware. Quando você publica uma tarefa ou um relatório no quadro, o texto que você escolhe enviar se torna público.
 
 ## Quanto custa para você
 
-A eletricidade de um núcleo de CPU ocupado por padrão, com a menor prioridade, de modo que os outros programas não ficam lentos. Em um telefone a bateria não é usada, a menos que você permita; mantenha o telefone no carregador.
+Um worker ocupado pode usar cerca de um núcleo de CPU. A prioridade baixa ajuda outros programas a obter tempo de CPU quando precisam. O trabalho ainda consome eletricidade e pode produzir calor. Em um notebook, o agente verifica a alimentação cerca de uma vez por minuto. Por padrão, ele espera para iniciar novas unidades quando detecta alimentação pela bateria. Uma unidade já em execução pode terminar, e o agente de desktop pode começar a trabalhar se a fonte de alimentação for desconhecida.
+
+No Android, desconectar o carregador cancela a unidade atual e a deixa disponível para tentar de novo. Selecione **Also work on battery power** no aplicativo se quiser que ele continue calculando sem o carregador.
 
 ## Remoção
 
-Para uma instalação EXE, escolha **SkyNet Agent → Uninstall** no menu Iniciar. O desinstalador mantém, por padrão, a chave do seu dispositivo e os resultados não enviados. Marque a caixa de exclusão de dados para removê-los também. Para uma instalação por linha de comando, execute o comando a seguir.
+No Windows, use o desinstalador do **SkyNet Agent**. Ele mantém, por padrão, a chave do seu dispositivo, as filas e o histórico de versões. Escolha a opção de exclusão de dados durante a desinstalação para removê-los também.
+
+No Linux, execute o comando a seguir. Ele desativa o serviço de usuário, para o agente e remove os programas instalados. A sua chave, as configurações, o progresso e as filas são mantidos.
 
 ```sh
 skynet-agent uninstall --yes
 ```
 
-O instalador do Linux por script de shell mantém a chave do dispositivo, as configurações e os resultados salvos. Para apagá-los também, use `skynet-agent uninstall --yes --purge` ao desinstalar. Para outras instalações por linha de comando, apague a pasta do agente depois que o comando terminar.
+Para remover também os dados salvos do agente, use `skynet-agent uninstall --yes --purge` ao desinstalar. No Android, desinstale o **SkyNet Agent** pelas configurações do Android para remover o aplicativo e os seus dados locais. Os registros publicados continuam públicos.
 
 ## Se algo der errado
 
-- **«no valid signature from a trusted release key»**: o arquivo baixado não é o que os mantenedores assinaram. O agente o recusa e continua trabalhando com o que tem. Se isso se repetir por dias, veja as issues do repositório.
-- **`CERTIFICATE_VERIFY_FAILED` no macOS** com o Python do python.org: o agente tenta então sozinho com o arquivo de certificados do sistema. Se o erro continuar, execute o `Install Certificates.command` que vem com esse Python.
-- **Python da Microsoft Store (Windows)** mantém uma cópia privada de `AppData` e do registro. Com ele a pasta do agente é `SkyNetAgent` na sua pasta de perfil, e a inicialização automática precisa ser adicionada à mão: `skynet-agent autostart enable` mostra como. Ainda não verificado em um dispositivo real.
-- **Os resultados ficam na caixa de saída**: execute `skynet-agent status`. Com `submit_via net` os relays ou nós não estavam acessíveis (um firewall?); com `submit_via github`, normalmente falta o `gh auth login`.
-- **O Android interrompe o agente em segundo plano**: execute `termux-wake-lock` no Termux e exclua o Termux da otimização de bateria.
+- **“no valid signature from a trusted key”** significa que o documento baixado não passou na verificação. O agente o recusa. Ele ainda pode usar uma lista de tarefas verificada anteriormente até que essa lista expire. No desktop, `skynet-agent status` mostra o último erro do repositório. O log de execução é `logs/agent.log` dentro da pasta do agente.
+- **Os resultados ficam na caixa de saída.** Use `skynet-agent status` ou `skynet-agent outbox list` para ver o que está esperando. No modo manual, execute `skynet-agent outbox send`. Se poucos relays ou nós responderem, o resultado continua na fila para outra tentativa.
+- **Uma instalação mais antiga mostra “GitHub submission is unsupported”.** Execute `skynet-agent config set submit_via net` para usar registros assinados nos novos resultados. As entradas já marcadas para o GitHub e as respostas antigas de IA ficam na caixa de saída para inspeção.
+- **O agente está em execução, mas nenhum trabalho novo começa.** Verifique `skynet-agent tasks` e o log de execução. Ele pode estar pausado, esperando alimentação, sem tarefas elegíveis ou esperando espaço na caixa de saída. No Android, conecte o carregador e toque em **Start** se você parou o aplicativo antes.
 
 ## O que foi testado
 
-O conjunto de testes ([`tests/`](../../agent/tests)) cobre assinaturas, atualizações, retorno à versão anterior, tarefas, publicação, registros assinados, o quadro de tarefas, um nó completo e um percurso completo, e é executado automaticamente no Windows, Linux e macOS a cada mudança (veja a aba Actions do repositório). À mão foi verificado no Windows 11. Ainda não verificado em um dispositivo real: Android (Termux) e a inicialização automática no macOS, Linux e Android. Se algo não funcionar no seu sistema, abra uma issue.
+Os testes do agente são executados automaticamente no Windows e no Linux. Eles cobrem listas de tarefas assinadas, cálculos com respostas conhecidas, atualizações e reversão, registros assinados, entrega, o quadro de tarefas e uma execução que inicia um worker e entrega o seu resultado a um nó simulado.
+
+Instalações reais foram testadas no Windows 11, no Linux Mint, no Ubuntu Server e em um emulador de Android 14. O aplicativo Android ainda não foi verificado em um dispositivo físico. Se algo não funcionar no seu sistema, abra uma issue.
 
 ## Licença
 
-O código do agente está sob a [licença MIT](../../agent/LICENSE).
+O código do agente está sob a [licença MIT](https://github.com/skyNetAIAgent/skynet-architecture/blob/main/agent-go/LICENSE).

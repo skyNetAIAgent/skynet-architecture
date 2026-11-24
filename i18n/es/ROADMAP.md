@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: abdb6f18f1052fd01d01bf76bcf63b29c7a9faf1b0d0e61d26d3803068d46b5c -->
+<!-- translation of docs/ROADMAP.md, source sha256: 179a6350fb2d665a7c94f5f2cfa6b2e520f28c4174e3b619f3a31299f63f53ff -->
 
 # Hoja de ruta: defensa contra el engaño
 
@@ -12,13 +12,13 @@ con cada cambio de estado.
 ## 1. Objetivo y criterios de finalización
 
 **Objetivo de la etapa actual del proyecto:** encontrar una forma de verificar la honestidad que cumpla
-a la vez los requisitos obligatorios ([REQUIREMENTS](REQUIREMENTS.md)):
+a la vez los requisitos obligatorios ([REQUIREMENTS](../ru/REQUIREMENTS.md)):
 
 - no se puede engañar a la red: el engaño es inútil o deficitario, también para un novato con la cuenta vacía,
   con colusión y con muchas claves;
 - ningún pago por adelantado: ni depósitos, ni aportaciones, ni multas;
-- participar es rentable y la verificación de la honestidad es barata. Valores orientativos del trabajo adicional de verificación: alrededor del 5% del trabajo
-  para las peticiones al modelo y alrededor del 20% para el entrenamiento (no confirmadas).
+- participar es rentable y la verificación de la honestidad es barata. Valores orientativos del recargo por verificación: alrededor del 5% del trabajo
+  para las peticiones al modelo y alrededor del 20% para el entrenamiento (no confirmados).
 
 **El trabajo se considera terminado cuando existe todo lo siguiente:**
 
@@ -57,7 +57,7 @@ no con la ausencia de ideas.
 | Por las firmas y las respuestas cortas no se puede establecer qué dispositivo trabajó ni durante cuánto tiempo: un intermediario, una caché y una tarjeta inactiva dan los mismos datos | Establecido por razonamiento | [OPEN_QUESTIONS](OPEN_QUESTIONS.md), «Qué se ha descartado» |
 | La red paga por un resultado verificable, no por el recurso | Aceptado (D2); la unidad del resultado y la condición de aceptación aún no están definidas | [CURRENT_DESIGN](CURRENT_DESIGN.md), sección 1 |
 | Pago diferido en lugar de depósito: el participante responde solo con la suma en espera | Aceptado | CURRENT_DESIGN, sección 2 |
-| Variante A: verificación por muestreo con anulación de las recompensas pendientes si se detecta fraude | Especificación actual | CURRENT_DESIGN, sección 3 |
+| Variante A: verificación por muestreo con anulación | Especificación actual | CURRENT_DESIGN, sección 3 |
 | Variante B: la red paga solo por las tareas verificadas, `1/p` veces más caras | Candidato principal; la elección tras la comparación (D3) | CURRENT_DESIGN, sección 3 |
 | Coincidencia del resultado bit a bit mediante aritmética entera | Candidato, no medido | OPEN_QUESTIONS, Q2 |
 | Disputa dividiendo a la mitad con recálculo de un paso en el registro | Medido para una fila del modelo; no construido para el modelo completo | [PILOT_RESULTS](PILOT_RESULTS.md) |
@@ -73,11 +73,13 @@ no con la ausencia de ideas.
   80% sin esa regla. El paso de la cuadrícula es 0,002–0,02; otras familias de estrategias no se han recorrido
   [cálculo, [FIRST_RUN](FIRST_RUN.md)].
 - Variante B, sin colusión: con la comparación exacta, la falsificación no se paga.
-- Variante B, colusión: `q` es la fracción del peso total de los verificadores de ese modelo que corresponde a la coalición. La falsificación
+- Variante B, colusión: `q` es la proporción del peso de la coalición entre los verificadores de ese modelo. La falsificación
   se paga solo si la tarea es elegida y los `k` verificadores están en colusión. El pago medio
   por una falsificación presentada es `R·q^k` (`R` es el precio de la tarea) y no depende de `p` [cálculo].
   Con `q = 1` es el precio completo. A un novato con la cuenta vacía no hay nada que descontarle.
-- No se ha demostrado para ninguna de las dos variantes que, si todos los verificadores se confabulan, no se pague por ningún resultado falso. Esa garantía se obtiene al verificar cada resultado pagado con datos que cualquier nodo puede comprobar por sí mismo. El recálculo completo añade alrededor del 100% del trabajo. Mediciones del piloto: la demostración
+- El pago falso nulo con colusión total de los verificadores no está demostrado ni para la variante A ni para la
+  variante B. Esa garantía la proporciona la verificación de cada resultado pagado con datos que cualquier nodo
+  comprueba por sí mismo. El recálculo completo añade alrededor del 100% del trabajo. Mediciones del piloto: la demostración
   RISC Zero de una fila del modelo tardó 22 min 10 s en construirse; la ejecución de ocho filas en la zkVM fue
   aproximadamente 17 700 veces más lenta de lo normal, sin construir la demostración. Estas mediciones no dan
   un límite inferior general del precio.
@@ -179,7 +181,8 @@ Ya hecho:
 - [x] **Comprobación en vivo en el servidor:** la instalación 0.2.0 pasó por sí misma a la 0.2.2 el 23 de noviembre
       de 2026; la clave del dispositivo y el progreso se conservaron. En el Linux doméstico, el agente se instaló
       de nuevo con el nuevo instalador (0.2.2); la próxima versión comprobará su autoactualización.
-- [ ] Comprobación en vivo de la autoactualización en Windows (tras la instalación por el propietario mediante el instalador).
+- [x] Comprobación en vivo de la autoactualización en Windows: la instalación del propietario pasó por sí misma
+      de 0.2.2 → 0.3.0 → Go 1.0.1 (23 de noviembre de 2026).
 
 **Paso 2. Android: aplicación sin token**
 
@@ -209,8 +212,8 @@ Ya hecho:
       dispositivo.
 - [x] Comprobación automática en CI en un Windows limpio sin Python: instalación, autocomprobación,
       desinstalación.
-- [ ] Comprobación en vivo en el ordenador de una persona: la primera la realiza el propietario
-      (versión v0.2.2).
+- [x] Comprobación en vivo en el ordenador de una persona: el propietario instaló el agente
+      desde Releases (versión v0.2.2).
 
 **Paso 4. Linux**
 
@@ -221,11 +224,23 @@ Ya hecho:
 - [x] Comprobación en CI: Debian 12 sin Python y Ubuntu 24.04 con Python; instalación en vivo en Linux Mint.
 - [ ] Comprobación en vivo en un participante no vinculado a los mantenedores.
 
-**Paso 5. Actualización del Python integrado y de los envoltorios**
+**Paso 5. Agente en Go en lugar de Python (decisión del propietario del 23 de noviembre de 2026)**
 
-- [ ] Descripción firmada del conjunto para cada sistema y arquitectura: versiones y hashes del
-      Python, del instalador y del envoltorio. El agente actualiza también Python, no solo sus
-      archivos.
+El agente se ha reescrito en Go: un único programa pequeño, no hace falta Python. El Python integrado y su
+actualización ya no son necesarios, por lo que se ha suprimido el paso anterior «actualización del Python integrado».
+
+- [x] Firmas, tareas, siete núcleos de cálculo, registros, Nostr, tablero, ciclo de trabajo, actualización
+      por el segundo canal (`agent/v2/release.json`), lanzador, inicio automático: en Go, solo
+      la biblioteca estándar (el código lo escribió ChatGPT, lo revisó DeepSeek).
+- [x] Los resultados de Go coinciden con Python bit a bit en todas las porciones rápidas de referencia y en todas
+      las pesadas comprobadas; el cotejo de las 1 199 porciones continúa.
+- [x] Compilación reproducible: hashes idénticos de los programas al compilar en Windows y Linux.
+- [x] El puente en Python 0.4.0 migra por sí mismo los agentes instalados a Go conservando la clave
+      del dispositivo, el progreso y la cola. Transición en vivo: el servidor, el Linux doméstico y el Windows del propietario
+      pasaron a Go 1.0.1 por sí mismos.
+- [x] Instaladores en Go: Windows 4,7 MB, Linux en un solo archivo; aplicación Android 0.3.0 con
+      motor Go, unos 8 MB en lugar de 40 (comprobado en el emulador Android 14).
+- [ ] Eliminar el puente y las copias en Python tras dos versiones verificadas en Go.
 
 **Paso 6. Flujo de tareas**
 
@@ -341,9 +356,9 @@ decida nada. Las direcciones no están aprobadas. Para cada una hay que indicar 
 la probabilidad de error y el coste de una petición o un paso completos; después, llevarla a una construcción o cerrarla
 con un contraejemplo.
 
-- [ ] **Tareas con un criterio exacto de corrección que cuesta poco comprobar.** Ejemplo: para la regresión ridge, el nodo
+- [ ] **Tareas con un criterio exacto y barato de corrección.** Ejemplo: para la regresión ridge, el nodo
       comprueba la condición de óptimo en una sola pasada por los datos. Pregunta: qué proporción del trabajo de la red
-      cabe en tales tareas. Empezar por esta dirección: garantiza que no se pague por ningún resultado falso.
+      cabe en tales tareas. Empezar por esta dirección: garantiza un pago falso nulo.
 - [ ] **Comprobación de cada multiplicación de matrices con un vector aleatorio** en lugar del recálculo. El vector
       se elige después de fijar el resultado; la probabilidad de dejar pasar un error no depende de la colusión.
       Es rentable para lotes grandes; al generar un token cada vez no hay ganancia. Las demás

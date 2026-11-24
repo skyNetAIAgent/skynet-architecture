@@ -2,6 +2,9 @@ param([Parameter(Mandatory)][string]$BuildDir)
 
 $ErrorActionPreference = 'Stop'
 $env:PATH = "$env:SystemRoot\System32;$env:SystemRoot"
+# Keep test runs off the real network: they must not publish records.
+$env:SKYNET_AGENT_RELAYS = "none"
+$env:SKYNET_AGENT_RECEIVERS = "none"
 if (Get-Command python.exe -ErrorAction SilentlyContinue) { throw 'System Python is still on PATH.' }
 $app = Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) 'SkyNetAgent'
 $group = Join-Path ([Environment]::GetFolderPath('Programs')) 'SkyNet Agent'

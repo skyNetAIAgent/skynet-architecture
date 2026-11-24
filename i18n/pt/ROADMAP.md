@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: abdb6f18f1052fd01d01bf76bcf63b29c7a9faf1b0d0e61d26d3803068d46b5c -->
+<!-- translation of docs/ROADMAP.md, source sha256: 179a6350fb2d665a7c94f5f2cfa6b2e520f28c4174e3b619f3a31299f63f53ff -->
 
 # Roteiro: defesa contra fraude
 
@@ -12,7 +12,7 @@ a cada mudança de status.
 ## 1. Objetivo e critérios de prontidão
 
 **Objetivo da etapa atual do projeto:** encontrar um modo de verificar a honestidade em que sejam cumpridos
-ao mesmo tempo os requisitos obrigatórios ([REQUIREMENTS](REQUIREMENTS.md)):
+ao mesmo tempo os requisitos obrigatórios ([REQUIREMENTS](../ru/REQUIREMENTS.md)):
 
 - não se pode fraudar a rede: a fraude é inútil ou dá prejuízo, inclusive para um novato com conta vazia,
   em conluio e com muitas chaves;
@@ -180,8 +180,8 @@ Já feito:
       novembro de 2026, e a chave do dispositivo e o progresso foram preservados. No Linux doméstico, o
       agente foi instalado de novo com o novo instalador (0.2.2); a próxima versão verificará sua
       autoatualização.
-- [ ] Verificação ao vivo da autoatualização no Windows (após a instalação pelo dono por meio do
-      instalador).
+- [x] Verificação ao vivo da autoatualização no Windows: a instalação do dono passou sozinha por
+      0.2.2 → 0.3.0 → Go 1.0.1 (23 de novembro de 2026).
 
 **Passo 2. Android: aplicativo sem token**
 
@@ -209,7 +209,8 @@ Já feito:
 - [x] Caixa de seleção «iniciar ao entrar» no instalador; a escolha é preservada na atualização.
 - [x] Remoção por «Aplicativos»; ao remover, é possível preservar a chave do dispositivo.
 - [x] Verificação automática no CI em um Windows limpo sem Python: instalação, autoverificação, remoção.
-- [ ] Verificação ao vivo no computador de uma pessoa: o dono é o primeiro a fazê-la (versão v0.2.2).
+- [x] Verificação ao vivo no computador de uma pessoa: o dono instalou o agente a partir do Releases
+      (versão v0.2.2).
 
 **Passo 4. Linux**
 
@@ -221,11 +222,23 @@ Já feito:
 - [x] Verificação no CI: Debian 12 sem Python e Ubuntu 24.04 com Python; instalação ao vivo no Linux Mint.
 - [ ] Verificação ao vivo com um participante sem vínculo com os mantenedores.
 
-**Passo 5. Atualização do Python embutido e dos invólucros**
+**Passo 5. Agente em Go em vez de Python (decisão do dono de 23 de novembro de 2026)**
 
-- [ ] Descrição assinada do conjunto para cada sistema e arquitetura: versões e impressões digitais do
-      Python, do instalador e do invólucro. O agente atualiza também o Python, e não apenas os próprios
-      arquivos.
+O agente foi reescrito em Go: um único programa pequeno, Python não é necessário. O Python embutido e sua
+atualização não são mais necessários, por isso o passo anterior «atualização do Python embutido» foi removido.
+
+- [x] Assinaturas, tarefas, sete núcleos de cálculo, registros, Nostr, quadro, ciclo de trabalho, atualização
+      pelo segundo canal (`agent/v2/release.json`), lançador, início automático — em Go, apenas
+      a biblioteca padrão (o código foi escrito pelo ChatGPT e verificado pelo DeepSeek).
+- [x] Os resultados em Go coincidem com os do Python bit a bit em todas as porções rápidas do padrão
+      de referência e em todas as porções pesadas verificadas; a conferência de todas as 1.199 porções continua.
+- [x] Compilação reproduzível: as mesmas impressões digitais dos programas na compilação no Windows e no Linux.
+- [x] A ponte em Python 0.4.0 migra por conta própria os agentes instalados para Go, preservando a chave
+      do dispositivo, o progresso e a fila. Transição ao vivo: o servidor, o Linux doméstico e o Windows do dono
+      passaram sozinhos para o Go 1.0.1.
+- [x] Instaladores em Go: Windows 4,7 MB, Linux em um único arquivo; aplicativo Android 0.3.0 com
+      motor Go, cerca de 8 MB em vez de 40 (verificado no emulador Android 14).
+- [ ] Remover a ponte e as cópias em Python após duas versões verificadas em Go.
 
 **Passo 6. Fluxo de tarefas**
 
@@ -317,7 +330,7 @@ recalculada em pelo menos dois dispositivos independentes.
       um vazamento nulo.
 - [ ] **Lixo de chaves gratuitas.** Candidato: o nó aceita dados apenas por números de tarefa permitidos,
       limita o tamanho, a fila e o trabalho por época. O canal ainda pode ser preenchido; não foi obtido
-      um lugar garantido para o novato honesto quando o número de chaves na rede é arbitrário.
+      um lugar garantido para o novato honesto com um número arbitrário de chaves.
 - [ ] **Resultado usado antes da verificação.** Candidato: verificar o bloco da resposta antes da entrega;
       manter a etapa de treinamento em um ramo separado e promover apenas o descendente verificado. Preço:
       atraso e memória.

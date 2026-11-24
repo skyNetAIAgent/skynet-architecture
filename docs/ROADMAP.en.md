@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: abdb6f18f1052fd01d01bf76bcf63b29c7a9faf1b0d0e61d26d3803068d46b5c -->
+<!-- translation of docs/ROADMAP.md, source sha256: 179a6350fb2d665a7c94f5f2cfa6b2e520f28c4174e3b619f3a31299f63f53ff -->
 
 # Roadmap: protection against cheating
 
@@ -12,7 +12,7 @@ updated on every status change.
 ## 1. Goal and readiness criteria
 
 **The goal of the current project stage:** to find a way to check honesty under which the mandatory
-requirements ([REQUIREMENTS](../REQUIREMENTS.md)) are met at the same time:
+requirements ([REQUIREMENTS](../i18n/ru/REQUIREMENTS.md)) are met at the same time:
 
 - the network cannot be cheated: cheating is useless or unprofitable, including for a newcomer
   with an empty account, under collusion, and with many keys;
@@ -57,13 +57,13 @@ of ideas.
 
 | What | Status | Where it is recorded |
 |---|---|---|
-| From signatures and short answers it cannot be established which device worked and for how long: a proxy, a cache, and an idle card give the same data | Established by reasoning | [OPEN_QUESTIONS](OPEN_QUESTIONS.en.md), "What has already been rejected" |
-| The network pays for a verifiable result, not for a resource | Accepted (D2); the unit of result and the acceptance condition are not yet defined | [CURRENT_DESIGN](CURRENT_DESIGN.en.md), section 1 |
+| From signatures and short answers it cannot be established which device worked and for how long: a proxy, a cache, and an idle card give the same data | Established by reasoning | [OPEN_QUESTIONS](OPEN_QUESTIONS.md), "What has already been rejected" |
+| The network pays for a verifiable result, not for a resource | Accepted (D2); the unit of result and the acceptance condition are not yet defined | [CURRENT_DESIGN](CURRENT_DESIGN.md), section 1 |
 | Deferred payment instead of a deposit: a participant can lose only the pending amount | Accepted | CURRENT_DESIGN, section 2 |
 | Variant A: verification by sampling, with cancellation of pending rewards when fraud is detected | Current specification | CURRENT_DESIGN, section 3 |
 | Variant B: the network pays only for verified tasks, paying `1/p` times the base price for each | Main candidate; the choice after comparison (D3) | CURRENT_DESIGN, section 3 |
 | Bit-for-bit match of the result through integer arithmetic | Candidate, not measured | OPEN_QUESTIONS, Q2 |
-| Dispute by halving with recomputation of one step in the ledger | Measured for one row of the model; not built for the full model | [PILOT_RESULTS](PILOT_RESULTS.en.md) |
+| Dispute by halving with recomputation of one step in the ledger | Measured for one row of the model; not built for the full model | [PILOT_RESULTS](PILOT_RESULTS.md) |
 | Verification of matrix multiplication with a random vector inside a dispute | Candidate, only a calculated estimate exists | CURRENT_DESIGN, section 3 |
 | An unchangeable verification core that cannot be revoked by a vote | Accepted (D4) | CURRENT_DESIGN, section 8 |
 
@@ -146,7 +146,7 @@ Already done:
 - [x] An agent program for Windows and Linux: signed tasks and updates, automatic
       checks in CI (release 0.2.0). Installation with one command
       in the terminal; Python 3.9+ is required.
-- [x] Results and the [task board](BOARD.en.md) without an account.
+- [x] Results and the [task board](BOARD.md) without an account.
 - [x] The first full node storing the history of records.
 - [x] The first research task "Defense against cheaters" on the board, in nine languages.
 - [x] A trial Android app 0.1.0 (checked only on the emulator).
@@ -170,7 +170,8 @@ Already done:
       23 November 2026, with the device key and progress preserved. On the home Linux the agent was
       installed anew with the new installer (0.2.2); its self-update will be checked by the next
       release.
-- [ ] Live check of self-update on Windows (after installation by the owner via the installer).
+- [x] Live check of self-update on Windows: the owner's installation went through 0.2.2 → 0.3.0 →
+      Go 1.0.1 by itself (23 November 2026).
 
 **Step 2. Android: an app without a token**
 
@@ -198,7 +199,7 @@ Already done:
 - [x] Uninstalling via "Apps"; when uninstalling, the device key can be kept.
 - [x] An automatic check in CI on a clean Windows without Python: installation, self-check,
       uninstallation.
-- [ ] Live check on a person's computer: the owner is the first to go through it (release v0.2.2).
+- [x] Live check on a person's computer: the owner installed the agent from Releases (release v0.2.2).
 
 **Step 4. Linux**
 
@@ -211,11 +212,24 @@ Already done:
       on Linux Mint.
 - [ ] A live check with a participant not connected with the maintainers.
 
-**Step 5. Updating the embedded Python and the wrappers**
+**Step 5. A Go agent instead of Python (owner's decision of 23 November 2026)**
 
-- [ ] A signed description of the bundle for each system and architecture: the versions and hashes
-      of Python, the installer, and the wrapper. The agent updates Python as well, not only its own
-      files.
+The agent has been rewritten in Go: one small program, Python is not needed. The embedded Python and
+its update are no longer required, so the previous step "updating the embedded Python" has been
+removed.
+
+- [x] Signatures, tasks, seven computational kernels, records, Nostr, the board, the work loop,
+      updating via the second channel (`agent/v2/release.json`), the launcher, and autostart — in Go,
+      standard library only (code written by ChatGPT, checked by DeepSeek).
+- [x] Go results match Python bit for bit on all fast chunks of the reference and on all checked
+      heavy chunks; cross-checking of all 1,199 chunks continues.
+- [x] Reproducible build: identical program hashes when built on Windows and Linux.
+- [x] The Python bridge 0.4.0 itself migrates installed agents to Go while preserving the device
+      key, progress, and queue. Live transition: the server, the home Linux, and the owner's Windows
+      switched to Go 1.0.1 by themselves.
+- [x] Installers in Go: Windows 4.7 MB, Linux as a single file; the Android app 0.3.0 with a Go
+      engine, about 8 MB instead of 40 (checked on the Android 14 emulator).
+- [ ] Remove the bridge and the Python copies after two verified releases in Go.
 
 **Step 6. Task flow**
 
