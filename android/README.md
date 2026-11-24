@@ -19,8 +19,9 @@ the service lifecycle and reboot still need testing on Android.
 
 - It works only while the device is charging, unless you tick "Also work on battery power".
   Unplugging cancels the current unit and leaves it available for a later run.
-- To resume after restarting the device, enable **Start after reboot**. It is off by
-  default. Pressing **Stop** keeps the agent stopped across a reboot.
+- After you press **Start** once, the agent also starts again after the device restarts
+  (**Start after reboot** is on by default; untick it to turn this off). Pressing **Stop** keeps
+  the agent stopped across a reboot.
 - On Android 13 and newer, if you refuse notifications, the app still works; Android then shows
   it only in the list of running apps.
 - If an existing profile uses `submit_via=github`, its results stay queued. This version

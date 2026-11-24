@@ -40,8 +40,8 @@ Name: "ar"; MessagesFile: "compiler:Languages\Unofficial\Arabic.isl"
 #endif
 
 [Tasks]
-Name: "autostart"; Description: "Start at Windows sign-in"; Flags: unchecked
-Name: "startnow"; Description: "Start the agent now"; Flags: unchecked
+Name: "autostart"; Description: "Start at Windows sign-in"
+Name: "startnow"; Description: "Start the agent now"
 
 [Files]
 Source: "{#BuildDir}\release\*"; DestDir: "{tmp}\release"; Flags: deleteafterinstall

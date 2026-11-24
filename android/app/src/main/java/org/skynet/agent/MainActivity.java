@@ -244,7 +244,7 @@ public class MainActivity extends Activity {
 
         CheckBox boot = new CheckBox(this);
         boot.setText(R.string.start_on_boot);
-        boot.setChecked(prefs.getBoolean("start_on_boot", false));
+        boot.setChecked(prefs.getBoolean("start_on_boot", true));
         boot.setOnCheckedChangeListener((view, checked) ->
                 prefs.edit().putBoolean("start_on_boot", checked).apply());
         page.addView(boot);

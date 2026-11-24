@@ -1,4 +1,4 @@
-<!-- translation of android/README.md, source sha256: e6e5eb4a3358a14712c3c5b2e0efee2cd483b0009e7378ef16b31cc789c0d054 -->
+<!-- translation of android/README.md, source sha256: f39e5a1b5b61d6be25ac07b2c69e9f4af5a9bca2ee2ff7cb9610398aebe13e0c -->
 
 # Agente de investigación de SkyNet para Android (experimental)
 
@@ -24,8 +24,9 @@ instalación sobre la 0.2.0, el ciclo de vida del servicio y el reinicio aún de
 - Solo funciona mientras el dispositivo se está cargando, salvo que marque «Trabajar también con
   batería». Desenchufar el dispositivo cancela la unidad actual y la deja disponible para una
   ejecución posterior.
-- Para reanudar tras reiniciar el dispositivo, active **Iniciar tras reiniciar**. Está desactivada
-  de forma predeterminada. Pulsar **Detener** mantiene el agente detenido tras un reinicio.
+- Una vez que pulse **Iniciar**, el agente también se inicia de nuevo tras reiniciar el dispositivo
+  (**Iniciar tras reiniciar** está activada de forma predeterminada; desmárquela para desactivar esta
+  opción). Pulsar **Detener** mantiene el agente detenido tras un reinicio.
 - En Android 13 y posterior, si rechaza las notificaciones, la aplicación sigue funcionando;
   Android la muestra entonces solo en la lista de aplicaciones en ejecución.
 - Si un perfil existente usa `submit_via=github`, sus resultados permanecen en cola. Esta versión

@@ -1,4 +1,4 @@
-<!-- translation of installer/linux/README.md, source sha256: 7ece3bc522f30a5f0b62b4a6580a177b3d4725e5b1eaa5513e255f0772f27156 -->
+<!-- translation of installer/linux/README.md, source sha256: cabcf2237fcb61f3ccddb3e461306c5030f018a0db5353bfe00e7a5f55dd389f -->
 
 # Linux 安装程序
 
@@ -7,11 +7,11 @@
 离线安装程序包含适用于 amd64、arm64 和 ARMv7 的已签名 Go 可执行文件。请以桌面用户身份运行它。全新安装会使用按用户划分的数据目录，并把命令放在 `~/.local/bin` 中。
 
 ~~~sh
-sh skynet-agent-install.sh --no-autostart
+sh skynet-agent-install.sh
 ~/.local/bin/skynet-agent verify-install
 ~~~
 
-使用 `--home DIR` 可指定自定义配置目录。默认情况下，安装程序会保留登录时启动。使用 `--autostart` 可立即启动 systemd 用户服务，并在登录时启动；或者加上 `--linger`，让它在登录会话之外继续运行。卸载代理程序会保留身份和队列。加上 `--purge` 则会显式删除其保存的数据。
+使用 `--home DIR` 可指定自定义配置目录。安装程序会立即启动代理程序，并将其注册为 systemd 用户服务，因此重启后它会再次启动；它还会尝试在注销后继续运行（linger）。使用 `--no-autostart` 可仅执行安装，或使用 `--linger` 要求启用 linger。卸载代理程序会保留身份和队列。加上 `--purge` 则会显式删除其保存的数据。
 
 ~~~sh
 ~/.local/bin/skynet-agent uninstall --yes

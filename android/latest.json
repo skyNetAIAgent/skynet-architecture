@@ -1,10 +1,10 @@
 {
   "format": 1,
-  "version_code": 5,
-  "version_name": "0.4.1",
+  "version_code": 6,
+  "version_name": "0.4.2",
   "min_sdk": 24,
-  "notes": "Results are published again: identity key saved in a way Android allows.",
-  "url": "https://github.com/skyNetAIAgent/skynet-architecture/releases/download/v1.3.2/skynet-agent-0.4.1.apk",
+  "notes": "Starts again after a reboot by default.",
+  "url": "https://github.com/skyNetAIAgent/skynet-architecture/releases/download/v1.3.3/skynet-agent-0.4.2.apk",
   "size": 8203077,
-  "sha256": "02564e00b146e14b85f1dc592992f60fe66a2d00fe6ed6ae6f187f91863a0df0"
+  "sha256": "020fb805672ebbcac604b7baaa016f6a3a922b10581183b4f4185870259f0499"
 }

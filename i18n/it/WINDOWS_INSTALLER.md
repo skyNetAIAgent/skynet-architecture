@@ -1,4 +1,4 @@
-<!-- translation of installer/windows/README.md, source sha256: 2da95275cc3800c9e5962bb14e7d8acc894408a7819ddf9d7ce80194c3f1169e -->
+<!-- translation of installer/windows/README.md, source sha256: ea7cbbbfeb25d77b3a5b0c8e09d4f0869dfa666efd0d84e0755573b22c5206ae -->
 
 # Programma di installazione desktop per Windows
 
@@ -7,7 +7,8 @@
 Scegliete il programma di installazione amd64 o arm64 per il vostro computer.
 Verificate il suo SHA-256 usando un'impronta di controllo ottenuta tramite un canale
 attendibile. L'installazione colloca il rilascio nativo firmato nel profilo dell'utente
-corrente. L'avvio all'accesso e l'avvio immediato sono facoltativi.
+corrente. L'installazione avvia subito l'agente e a ogni accesso a Windows; entrambe le
+opzioni possono essere deselezionate nella pagina delle attività.
 I collegamenti nel menu Start richiamano il programma di avvio permanente.
 
 Il programma di disinstallazione conserva per impostazione predefinita identità, code e

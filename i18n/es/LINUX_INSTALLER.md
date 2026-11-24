@@ -1,4 +1,4 @@
-<!-- translation of installer/linux/README.md, source sha256: 7ece3bc522f30a5f0b62b4a6580a177b3d4725e5b1eaa5513e255f0772f27156 -->
+<!-- translation of installer/linux/README.md, source sha256: cabcf2237fcb61f3ccddb3e461306c5030f018a0db5353bfe00e7a5f55dd389f -->
 
 # Instalador de Linux
 
@@ -7,11 +7,11 @@
 El instalador sin conexión contiene ejecutables Go firmados para amd64, arm64 y ARMv7. Ejecútelo con el usuario de escritorio. Una instalación nueva usa el directorio de datos por usuario y coloca la orden en `~/.local/bin`.
 
 ~~~sh
-sh skynet-agent-install.sh --no-autostart
+sh skynet-agent-install.sh
 ~/.local/bin/skynet-agent verify-install
 ~~~
 
-Use `--home DIR` para un perfil personalizado. La instalación conserva de forma predeterminada el inicio automático al iniciar sesión. Use `--autostart` para iniciar el servicio de usuario de systemd ahora y al iniciar sesión, o añada `--linger` para mantenerlo en ejecución fuera de las sesiones de inicio de sesión. La eliminación del agente conserva la identidad y las colas. Añadir `--purge` elimina explícitamente sus datos guardados.
+Use `--home DIR` para un perfil personalizado. La instalación inicia el agente de inmediato y lo registra como servicio de usuario de systemd, de modo que vuelve a iniciarse tras un reinicio; también intenta mantenerlo en ejecución después de cerrar la sesión (linger). Use `--no-autostart` para solo instalar, o `--linger` para exigir linger. La eliminación del agente conserva la identidad y las colas. Añadir `--purge` elimina explícitamente sus datos guardados.
 
 ~~~sh
 ~/.local/bin/skynet-agent uninstall --yes

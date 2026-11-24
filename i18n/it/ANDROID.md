@@ -1,4 +1,4 @@
-<!-- translation of android/README.md, source sha256: e6e5eb4a3358a14712c3c5b2e0efee2cd483b0009e7378ef16b31cc789c0d054 -->
+<!-- translation of android/README.md, source sha256: f39e5a1b5b61d6be25ac07b2c69e9f4af5a9bca2ee2ff7cb9610398aebe13e0c -->
 
 # Agente di ricerca SkyNet per Android (sperimentale)
 
@@ -25,9 +25,10 @@ essere verificati su Android.
 - Funziona solo mentre il dispositivo è in carica, a meno che non spuntiate "Lavora anche a
   batteria". Scollegare il caricatore annulla l'unità corrente e la lascia disponibile per
   un'esecuzione successiva.
-- Per riprendere dopo aver riavviato il dispositivo, attivate **Avvio dopo il riavvio**.
-  L'opzione è disattivata per impostazione predefinita. Se premete **Arresta**, l'agente resta
-  fermo anche dopo un riavvio.
+- Dopo aver premuto **Avvia** una volta, l'agente si avvia di nuovo anche dopo il riavvio
+  del dispositivo (**Avvio dopo il riavvio** è attivo per impostazione predefinita;
+  deselezionatelo per disattivarlo). Se premete **Arresta**, l'agente resta fermo anche dopo
+  un riavvio.
 - Su Android 13 e versioni successive, se rifiutate le notifiche, l'app funziona comunque;
   Android la mostra allora solo nell'elenco delle app in esecuzione.
 - Se un profilo esistente usa `submit_via=github`, i suoi risultati restano in coda. Questa

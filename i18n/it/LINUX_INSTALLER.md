@@ -1,4 +1,4 @@
-<!-- translation of installer/linux/README.md, source sha256: 7ece3bc522f30a5f0b62b4a6580a177b3d4725e5b1eaa5513e255f0772f27156 -->
+<!-- translation of installer/linux/README.md, source sha256: cabcf2237fcb61f3ccddb3e461306c5030f018a0db5353bfe00e7a5f55dd389f -->
 
 # Programma di installazione per Linux
 
@@ -7,11 +7,11 @@
 Il programma di installazione offline contiene eseguibili Go firmati per amd64, arm64 e ARMv7. Eseguitelo come utente desktop. Una nuova installazione usa la directory dati per utente e colloca il comando in `~/.local/bin`.
 
 ~~~sh
-sh skynet-agent-install.sh --no-autostart
+sh skynet-agent-install.sh
 ~/.local/bin/skynet-agent verify-install
 ~~~
 
-Usate `--home DIR` per un profilo personalizzato. Il programma di installazione conserva l'avvio all'accesso per impostazione predefinita. Usate `--autostart` per avviare subito il servizio utente systemd e all'accesso, oppure aggiungete `--linger` per mantenerlo in esecuzione al di fuori delle sessioni di accesso. La rimozione dell'agente conserva l'identità e le code. L'aggiunta di `--purge` rimuove esplicitamente i suoi dati salvati.
+Usate `--home DIR` per un profilo personalizzato. La configurazione avvia subito l'agente e lo registra come servizio utente systemd, così riparte dopo un riavvio; inoltre prova a mantenerlo in esecuzione dopo la disconnessione (linger). Usate `--no-autostart` per installare soltanto, oppure `--linger` per richiedere linger. La rimozione dell'agente conserva l'identità e le code. L'aggiunta di `--purge` rimuove esplicitamente i suoi dati salvati.
 
 ~~~sh
 ~/.local/bin/skynet-agent uninstall --yes

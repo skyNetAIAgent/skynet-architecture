@@ -1,4 +1,4 @@
-<!-- translation of android/README.md, source sha256: e6e5eb4a3358a14712c3c5b2e0efee2cd483b0009e7378ef16b31cc789c0d054 -->
+<!-- translation of android/README.md, source sha256: f39e5a1b5b61d6be25ac07b2c69e9f4af5a9bca2ee2ff7cb9610398aebe13e0c -->
 
 # Agente de pesquisa SkyNet para Android (experimental)
 
@@ -21,8 +21,9 @@ por cima da 0.2.0, o ciclo de vida do serviço e a reinicialização ainda preci
 
 - Ele só trabalha enquanto o dispositivo está carregando, a menos que você marque "Trabalhar também na bateria".
   Desconectar cancela a porção atual e a deixa disponível para uma execução posterior.
-- Para continuar depois de reiniciar o dispositivo, ative **Iniciar após reiniciar**. Vem desativado
-  por padrão. Apertar **Parar** mantém o agente parado após um reinício.
+- Depois que você aperta **Iniciar** uma vez, o agente também volta a iniciar após o dispositivo reiniciar
+  (**Iniciar após reiniciar** vem ativado por padrão; desmarque essa opção para desativar). Apertar **Parar** mantém
+  o agente parado após um reinício.
 - No Android 13 e mais recentes, se você recusar as notificações, o aplicativo continua funcionando; o Android passa a mostrá-lo apenas na lista de aplicativos em execução.
 - Se um perfil existente usa `submit_via=github`, os resultados dele ficam na fila. Esta versão
   oferece publicação por meio de registros de rede assinados.

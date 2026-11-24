@@ -76,3 +76,20 @@ func TestTermuxSkipsGPU(t *testing.T) {
 		t.Fatalf("unexpected nvidia-smi invocation, stat error = %v", err)
 	}
 }
+
+func TestPCINameLookup(t *testing.T) {
+	dir := t.TempDir()
+	ids := filepath.Join(dir, "pci.ids")
+	data := "# comment\n1000  Broadcom\n\t0001  Something\n1002  Advanced Micro Devices, Inc. [AMD/ATI]\n" +
+		"\t67df  Ellesmere [Radeon RX 470/480/570/570X/580/580X/590]\n\t\t1002 0b31  Radeon RX 580\n10de  NVIDIA Corporation\n"
+	if err := os.WriteFile(ids, []byte(data), 0600); err != nil {
+		t.Fatal(err)
+	}
+	files := []string{filepath.Join(dir, "missing"), ids}
+	if got := pciName(files, "0x1002", "0x67DF"); got != "Ellesmere [Radeon RX 470/480/570/570X/580/580X/590]" {
+		t.Fatalf("name = %q", got)
+	}
+	if got := pciName(files, "0x1002", "0x0001"); got != "" {
+		t.Fatalf("unknown device = %q", got)
+	}
+}

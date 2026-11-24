@@ -11,14 +11,14 @@ case $(uname -m) in
     *) die "No Go target for this architecture." ;;
 esac
 home=${SKYNET_AGENT_HOME:-${XDG_DATA_HOME:-$HOME/.local/share}/skynet-agent}
-startup=keep
-linger=no
+startup=enable
+linger=auto
 while [ "$#" -gt 0 ]; do
     case $1 in
         --home) shift; home=${1:?missing home} ;;
         --home=*) home=${1#*=} ;;
         --autostart) startup=enable ;;
-        --no-autostart) startup=disable ;;
+        --no-autostart) startup=disable; linger=no ;;
         --linger) linger=yes; startup=enable ;;
         *) die "Unknown option $1" ;;
     esac
@@ -85,6 +85,26 @@ wrapper=$(mktemp "$HOME/.local/bin/.skynet-XXXXXXXX")
 printf '%s\n' '#!/bin/sh' "exec '$escaped' launch \"\$@\"" > "$wrapper"
 chmod 700 "$wrapper"
 mv -f "$wrapper" "$shim"
-if [ "$startup" != keep ]; then "$home/skynet-agent" launch autostart "$startup"; fi
-if [ "$linger" = yes ]; then loginctl --no-ask-password enable-linger "$(id -un)"; fi
-printf 'Installed. Run %s status\n' "$shim"
+started=no
+if [ "$startup" = enable ]; then
+    # Start now and after every login or boot (systemd user service); keep running after logout if allowed.
+    if "$home/skynet-agent" launch autostart enable >/dev/null 2>&1; then
+        started=yes
+        if [ "$linger" = yes ]; then
+            loginctl --no-ask-password enable-linger "$(id -un)"
+        elif [ "$linger" = auto ]; then
+            loginctl --no-ask-password enable-linger "$(id -un)" >/dev/null 2>&1 || true
+        fi
+    else
+        # No systemd user session (container, minimal system): start in the background for now.
+        nohup "$home/skynet-agent" launch run >/dev/null 2>&1 &
+        started=background
+    fi
+else
+    "$home/skynet-agent" launch autostart disable
+fi
+case $started in
+    yes) printf 'Installed and started; it also starts after a reboot. Check: %s status\n' "$shim" ;;
+    background) printf 'Installed and started in the background (no systemd user session: it will not start after a reboot). Check: %s status\n' "$shim" ;;
+    *) printf 'Installed without autostart. Start: %s run   Check: %s status\n' "$shim" "$shim" ;;
+esac

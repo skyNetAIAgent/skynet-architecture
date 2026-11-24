@@ -10,7 +10,7 @@ public class BootReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         if (!Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) return;
         SharedPreferences prefs = context.getSharedPreferences("app", Context.MODE_PRIVATE);
-        if (prefs.getBoolean("start_on_boot", false) && prefs.getBoolean("running", false)
+        if (prefs.getBoolean("start_on_boot", true) && prefs.getBoolean("running", false)
                 && AgentService.runningMarker(context).exists()) {
             AgentService.start(context);
         } else {

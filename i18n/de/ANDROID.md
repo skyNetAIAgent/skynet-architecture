@@ -1,4 +1,4 @@
-<!-- translation of android/README.md, source sha256: e6e5eb4a3358a14712c3c5b2e0efee2cd483b0009e7378ef16b31cc789c0d054 -->
+<!-- translation of android/README.md, source sha256: f39e5a1b5b61d6be25ac07b2c69e9f4af5a9bca2ee2ff7cb9610398aebe13e0c -->
 
 # SkyNet-Forschungsagent für Android (experimentell)
 
@@ -21,8 +21,9 @@ In dieser Phase gibt es keine Belohnungen.
 
 - Sie arbeitet nur, während das Gerät geladen wird, außer Sie aktivieren „Auch im Akkubetrieb arbeiten“.
   Das Trennen vom Strom bricht das aktuelle Arbeitsstück ab und lässt es für einen späteren Lauf verfügbar.
-- Um nach einem Neustart des Geräts fortzufahren, aktivieren Sie **Start after reboot**. Sie ist standardmäßig
-  aus. Ein Druck auf **Stop** hält den Agenten über einen Neustart hinweg gestoppt.
+- Nachdem Sie einmal **Start** gedrückt haben, startet der Agent auch nach einem Neustart des Geräts erneut
+  (**Start after reboot** ist standardmäßig aktiviert; deaktivieren Sie das Kontrollkästchen, um dies auszuschalten). Ein Druck auf **Stop** hält
+  den Agenten über einen Neustart hinweg gestoppt.
 - Unter Android 13 und neuer funktioniert die App auch dann, wenn Sie Benachrichtigungen ablehnen; Android zeigt sie dann
   nur in der Liste der laufenden Apps.
 - Wenn ein vorhandenes Profil `submit_via=github` verwendet, bleiben seine Ergebnisse in der Warteschlange. Diese Version

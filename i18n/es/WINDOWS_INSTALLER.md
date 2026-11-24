@@ -1,4 +1,4 @@
-<!-- translation of installer/windows/README.md, source sha256: 2da95275cc3800c9e5962bb14e7d8acc894408a7819ddf9d7ce80194c3f1169e -->
+<!-- translation of installer/windows/README.md, source sha256: ea7cbbbfeb25d77b3a5b0c8e09d4f0869dfa666efd0d84e0755573b22c5206ae -->
 
 # Instalador de escritorio de Windows
 
@@ -6,9 +6,9 @@
 
 Elija el instalador amd64 o arm64 para su computadora. Verifique su SHA-256 con una suma
 de comprobación obtenida por un canal de confianza. El instalador instala la versión
-nativa firmada en el perfil del usuario actual. El inicio automático al iniciar sesión y
-la ejecución inmediata son opcionales. Los accesos directos del menú Inicio invocan el
-lanzador permanente.
+nativa firmada en el perfil del usuario actual. El instalador inicia el agente de
+inmediato y en cada inicio de sesión de Windows; ambas opciones se pueden desmarcar en
+la página de tareas. Los accesos directos del menú Inicio invocan el lanzador permanente.
 
 El desinstalador conserva la identidad, las colas y el historial de versiones de forma
 predeterminada. Seleccione la opción de eliminación de datos para eliminarlos. Durante la

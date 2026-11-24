@@ -83,8 +83,8 @@ class NativeBootstrap(unittest.TestCase):
             asset = root / "asset"
             asset.write_text("""#!/bin/sh
 set -eu
-printf '%s\\n' "$@" > "$FIX/executed"
-if [ "$1" = install-bundle ]; then cp "$0" "$3/skynet-agent"; fi
+if [ "$1" = install-bundle ]; then printf '%s\\n' "$@" > "$FIX/executed"; cp "$0" "$3/skynet-agent"
+else printf '%s\\n' "$@" > "$FIX/last"; fi
 """)
             target = dict(name="skynet-agent", url="https://github.com/test/asset", **bridge.meta(asset.read_bytes()))
             raw = json.dumps(dict(format=2, seq=7, version="1.0.0", min_bridge_seq=6,
@@ -118,7 +118,10 @@ if [ "$file" = asset ]; then printf '200 '; fi
                         argv = marker.read_text().splitlines()
                         self.assertEqual(argv[0], "install-bundle")
                         self.assertEqual(argv[2], env["SKYNET_AGENT_HOME"])
+                        # setup starts the agent and registers autostart by default
+                        self.assertEqual((root / "last").read_text().splitlines(), ["launch", "autostart", "enable"])
+                        self.assertIn(b"Installed and started", call.stdout)
                         shim = root / ".local/bin/skynet-agent"
                         subprocess.run([str(shim), "version"], env=env, check=True, timeout=20)
-                        self.assertEqual(marker.read_text().splitlines(), ["launch", "version"])
+                        self.assertEqual((root / "last").read_text().splitlines(), ["launch", "version"])
                         marker.unlink()
