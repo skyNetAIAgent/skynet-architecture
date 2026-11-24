@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: 6f12143662929b719966cb992e7a2cc7227ba4d97d49e226216546d18695a246 -->
+<!-- translation of docs/ROADMAP.md, source sha256: a75066f8d65b14411a5e147276e9ead9da3618100983ef343d320b4b14a3cb8b -->
 
 # Roadmap: Schutz vor Betrug
 
@@ -124,7 +124,7 @@ benannten Daten des Prüfers gezeigt, nicht durch das Fehlen von Ideen.
 
 ## 3. Entscheidungen
 
-Die Entscheidungen D1–D5 wurden am 23. November 2026 getroffen, D6–D17 am 24. November 2026 (im Auftrag des Eigentümers).
+Die Entscheidungen D1–D5 wurden am 23. November 2026 getroffen, D6–D25 am 24. November 2026 (im Auftrag des Eigentümers; D18–D25 zu den Fragen der Phase 4, Begründungen in [VERIFICATION_SEARCH](VERIFICATION_SEARCH.md), Abschnitt 6).
 
 | Nr. | Frage | Entscheidung |
 |---|---|---|
@@ -145,6 +145,14 @@ Die Entscheidungen D1–D5 wurden am 23. November 2026 getroffen, D6–D17 am 24
 | D15 | Wiederholte Prüfungen und Lehrlingsprüfungen | **Eine einfache Neuberechnung, die sich kopieren lässt, wird nicht bezahlt.** Eine Prüfung wird nur dort bezahlt, wo ihr Ergebnis nicht durch Kopieren der Antwort eines anderen erhalten werden kann |
 | D16 | Ehrlicher Geräteausfall | **Wird nicht als Betrug bestraft:** Die Aufgabe wird nicht bezahlt, der ausstehende Betrag verfällt nicht; die Zahl solcher Ausfälle pro Schlüssel ist begrenzt |
 | D17 | Quelle der Auszahlung für Anfragen in Variante B | **Nur aus den Zahlungen der Nutzer**, ohne Ausgabe von Credits |
+| D18 | Bezahlung des Trainings für eine nachgewiesene Verbesserung | **Wird als Kandidat für eine neue Einheit der Trainingsbezahlung untersucht, aber nicht angenommen.** Das ist weder eine Prüfung des Schritts noch ein Beweis dafür, dass kein Schaden entsteht: Das Modell wird nur nach der Regel D9 freigegeben. Die Entscheidung über die Annahme erfolgt nach den Berechnungen M7, M8, M10–M12 und dem Versuch O6 (außerhalb von D5, die Erlaubnis des Eigentümers ist erforderlich). Die Suche nach einer Prüfung des Schritts selbst geht weiter |
+| D19 | Kleine kryptografische Fehlerwahrscheinlichkeit | **Wird als ausdrückliche Annahme zugelassen** unter drei Bedingungen: Zufälligkeit von einem externen Beacon nach der endgültigen Fixierung, die Stichprobe wird nicht aus den Daten des Ausführenden abgeleitet (ohne Fiat–Shamir), die Untergrenze des Preises eines Versuchs ist aufgeschrieben und `ε·R` ist kleiner als sie. Der Fehler beträgt höchstens `2⁻⁸⁰` pro Versuch. Eine gewöhnliche Stichprobenprüfung mit Leckage `q^k` wird dadurch nicht zulässig |
+| D20 | Externer Beacon | **Mindestens zwei unabhängige öffentliche Quellen**, der Wert wird zu einem im Voraus bestimmten Zeitpunkt nach der endgültigen Fixierung entnommen, ohne das Recht, ihn zu überspringen. Die Quellen und der Preis des Einflusses auf sie werden in Phase 2 gewählt; das Vertrauen in sie wird als Annahme aufgeschrieben. Bis zur Wahl des Schemas mit Stichprobe werden sie nicht einbezogen |
+| D21 | Wer die Antwort des Modells prüft | **Eine vom Abspracheanteil unabhängige Prüfung der Antwort gibt es nur beim Zahler, der selbst prüft.** Eine Antwort ohne Prüfung bezahlt das Netz nicht. Ein Nutzer ohne Ausrüstung kann selbst einen Prüfer bestimmen; das ist seine Annahme, D1 sagt das Netz für ihn nicht zu. Die Garantie für einen solchen Nutzer bleibt eine offene Frage |
+| D22 | Produktänderungen für eine billige Prüfung | **Sind als eigene Aufgabentypen des Plans mit ausdrücklichem Vertrag erlaubt** (kanonische Token-Wahl, ganzzahliges Profil, Aufgaben mit prüfbarem Ausgang, exakte Optimierer), nach dem Versuch O5 und der Berechnung M17. Die gewöhnliche Stichprobe bleibt mit der Kennzeichnung „ungeprüft“ |
+| D23 | Falsche Streitfälle des Zahlers | **Zuerst die Berechnung M9.** Die Prüfung durch den Zahler wird nicht einbezogen, solange keine Regel zur Begrenzung falscher Streitfälle ohne Pfand gewählt ist |
+| D24 | Chiffretext der Antwort im Journal | **Ja:** wird mit einem einzigen Eintrag zusammen mit der Annahme aufgezeichnet, etwa 2–4 KB pro Antwort |
+| D25 | Zweiseitige Formulierung von D1 | **Wird nicht geändert:** Eine Fälschung, die schlechter als ehrliche Arbeit, aber vorteilhafter als Untätigkeit ist, verletzt ebenfalls D1 |
 
 **Reihenfolge der Arbeit.** Zuerst wird Phase 0 abgeschlossen — die Mini-Agenten und die
 Anwendungen für Smartphones, damit sich andere Menschen an der Arbeit beteiligen können. Danach
@@ -396,40 +404,46 @@ Operationen, die Daten, die Fehlerwahrscheinlichkeit und der Preis einer ganzen 
 Schritts anzugeben; danach zu einer Konstruktion auszubauen oder durch ein Gegenbeispiel zu
 schließen.
 
+- [x] Der Modellrat (sechs Arbeiten und drei Kritiken) hat alle Richtungen durchgearbeitet; Ergebnis
+      und Aufgaben für die Mini-Agenten — [VERIFICATION_SEARCH](VERIFICATION_SEARCH.md), 24. November 2026.
 - [ ] **Aufgaben mit billigem exaktem Richtigkeitsmerkmal.** Beispiel: Bei der Ridge-Regression
       prüft ein Knoten die Optimalitätsbedingung in einem Durchlauf über die Daten. Frage: Welcher
-      Anteil der Netzarbeit passt in solche Aufgaben. Mit dieser Richtung beginnen: Sie führt zu null unberechtigten Auszahlungen.
-- [ ] **Prüfung jeder Matrixmultiplikation mit einem Zufallsvektor** statt Neuberechnung. Der
+      Anteil der Netzarbeit passt in solche Aufgaben. Mit dieser Richtung beginnen: Sie führt zu null unberechtigten Auszahlungen. *Ergebnis:* Hält für eine enge Klasse von Aufgaben; der Anteil solcher Arbeit ist unbekannt.
+- [x] **Prüfung jeder Matrixmultiplikation mit einem Zufallsvektor** statt Neuberechnung. Der
       Vektor wird nach der Fixierung des Ergebnisses gewählt; die Wahrscheinlichkeit, einen Fehler
       zu übersehen, hängt nicht von der Absprache ab. Vorteilhaft für große Batches; bei der
       Erzeugung Token für Token gibt es keinen Gewinn. Die übrigen Operationen (Rundung,
-      Aktivierungen, Cache, Optimierer) müssen gesondert geprüft werden.
+      Aktivierungen, Cache, Optimierer) müssen gesondert geprüft werden. *Ergebnis:* Als billige Prüfung
+      durch einen Netzknoten widerlegt (stößt an den Datenverkehr); hält als Prüfung des Zahlers mit schnellem Kanal.
 - [ ] **Prüfung einer fertigen Antwort in einem Modelllauf** mit exaktem Profil und in der
       Aufgabe festgelegter Zufälligkeit. Die Zahl der Operationen ist von derselben Größenordnung
-      wie bei der Erzeugung; ob dies in 5% passt, ist nicht festgestellt.
-- [ ] **Tabellen exakter Teilsummen für unveränderliche Schichten:** Ein Knoten leitet einmal
+      wie bei der Erzeugung; ob dies in 5% passt, ist nicht festgestellt. *Ergebnis:* Bester Kandidat für die Antwort des Modells ist die Prüfung
+      durch den Zahler, 1,2–3,8% bei der Erzeugung einer einzelnen Antwort [Berechnung]; wartet auf den Versuch D5 und die Entscheidung D23.
+- [x] **Tabellen exakter Teilsummen für unveränderliche Schichten:** Ein Knoten leitet einmal
       Tabellen aus den Gewichten ab und erhält danach die Ausgabe einer Schicht durch Lesen und
-      Addieren. Auch auf einen einzelnen Token anwendbar; stößt an die Speichermenge.
-- [ ] **Zertifikat des gewinnenden Tokens** für ein großes Vokabular: Der Ausführende übermittelt
+      Addieren. Auch auf einen einzelnen Token anwendbar; stößt an die Speichermenge. *Ergebnis:* durch Berechnung widerlegt.
+- [x] **Zertifikat des gewinnenden Tokens** für ein großes Vokabular: Der Ausführende übermittelt
       die Abdeckung des Vokabulars in Gruppen, der Knoten prüft die oberen Grenzen und steigt nur
       dort zu einzelnen Tokens hinab, wo die Grenze den Gewinner nicht trennt. Im schlimmsten Fall
-      wird das gesamte Vokabular geprüft.
-- [ ] **Lernschritt als exakte Aktualisierungsformel:** Die Knoten speichern und prüfen nicht die
+      wird das gesamte Vokabular geprüft. *Ergebnis:* hält als Teil der Prüfung der gierigen Auswahl.
+- [x] **Lernschritt als exakte Aktualisierungsformel:** Die Knoten speichern und prüfen nicht die
       neue Gewichtsmatrix, sondern die Aktualisierungsfaktoren. Hergeleitet nur für eine lineare
-      Schicht mit einfachem SGD.
-- [ ] **Ein Streitfall, offen für jeden Teilnehmer innerhalb des Fensters.** Die Garantie ist
+      Schicht mit einfachem SGD. *Ergebnis:* als Prüfung des Schritts widerlegt.
+- [x] **Ein Streitfall, offen für jeden Teilnehmer innerhalb des Fensters.** Die Garantie ist
       bedingt: Es braucht mindestens einen Beobachter, der die Daten erhalten und rechtzeitig Einspruch erhoben hat. Wer die Beobachtung bei leerem Konto bezahlt, ist nicht entschieden.
-      Als Reserve behalten.
+      Als Reserve behalten. *Ergebnis:* als vom Abspracheanteil unabhängige Prüfung widerlegt.
 - [ ] **Bezahlung für die gemessene Modellverbesserung** auf Aufgaben, die nach der Fixierung der
       Gewichte gewählt wurden. Ändert die Grundlage der Bezahlung und erfordert eine gesonderte
-      Entscheidung. Geeignet für die Auswahl von Modellversionen.
+      Entscheidung. Geeignet für die Auswahl von Modellversionen. *Ergebnis:* der einzige
+      verbliebene Weg für das Training, mit Korrekturen; wird nach D18 untersucht.
 - [ ] **Rechenbeweise für das Training (sumcheck, GKR)** für einen bestimmten Schritt:
       vollständiger Kostenvoranschlag mit Bereichen, Rundung und Bindung des Eingangs an die
-      Aufgabe.
-- [ ] **Untere Grenze:** zeigen, welche Klassen von Prüfungen nicht fehlerfrei sein können.
+      Aufgabe. *Ergebnis:* hält als Richtung; konkrete Aufteilungen sind widerlegt, 20% sind nicht gezeigt.
+- [x] **Untere Grenze:** zeigen, welche Klassen von Prüfungen nicht fehlerfrei sein können.
       Anfang: Ein fester Satz linearer Prüfungen, dessen Anzahl kleiner als die Größe des
       Ergebnisses ist, lässt immer irgendeinen Fehler durch; offen bleiben frische Zufälligkeit
-      und Eingaben mit bekannter Struktur.
+      und Eingaben mit bekannter Struktur. *Ergebnis:* die haltbaren Grenzen sind in
+      [VERIFICATION_SEARCH](VERIFICATION_SEARCH.md), Abschnitt 2, veröffentlicht.
 - [ ] Ideen von Teilnehmern und KI-Assistenten vom Brett: Jede durchläuft dieselbe Analyse,
       einschließlich des Falls `q = 1`.
 

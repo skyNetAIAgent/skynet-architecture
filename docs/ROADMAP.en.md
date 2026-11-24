@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: 6f12143662929b719966cb992e7a2cc7227ba4d97d49e226216546d18695a246 -->
+<!-- translation of docs/ROADMAP.md, source sha256: a75066f8d65b14411a5e147276e9ead9da3618100983ef343d320b4b14a3cb8b -->
 
 # Roadmap: protection against cheating
 
@@ -112,7 +112,8 @@ of ideas.
 
 ## 3. Decisions
 
-Decisions D1–D5 were made on 23 November 2026, and D6–D17 on 24 November 2026 (at the owner's direction).
+Decisions D1–D5 were made on 23 November 2026, and D6–D25 on 24 November 2026 (at the owner's direction;
+D18–D25 on the questions of stage 4, with the justifications in [VERIFICATION_SEARCH](VERIFICATION_SEARCH.en.md), section 6).
 
 | № | Question | Decision |
 |---|---|---|
@@ -133,6 +134,14 @@ Decisions D1–D5 were made on 23 November 2026, and D6–D17 on 24 November 202
 | D15 | Repeat and apprentice checks | **A simple recomputation that can be copied is not paid.** A check is paid only where its result cannot be obtained by copying someone else's answer |
 | D16 | An honest hardware failure | **It is not punished as cheating:** the task is not paid, the pending amount is not burned; the number of such failures per key is limited |
 | D17 | The source of payment for requests in Variant B | **Only from user payments**, without issuing credits |
+| D18 | Payment for training for a proven improvement | **Under investigation as a candidate for a new unit of payment for training, but not accepted.** This is not a verification of a step and not a proof of absence of harm: the model is released only by the rule of D9. The decision on acceptance comes after calculations M7, M8, M10–M12 and experiment O6 (outside D5, the owner's permission is required). The search for a verification of the step itself continues |
+| D19 | A small cryptographic error | **Permitted as an explicit assumption** under three conditions: randomness from an external beacon after the final fixing, the sample is not derived from the performer's data (no Fiat–Shamir), a lower bound on the price of an attempt is recorded and `ε·R` is less than it. The error is no greater than `2⁻⁸⁰` per attempt. Ordinary sampling verification with leakage `q^k` is not resolved by this |
+| D20 | External beacon | **At least two independent public sources**, the value is taken at a pre-appointed moment after the final fixing, without the right to skip. The sources and the price of influencing them are chosen in stage 2; trust in them is recorded as an assumption. Until the scheme is chosen, they are not included with sampling |
+| D21 | Who checks the model's answer | **A check of the answer independent of collusion exists only at the payer, who checks it themselves.** The network does not pay for an answer without a check. A user without equipment can appoint a verifier themselves; this is their assumption, the network does not promise D1 for them. The guarantee for such a user remains an open question |
+| D22 | Product changes for the sake of cheap verification | **Permitted as separate types of plan tasks with an explicit contract** (canonical token selection, integer profile, tasks with a verifiable outcome, exact optimizers), after experiment O5 and calculation M17. Ordinary sampling remains marked "not verified" |
+| D23 | False disputes by the payer | **Calculation M9 first.** Verification by the payer is not enabled until a rule limiting false disputes without a deposit has been chosen |
+| D24 | Ciphertext of the answer in the ledger | **Yes:** it is recorded in a single record together with acceptance, about 2–4 KB per answer |
+| D25 | Two-sided record of D1 | **Unchanged:** a fake that is worse than honest work but more profitable than inaction also violates D1 |
 
 **Order of work.** Stage 0 is completed first — mini-agents and smartphone apps, so that other people can join the work. Then stages 1–5 according to this map.
 
@@ -359,37 +368,46 @@ The directions are not approved. For each one it is necessary to specify the ope
 checked, the data, the probability of error, and the price of a whole request or step; then either
 carry it to a construction or close it with a counterexample.
 
+- [x] The council of models (six works and three critics) analyzed all directions; the result and the tasks
+      for mini-agents — [VERIFICATION_SEARCH](VERIFICATION_SEARCH.en.md), 24 November 2026.
 - [ ] **Tasks with a cheap exact correctness criterion.** Example: for ridge regression, a node
       checks the optimality condition in one pass over the data. Question: what share of the
-      network's work fits into such tasks. Start from this direction: it gives a zero false payout.
-- [ ] **Checking every matrix multiplication with a random vector** instead of recomputation. The
+      network's work fits into such tasks. Start from this direction: it gives a zero false payout. *Result:* it holds for a narrow class of
+      tasks; the share of such work is unknown.
+- [x] **Checking every matrix multiplication with a random vector** instead of recomputation. The
       vector is chosen after the result is fixed; the probability of missing an error does not depend
       on collusion. Beneficial for large batches; when generating one token at a time there is no
       gain. The remaining operations (rounding, activations, cache, optimizer) need to be checked
-      separately.
+      separately. *Result:* refuted as a cheap check by a network node (it runs into traffic); it holds
+      as a check by the payer with a fast channel.
 - [ ] **Checking a ready answer with one pass of the model** with an exact profile and the randomness
       specified in the task. The number of operations is of the same order as generation; whether
-      this fits into 5% is not established.
-- [ ] **Tables of exact partial sums for unchanged layers:** a node derives the tables from the
+      this fits into 5% is not established. *Result:* the best candidate for a model answer is
+      verification by the payer, 1.2–3.8% when generating one answer at a time [calculated]; it awaits
+      experiment D5 and decision D23.
+- [x] **Tables of exact partial sums for unchanged layers:** a node derives the tables from the
       weights once and then obtains the layer's output by reads and additions. Applicable to a single
-      token as well; limited by the amount of memory.
-- [ ] **Winning-token certificate** for a large vocabulary: the performer sends a covering of the
+      token as well; limited by the amount of memory. *Result:* refuted by calculation.
+- [x] **Winning-token certificate** for a large vocabulary: the performer sends a covering of the
       vocabulary by groups, the node checks the upper bounds and descends to individual tokens only
       where the bound does not separate the winner. In the worst case the whole vocabulary is
-      checked.
-- [ ] **A training step as an exact update formula:** nodes store and check not the new weight
-      matrix but the update multipliers. Derived only for a linear layer with simple SGD.
-- [ ] **A dispute open to any participant within the window.** The guarantee is conditional: at
+      checked. *Result:* it holds as part of the greedy-choice check.
+- [x] **A training step as an exact update formula:** nodes store and check not the new weight
+      matrix but the update multipliers. Derived only for a linear layer with simple SGD. *Result:* refuted as a verification of a step.
+- [x] **A dispute open to any participant within the window.** The guarantee is conditional: at
       least one observer is needed who received the data and had time to object. Who pays for
-      observation with an empty account is not decided. Keep as a fallback.
+      observation with an empty account is not decided. Keep as a fallback. *Result:* refuted as a check independent of collusion.
 - [ ] **Payment for a measured improvement of the model** on tasks chosen after the weights are
       fixed. Changes the basis of payment and requires a separate decision. Suitable for selecting
-      model versions.
+      model versions. *Result:* the only surviving path for training, with corrections; under
+      investigation under D18.
 - [ ] **Proofs of computation for training (sumcheck, GKR)** for one specific step: a full estimate
-      with ranges, rounding, and binding of the input to the task.
-- [ ] **A lower bound:** show which classes of checks cannot be error-free. A start: a fixed set of
+      with ranges, rounding, and binding of the input to the task. *Result:* it holds as a direction;
+      specific cost breakdowns are refuted, the 20% is not shown.
+- [x] **A lower bound:** show which classes of checks cannot be error-free. A start: a fixed set of
       linear checks fewer in number than the size of the result always misses some error; fresh
-      randomness and inputs with a known structure remain open.
+      randomness and inputs with a known structure remain open. *Result:* the bounds that survived are
+      published in [VERIFICATION_SEARCH](VERIFICATION_SEARCH.en.md), section 2.
 - [ ] Ideas from participants and AI assistants from the board: each goes through the same analysis,
       including the case `q = 1`.
 

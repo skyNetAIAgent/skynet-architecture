@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: 6f12143662929b719966cb992e7a2cc7227ba4d97d49e226216546d18695a246 -->
+<!-- translation of docs/ROADMAP.md, source sha256: a75066f8d65b14411a5e147276e9ead9da3618100983ef343d320b4b14a3cb8b -->
 
 # Tabella di marcia: difesa dall'inganno
 
@@ -117,7 +117,8 @@ non con l'assenza di idee.
 
 ## 3. Decisioni
 
-Le decisioni D1–D5 sono prese il 23 novembre 2026, le D6–D17 il 24 novembre 2026 (su incarico del proprietario).
+Le decisioni D1–D5 sono prese il 23 novembre 2026, le D6–D25 il 24 novembre 2026 (su incarico del proprietario;
+le D18–D25 riguardano le domande della fase 4, motivazioni in [VERIFICATION_SEARCH](VERIFICATION_SEARCH.md), sezione 6).
 
 | N. | Domanda | Decisione |
 |---|---|---|
@@ -138,6 +139,14 @@ Le decisioni D1–D5 sono prese il 23 novembre 2026, le D6–D17 il 24 novembre 
 | D15 | Verifiche ripetute e da apprendista | **Un semplice ricalcolo che si può copiare non viene pagato.** La verifica viene pagata solo dove il suo risultato non si può ottenere copiando la risposta altrui |
 | D16 | Guasto hardware onesto | **Non viene punito come inganno:** il compito non viene pagato, la somma in sospeso non si perde; il numero di tali guasti per chiave è limitato |
 | D17 | Fonte del pagamento per le richieste nella variante B | **Solo dai pagamenti degli utenti**, senza emissione di crediti |
+| D18 | Pagamento dell'addestramento per un miglioramento dimostrato | **Si studia come candidato di una nuova unità di pagamento dell'addestramento, ma non è accettato.** Non è una verifica del passo né una prova dell'assenza di danno: il modello viene rilasciato solo secondo la regola D9. La decisione di accettazione viene dopo i calcoli M7, M8, M10–M12 e l'esperimento O6 (fuori da D5, serve l'autorizzazione del proprietario). La ricerca della verifica del passo stesso continua |
+| D19 | Piccolo errore crittografico | **È ammesso come ipotesi esplicita** a tre condizioni: casualità da un faro esterno dopo la fissazione definitiva, il campione non si ricava dai dati dell'esecutore (senza Fiat–Shamir), sono scritti il limite inferiore del costo del tentativo e `ε·R` risulta minore di esso. L'errore non supera `2⁻⁸⁰` per tentativo. La normale verifica a campione con perdita `q^k` non viene risolta da questo |
+| D20 | Faro esterno | **Non meno di due fonti pubbliche indipendenti**, il valore si prende in un momento fissato in anticipo dopo la fissazione definitiva, senza possibilità di saltarlo. Le fonti e il costo dell'influenza su di esse si scelgono nella fase 2; la fiducia in esse si scrive come ipotesi. Fino alla scelta dello schema con campionamento non vengono incluse |
+| D21 | Chi verifica la risposta del modello | **La verifica della risposta indipendente dalla collusione è solo presso il pagatore, che verifica da sé.** La rete non paga una risposta senza verifica. Un utente senza attrezzatura può designare da sé un verificatore; è una sua ipotesi, la rete non gli promette D1. La garanzia per un tale utente resta una questione aperta |
+| D22 | Cambiamenti del prodotto per una verifica economica | **Sono consentiti come tipi separati di compiti del piano con un contratto esplicito** (scelta canonica del token, profilo ad aritmetica intera, compiti con esito verificabile, ottimizzatori esatti), dopo l'esperimento O5 e il calcolo M17. Il campionamento normale resta con la nota «non verificato» |
+| D23 | Controversie false del pagatore | **Prima il calcolo M9.** La verifica da parte del pagatore non viene inclusa finché non è scelta una regola che limiti le controversie false senza deposito |
+| D24 | Crittogramma della risposta nel registro | **Sì:** si registra con un'unica registrazione insieme all'accettazione, circa 2–4 KB per risposta |
+| D25 | La registrazione bidirezionale di D1 | **Non cambia:** anche una contraffazione peggiore del lavoro onesto ma più conveniente dell'inazione viola D1 |
 
 **Ordine di lavoro.** Prima si completa la fase 0 — i mini-agenti e le applicazioni per smartphone,
 perché altre persone possano collegarsi al lavoro. Poi le fasi 1–5 secondo questa tabella di marcia.
@@ -380,36 +389,46 @@ Le direzioni non sono approvate. Per ciascuna bisogna indicare le operazioni ver
 probabilità di errore e il costo di un'intera richiesta o di un passo; poi portarla a costruzione oppure
 chiuderla con un controesempio.
 
+- [x] Il consiglio dei modelli (sei lavori e tre critiche) ha analizzato tutte le direzioni; l'esito e i
+      compiti per i mini-agenti sono in [VERIFICATION_SEARCH](VERIFICATION_SEARCH.md), 24 novembre 2026.
 - [ ] **Compiti con un segno di correttezza esatto ed economico.** Esempio: per la regressione ridge il
       nodo verifica la condizione di ottimo in un solo passaggio sui dati. Domanda: quale quota del lavoro
       della rete rientra in tali compiti. Cominciare da questa direzione: dà un pagamento indebito nullo.
-- [ ] **Verifica di ogni moltiplicazione di matrici con un vettore casuale** al posto del ricalcolo. Il
+      *Esito:* regge per una classe ristretta di compiti, la quota di tale lavoro è sconosciuta.
+- [x] **Verifica di ogni moltiplicazione di matrici con un vettore casuale** al posto del ricalcolo. Il
       vettore si sceglie dopo la fissazione del risultato; la probabilità di lasciar passare un errore non
       dipende dalla collusione. Conviene per grandi batch; generando un token alla volta non c'è guadagno.
       Le altre operazioni (arrotondamento, attivazioni, cache, ottimizzatore) vanno verificate separatamente.
+      *Esito:* confutato come verifica economica da parte del nodo della rete (si scontra con il traffico); regge come verifica del pagatore con un canale veloce.
 - [ ] **Verifica di una risposta pronta con un solo passaggio del modello** con profilo esatto e casualità
       fissata nel compito. Il numero di operazioni è dello stesso ordine della generazione; se rientri nel
       5% non è stabilito.
-- [ ] **Tabelle di somme parziali esatte per strati invariati:** il nodo ricava una volta le tabelle dai
+      *Esito:* il candidato migliore per la risposta del modello è la verifica da parte del pagatore, 1,2–3,8% generando una risposta alla volta [calcolo]; attende l'esperimento D5 e la decisione D23.
+- [x] **Tabelle di somme parziali esatte per strati invariati:** il nodo ricava una volta le tabelle dai
       pesi e poi ottiene l'uscita dello strato con letture e addizioni. Applicabile anche a un solo token;
-      si scontra con la quantità di memoria.
-- [ ] **Certificato del token vincente** per un ampio vocabolario: l'esecutore trasmette la copertura del
+      si scontra con la quantità di memoria. *Esito:* confutato con il calcolo.
+- [x] **Certificato del token vincente** per un ampio vocabolario: l'esecutore trasmette la copertura del
       vocabolario a gruppi, il nodo verifica i limiti superiori e scende ai singoli token solo dove il
       limite non separa il vincitore. Nel caso peggiore si verifica l'intero vocabolario.
-- [ ] **Passo di addestramento come formula esatta di aggiornamento:** i nodi conservano e verificano non
+      *Esito:* regge come parte della verifica della scelta greedy.
+- [x] **Passo di addestramento come formula esatta di aggiornamento:** i nodi conservano e verificano non
       la nuova matrice dei pesi, ma i moltiplicatori di aggiornamento. Ricavato solo per lo strato lineare
-      con un semplice SGD.
-- [ ] **Controversia aperta a qualsiasi partecipante durante la finestra.** Garanzia condizionale: serve
+      con un semplice SGD. *Esito:* confutato come verifica del passo.
+- [x] **Controversia aperta a qualsiasi partecipante durante la finestra.** Garanzia condizionale: serve
       almeno un osservatore che abbia ricevuto i dati e abbia fatto in tempo a obiettare. Chi paga
       l'osservazione con il conto vuoto non è deciso. Lasciare come riserva.
+      *Esito:* confutato come verifica indipendente dalla collusione.
 - [ ] **Pagamento per il miglioramento misurato del modello** su compiti scelti dopo la fissazione dei pesi.
       Cambia il fondamento del pagamento e richiede una decisione separata. Adatto alla selezione delle
       versioni del modello.
+      *Esito:* l'unico percorso sopravvissuto per l'addestramento, con correzioni; si studia secondo D18.
 - [ ] **Prove di calcolo per l'addestramento (sumcheck, GKR)** per un singolo passo determinato: preventivo
       completo con intervalli, arrotondamento e collegamento dell'ingresso al compito.
-- [ ] **Limite inferiore:** mostrare quali classi di verifiche non possono essere prive di errori. Inizio:
+      *Esito:* regge come direzione; gli schemi concreti sono confutati, il 20% non è dimostrato.
+- [x] **Limite inferiore:** mostrare quali classi di verifiche non possono essere prive di errori. Inizio:
       un insieme fisso di verifiche lineari in numero minore della dimensione del risultato lascia sempre
       passare qualche errore; restano aperte la casualità fresca e gli ingressi con struttura nota.
+      *Esito:* i limiti consolidati sono pubblicati in [VERIFICATION_SEARCH](VERIFICATION_SEARCH.md), sezione 2.
 - [ ] Idee dei partecipanti e degli assistenti IA dalla bacheca: ciascuna passa per la stessa analisi,
       incluso il caso `q = 1`.
 

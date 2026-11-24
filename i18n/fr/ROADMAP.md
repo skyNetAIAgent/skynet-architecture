@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: 6f12143662929b719966cb992e7a2cc7227ba4d97d49e226216546d18695a246 -->
+<!-- translation of docs/ROADMAP.md, source sha256: a75066f8d65b14411a5e147276e9ead9da3618100983ef343d320b4b14a3cb8b -->
 
 # Feuille de route : protection contre la fraude
 
@@ -113,7 +113,8 @@ vérificateur, et non par l'absence d'idées.
 
 ## 3. Décisions
 
-Les décisions D1–D5 sont prises le 23 novembre 2026, D6–D17 le 24 novembre 2026 (sur instruction du propriétaire).
+Les décisions D1–D5 sont prises le 23 novembre 2026, D6–D25 le 24 novembre 2026 (sur instruction du propriétaire ;
+D18–D25 portent sur les questions de l'étape 4, justifications dans [VERIFICATION_SEARCH](VERIFICATION_SEARCH.md), section 6).
 
 | N° | Question | Décision |
 |---|---|---|
@@ -134,6 +135,14 @@ Les décisions D1–D5 sont prises le 23 novembre 2026, D6–D17 le 24 novembre 
 | D15 | Vérifications répétées et vérifications d'apprenti | **Un simple recalcul, qui peut être copié, n'est pas payé.** Une vérification n'est payée que là où son résultat ne peut pas être obtenu en copiant la réponse d'un autre |
 | D16 | Panne matérielle honnête | **N'est pas punie comme une fraude :** la tâche n'est pas payée, la somme en attente n'est pas perdue ; le nombre de telles pannes par clé est limité |
 | D17 | Source du paiement des requêtes dans la variante B | **Uniquement à partir des paiements des utilisateurs**, sans émission de crédits |
+| D18 | Paiement de l'apprentissage pour une amélioration prouvée | **Étudiée comme candidate à une nouvelle unité de paiement de l'apprentissage, mais non adoptée.** Ce n'est ni une vérification de l'étape ni une preuve de l'absence de préjudice : le modèle n'est publié que selon la règle D9. La décision d'adoption intervient après les calculs M7, M8, M10–M12 et l'expérience O6 (hors D5, autorisation du propriétaire requise). La recherche d'une vérification de l'étape elle-même se poursuit |
+| D19 | Faible erreur cryptographique | **Admise comme hypothèse explicite** sous trois conditions : l'aléa provient d'une balise externe après la fixation définitive, l'échantillon n'est pas déduit des données de l'exécutant (sans Fiat–Shamir), une borne inférieure du coût d'une tentative est consignée et `ε·R` lui est inférieure. L'erreur ne dépasse pas `2⁻⁸⁰` par tentative. La vérification par échantillonnage ordinaire avec fuite `q^k` n'est pas résolue par cela |
+| D20 | Balise externe | **Au moins deux sources publiques indépendantes**, la valeur est prise à un moment fixé à l'avance après la fixation définitive, sans possibilité d'omettre ce moment. Les sources et le coût d'une influence sur elles sont choisis à l'étape 2 ; la confiance en elles est consignée comme hypothèse. Elles ne sont pas incluses avant le choix du schéma avec échantillonnage |
+| D21 | Qui vérifie la réponse du modèle | **La vérification de la réponse indépendante de la collusion n'a lieu que chez le payeur, qui vérifie lui-même.** Le réseau ne paie pas une réponse sans vérification. Un utilisateur sans matériel peut désigner lui-même un vérificateur ; c'est son hypothèse, le réseau ne lui promet pas D1. La garantie pour un tel utilisateur reste une question ouverte |
+| D22 | Changements du produit pour une vérification bon marché | **Autorisés comme types de tâches distincts du plan avec un contrat explicite** (choix canonique du jeton, profil en arithmétique entière, tâches à issue vérifiable, optimiseurs exacts), après l'expérience O5 et le calcul M17. L'échantillonnage ordinaire reste marqué « non vérifié » |
+| D23 | Faux litiges du payeur | **D'abord le calcul M9.** La vérification par le payeur n'est pas incluse tant qu'une règle limitant les faux litiges sans caution n'est pas choisie |
+| D24 | Texte chiffré de la réponse dans le journal | **Oui :** consigné par un seul enregistrement lors de l'acceptation, environ 2–4 Ko par réponse |
+| D25 | Enregistrement bidirectionnel de D1 | **Ne change pas :** un faux qui est pire que le travail honnête mais plus avantageux que l'inaction viole aussi D1 |
 
 **Ordre du travail.** D'abord l'étape 0 est menée à terme — les mini-agents et les applications pour smartphones, afin que d'autres personnes puissent rejoindre le travail. Ensuite les étapes 1–5 selon cette feuille de route.
 
@@ -378,37 +387,38 @@ décide rien. Les directions ne sont pas approuvées. Pour chacune, il faut indi
 les données, la probabilité d'erreur et le coût d'une requête ou d'une étape entière ; puis la mener jusqu'à
 une construction ou la fermer par un contre-exemple.
 
+- [x] Le conseil de modèles (six travaux et trois critiques) a analysé toutes les directions ; le bilan et les tâches pour les mini-agents — [VERIFICATION_SEARCH](VERIFICATION_SEARCH.md), 24 novembre 2026.
 - [ ] **Tâches pour lesquelles un critère exact permet de vérifier le résultat à faible coût.** Exemple : pour la régression ridge, le nœud
       vérifie la condition d'optimalité en un seul passage sur les données. Question : quelle part du travail
-      du réseau tient dans de telles tâches. Commencer par cette direction : elle garantit qu’aucun résultat falsifié n’est rémunéré.
-- [ ] **Utilisation d’un vecteur aléatoire pour vérifier chaque produit de matrices** au lieu du recalcul. Le
+      du réseau tient dans de telles tâches. Commencer par cette direction : elle garantit qu’aucun résultat falsifié n’est rémunéré. *Bilan :* tient pour une classe étroite de tâches, la part d'un tel travail est inconnue.
+- [x] **Utilisation d’un vecteur aléatoire pour vérifier chaque produit de matrices** au lieu du recalcul. Le
       vecteur est choisi après la fixation du résultat ; la probabilité de laisser passer une erreur ne
       dépend pas de la collusion. Rentable pour les grands lots ; pour la génération jeton par jeton, aucun
-      gain. Les autres opérations (arrondi, activations, cache, optimiseur) doivent être vérifiées séparément.
+      gain. Les autres opérations (arrondi, activations, cache, optimiseur) doivent être vérifiées séparément. *Bilan :* réfutée comme vérification bon marché par un nœud du réseau (butte sur le trafic) ; reste valable comme vérification du payeur avec un canal rapide.
 - [ ] **Vérification de la réponse finie par un seul passage du modèle** avec un profil exact et l'aléa fixé
       dans la tâche. Le nombre d'opérations est du même ordre que la génération ; on ne sait pas si cela
-      tient dans 5%.
-- [ ] **Tables de sommes partielles exactes pour les couches immuables :** le nœud déduit une fois les tables
+      tient dans 5%. *Bilan :* meilleur candidat pour la réponse du modèle — vérification par le payeur, 1,2–3,8% lors de la génération d'une réponse à la fois [calcul] ; en attente de l'expérience D5 et de la décision D23.
+- [x] **Tables de sommes partielles exactes pour les couches immuables :** le nœud déduit une fois les tables
       des poids, puis obtient la sortie de la couche par des lectures et des additions. Applicable aussi à un
-      seul jeton ; bute sur le volume de mémoire.
-- [ ] **Certificat du jeton gagnant** pour un grand vocabulaire : l'exécutant transmet la couverture du
+      seul jeton ; bute sur le volume de mémoire. *Bilan :* réfutée par le calcul.
+- [x] **Certificat du jeton gagnant** pour un grand vocabulaire : l'exécutant transmet la couverture du
       vocabulaire par groupes, le nœud vérifie les bornes supérieures et ne descend vers les jetons
       individuels que là où la borne ne sépare pas le gagnant. Dans le pire des cas, tout le vocabulaire est
-      vérifié.
-- [ ] **Étape d'apprentissage comme formule exacte de mise à jour :** les nœuds stockent et vérifient non la
+      vérifié. *Bilan :* tient comme partie de la vérification du choix glouton.
+- [x] **Étape d'apprentissage comme formule exacte de mise à jour :** les nœuds stockent et vérifient non la
       nouvelle matrice de poids, mais les facteurs de mise à jour. Dérivé uniquement pour une couche linéaire
-      avec un SGD simple.
-- [ ] **Litige ouvert à tout participant pendant la fenêtre.** La garantie est conditionnelle : il faut au
+      avec un SGD simple. *Bilan :* réfutée comme vérification de l'étape.
+- [x] **Litige ouvert à tout participant pendant la fenêtre.** La garantie est conditionnelle : il faut au
       moins un observateur qui a reçu les données et a eu le temps d'objecter. Qui paie l'observation avec un
-      compte vide n'est pas résolu. Garder en solution de repli.
+      compte vide n'est pas résolu. Garder en solution de repli. *Bilan :* réfutée comme vérification indépendante de la collusion.
 - [ ] **Paiement pour l'amélioration mesurée du modèle** sur des tâches choisies après la fixation des poids.
       Change le fondement du paiement et exige une décision séparée. Convient à la sélection des versions du
-      modèle.
+      modèle. *Bilan :* seule voie survivante pour l'apprentissage, avec corrections ; étudiée selon D18.
 - [ ] **Preuves de calcul pour l'apprentissage (sumcheck, GKR)** pour une étape définie : une estimation complète du coût de calcul
-      avec les plages, l'arrondi et le rattachement de l'entrée à la tâche.
-- [ ] **Borne inférieure :** montrer quelles classes de vérifications ne peuvent pas être sans erreur. Début :
+      avec les plages, l'arrondi et le rattachement de l'entrée à la tâche. *Bilan :* tient comme direction ; les répartitions concrètes sont réfutées, 20% ne sont pas démontrés.
+- [x] **Borne inférieure :** montrer quelles classes de vérifications ne peuvent pas être sans erreur. Début :
       un ensemble fixe de vérifications linéaires dont le nombre est inférieur à la taille du résultat laisse
-      toujours passer une certaine erreur ; restent ouverts l'aléa frais et les entrées à structure connue.
+      toujours passer une certaine erreur ; restent ouverts l'aléa frais et les entrées à structure connue. *Bilan :* les bornes établies sont publiées dans [VERIFICATION_SEARCH](VERIFICATION_SEARCH.md), section 2.
 - [ ] Les idées des participants et des assistants IA venant du tableau : chacune passe par la même analyse,
       y compris le cas `q = 1`.
 

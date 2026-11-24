@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: 6f12143662929b719966cb992e7a2cc7227ba4d97d49e226216546d18695a246 -->
+<!-- translation of docs/ROADMAP.md, source sha256: a75066f8d65b14411a5e147276e9ead9da3618100983ef343d320b4b14a3cb8b -->
 
 # Roteiro: defesa contra fraude
 
@@ -113,7 +113,7 @@ e não pela ausência de ideias.
 
 ## 3. Decisões
 
-As decisões D1–D5 foram tomadas em 23 de novembro de 2026, e as D6–D17, em 24 de novembro de 2026 (por determinação do dono).
+As decisões D1–D5 foram tomadas em 23 de novembro de 2026, e as D6–D25, em 24 de novembro de 2026 (por determinação do dono; as D18–D25, sobre questões da etapa 4, com justificativas em [VERIFICATION_SEARCH](VERIFICATION_SEARCH.md), seção 6).
 
 | Nº | Questão | Decisão |
 |---|---|---|
@@ -134,6 +134,14 @@ As decisões D1–D5 foram tomadas em 23 de novembro de 2026, e as D6–D17, em 
 | D15 | Verificações repetidas e de aprendiz | **O recálculo simples, que pode ser copiado, não é pago.** A verificação só é paga onde seu resultado não pode ser obtido copiando a resposta de outra pessoa |
 | D16 | Falha honesta de hardware | **Não é punida como fraude:** a tarefa não é paga, o valor pendente não é perdido; o número dessas falhas por chave é limitado |
 | D17 | Fonte do pagamento pelas solicitações na variante B | **Apenas dos pagamentos dos usuários**, sem emissão de créditos |
+| D18 | Pagamento do treinamento por melhoria comprovada | **É investigado como candidato a uma nova unidade de pagamento do treinamento, mas não foi adotado.** Não é uma verificação de etapa nem uma prova da ausência de dano: o modelo é liberado apenas pela regra D9. A decisão de adoção vem depois dos cálculos M7, M8, M10–M12 e da experiência O6 (fora do D5, é preciso autorização do dono). A busca por uma verificação da própria etapa continua |
+| D19 | Pequeno erro criptográfico | **É admitido como premissa explícita** sob três condições: aleatoriedade de um farol externo após a fixação final, amostragem não derivada dos dados do executor (sem Fiat–Shamir), com o limite inferior do preço da tentativa registrado e `ε·R` menor que ele. O erro não é maior que `2⁻⁸⁰` por tentativa. A verificação por amostragem comum com vazamento `q^k` não é resolvida por isso |
+| D20 | Farol externo | **Não menos de duas fontes públicas independentes**; o valor é tomado em um momento designado previamente, após a fixação final, sem direito de omitir a consulta. As fontes e o preço da influência sobre elas são escolhidos na etapa 2; a confiança nelas é registrada como premissa. Não são incluídos antes da escolha do esquema com amostragem |
+| D21 | Quem verifica a resposta do modelo | **A verificação da resposta que não depende do conluio fica apenas com o pagador, que verifica por conta própria.** A rede não paga por uma resposta sem verificação. Um usuário sem equipamento pode designar ele mesmo um verificador; essa é uma premissa dele, e a rede não promete o D1 para ele. A garantia para esse usuário continua sendo uma questão aberta |
+| D22 | Mudanças de produto para uma verificação barata | **São permitidas como tipos separados de tarefas do plano com contrato explícito** (escolha canônica de token, perfil com aritmética inteira, tarefas com desfecho verificável, otimizadores exatos), depois da experiência O5 e do cálculo M17. A amostragem comum continua com o rótulo «não verificado» |
+| D23 | Disputas falsas do pagador | **Primeiro, o cálculo M9.** A verificação pelo pagador não é ativada enquanto não for escolhida uma regra que limite disputas falsas sem depósito |
+| D24 | Texto cifrado da resposta no registro | **Sim:** é registrado em uma única entrada, com o aceite, cerca de 2–4 KB por resposta |
+| D25 | Registro bilateral do D1 | **Não muda:** a falsificação que é pior que o trabalho honesto, mas mais vantajosa que a inação, também viola o D1 |
 
 **Ordem de trabalho.** Primeiro é concluída a etapa 0 — miniagentes e aplicativos para smartphones,
 para que outras pessoas possam se juntar ao trabalho. Depois, as etapas 1–5 segundo este roteiro.
@@ -367,35 +375,46 @@ não decida nada. As direções não foram aprovadas. Para cada uma é preciso i
 os dados, a probabilidade de erro e o preço de uma solicitação ou etapa inteira; em seguida, levá-la a uma
 construção ou fechá-la com um contraexemplo.
 
+- [x] O conselho de modelos (seis trabalhos e três críticas) analisou todas as direções; o resultado e as
+      tarefas para os miniagentes estão em [VERIFICATION_SEARCH](VERIFICATION_SEARCH.md), 24 de novembro de 2026.
 - [ ] **Tarefas com um sinal exato e barato de correção.** Exemplo: para a regressão ridge, o nó verifica
       a condição de ótimo em uma única passada pelos dados. Pergunta: qual parcela do trabalho da rede se
-      encaixa em tais tarefas. Começar por essa direção: ela dá pagamento indevido nulo.
-- [ ] **Verificação de cada produto de matrizes com o auxílio de um vetor aleatório** em vez do recálculo.
+      encaixa em tais tarefas. Começar por essa direção: ela dá pagamento indevido nulo. *Resultado:* mantém-se
+      para uma classe estreita de tarefas; a parcela desse trabalho é desconhecida.
+- [x] **Verificação de cada produto de matrizes com o auxílio de um vetor aleatório** em vez do recálculo.
       O vetor é escolhido depois da fixação do resultado; a probabilidade de deixar passar um erro não
       depende do conluio. É vantajoso para lotes grandes; na geração de um token por vez não há ganho. As
       demais operações (arredondamento, ativações, cache, otimizador) precisam ser verificadas separadamente.
+      *Resultado:* refutado como verificação barata pelo nó da rede (esbarra no tráfego); mantém-se como
+      verificação do pagador com canal rápido.
 - [ ] **Verificação da resposta pronta por uma única passada do modelo** com perfil exato e aleatoriedade
       definida na tarefa. O número de operações é da mesma ordem que o da geração; se isso cabe em 5% não
-      foi estabelecido.
-- [ ] **Tabelas de somas parciais exatas para camadas imutáveis:** o nó deriva uma vez as tabelas a partir
+      foi estabelecido. *Resultado:* melhor candidato para a resposta do modelo — verificação pelo pagador,
+      1,2–3,8% na geração de uma resposta por vez [cálculo]; aguarda a experiência D5 e a decisão D23.
+- [x] **Tabelas de somas parciais exatas para camadas imutáveis:** o nó deriva uma vez as tabelas a partir
       dos pesos e depois obtém a saída da camada por leituras e somas. Aplicável também a um único token;
-      esbarra no volume de memória.
-- [ ] **Certificado do token vencedor** para um vocabulário grande: o executor entrega a cobertura do
+      esbarra no volume de memória. *Resultado:* refutado por cálculo.
+- [x] **Certificado do token vencedor** para um vocabulário grande: o executor entrega a cobertura do
       vocabulário em grupos, o nó verifica os limites superiores e desce a tokens individuais apenas onde o
-      limite não separa o vencedor. No pior caso, todo o vocabulário é verificado.
-- [ ] **Etapa de treinamento como fórmula exata de atualização:** os nós guardam e verificam não a nova
+      limite não separa o vencedor. No pior caso, todo o vocabulário é verificado. *Resultado:* mantém-se
+      como parte da verificação da escolha gulosa.
+- [x] **Etapa de treinamento como fórmula exata de atualização:** os nós guardam e verificam não a nova
       matriz de pesos, mas os multiplicadores da atualização. Derivado apenas para a camada linear com
-      SGD simples.
-- [ ] **Disputa aberta a qualquer participante durante a janela.** Garantia condicional: é preciso pelo
+      SGD simples. *Resultado:* refutado como verificação da etapa.
+- [x] **Disputa aberta a qualquer participante durante a janela.** Garantia condicional: é preciso pelo
       menos um observador que tenha recebido os dados e conseguido contestar. Quem paga a observação com
-      conta vazia não está resolvido. Deixar como reserva.
+      conta vazia não está resolvido. Deixar como reserva. *Resultado:* refutado como verificação independente
+      do conluio.
 - [ ] **Pagamento pela melhoria medida do modelo** em tarefas escolhidas depois da fixação dos pesos. Muda
-      a base do pagamento e exige uma decisão separada. Serve para a seleção de versões do modelo.
+      a base do pagamento e exige uma decisão separada. Serve para a seleção de versões do modelo. *Resultado:*
+      único caminho sobrevivente para o treinamento, com correções; é investigado conforme o D18.
 - [ ] **Provas de computação para o treinamento (sumcheck, GKR)** para uma única etapa determinada:
-      orçamento completo com faixas, arredondamento e vinculação da entrada à tarefa.
-- [ ] **Limite inferior:** mostrar quais classes de verificações não podem ser sem erro. Início: um conjunto
+      orçamento completo com faixas, arredondamento e vinculação da entrada à tarefa. *Resultado:* mantém-se
+      como direção; arranjos concretos foram refutados, 20% não foram demonstrados.
+- [x] **Limite inferior:** mostrar quais classes de verificações não podem ser sem erro. Início: um conjunto
       fixo de verificações lineares em número menor que o tamanho do resultado sempre deixa passar algum
-      erro; permanecem abertas a aleatoriedade fresca e as entradas com estrutura conhecida.
+      erro; permanecem abertas a aleatoriedade fresca e as entradas com estrutura conhecida. *Resultado:*
+      os limites que se mantiveram foram publicados em [VERIFICATION_SEARCH](VERIFICATION_SEARCH.md), seção 2.
 - [ ] Ideias dos participantes e dos assistentes de IA do quadro: cada uma passa pela mesma análise,
       inclusive o caso `q = 1`.
 
