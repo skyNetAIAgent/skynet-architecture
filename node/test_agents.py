@@ -144,7 +144,7 @@ class AgentsTest(unittest.TestCase):
         self.assertEqual((True, 2, NOW - 7200, NOW - 60),
                          (old["legacy"], old["result_count"], old["first_seen"], old["last_seen"]))
         _, _, page = self.http("GET", "/agents")
-        for value in (b"Legacy version", b"2 results", b"1 min 0 s ago", old["agent"][:12].encode()):
+        for value in (b"No status (results only)", b"2 results", b"1 min 0 s ago", old["agent"][:12].encode()):
             self.assertIn(value, page)
         self.post("/v1/status", status())
         upgraded, = self.rows()

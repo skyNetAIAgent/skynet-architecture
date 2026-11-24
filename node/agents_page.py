@@ -24,7 +24,7 @@ def render_agents(rows, now):
         key = escape(row["agent"])
         platform = " / ".join(escape(row[k]) for k in ("os", "arch") if row.get(k))
         if row["legacy"]:
-            version = "Legacy version"
+            version = "No status (results only)"
             count = row["result_count"]
             units = f'{count:,} result{"s" if count != 1 else ""}'
         else:
@@ -57,4 +57,4 @@ th, td {{ padding: .55rem .7rem; text-align: left; border-bottom: 1px solid #ced
 th {{ background: #edf2f5; white-space: nowrap; }} .online {{ color: #15664c; }}
 </style></head><body><main><h1>SkyNet agents</h1><dl>{summary}</dl>
 <div class="table"><table><thead><tr>{heading}</tr></thead><tbody>{contents}</tbody></table></div>
-<p>Online means a status or a result in the last 5 minutes; agents send their status every 2 minutes. The page refreshes every 30 seconds. <a href="/v1/agents">View as JSON</a></p></main></body></html>""".encode("utf-8")
+<p>Online means a status or a result in the last 5 minutes; agents from version 1.3.0 send their status every 2 minutes. "No status" means only results arrived: an older agent, or one that cannot reach this node directly. The page refreshes every 30 seconds. <a href="/v1/agents">View as JSON</a></p></main></body></html>""".encode("utf-8")
