@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: a75066f8d65b14411a5e147276e9ead9da3618100983ef343d320b4b14a3cb8b -->
+<!-- translation of docs/ROADMAP.md, source sha256: 93653f04265bb06c4c65bc040601db4a37aeabccf6d2a88155b16231d6e81734 -->
 
 # Tabella di marcia: difesa dall'inganno
 
@@ -391,6 +391,9 @@ chiuderla con un controesempio.
 
 - [x] Il consiglio dei modelli (sei lavori e tre critiche) ha analizzato tutte le direzioni; l'esito e i
       compiti per i mini-agenti sono in [VERIFICATION_SEARCH](VERIFICATION_SEARCH.md), 24 novembre 2026.
+- [x] Primi calcoli esatti per i mini-agenti: M8, M10, M12 e M14 dalla sezione 5.3 della raccolta
+      ([STAGE4_KERNELS](STAGE4_KERNELS.md)), agente 1.2.0, elenco dei compiti n. 3. I calcoli M5, M7 e M18
+      sono rinviati: nei lavori mancano le regole per definirli in modo univoco.
 - [ ] **Compiti con un segno di correttezza esatto ed economico.** Esempio: per la regressione ridge il
       nodo verifica la condizione di ottimo in un solo passaggio sui dati. Domanda: quale quota del lavoro
       della rete rientra in tali compiti. Cominciare da questa direzione: dà un pagamento indebito nullo.

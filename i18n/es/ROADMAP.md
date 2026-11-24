@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: a75066f8d65b14411a5e147276e9ead9da3618100983ef343d320b4b14a3cb8b -->
+<!-- translation of docs/ROADMAP.md, source sha256: 93653f04265bb06c4c65bc040601db4a37aeabccf6d2a88155b16231d6e81734 -->
 
 # Hoja de ruta: defensa contra el engaño
 
@@ -381,6 +381,9 @@ la probabilidad de error y el coste de una petición o un paso completos; despu�
 con un contraejemplo.
 
 - [x] El consejo de modelos (seis trabajos y tres críticas) analizó todas las direcciones; el resultado y las tareas para los miniagentes están en [VERIFICATION_SEARCH](VERIFICATION_SEARCH.md), 24 de noviembre de 2026.
+- [x] Los primeros cálculos exactos para los miniagentes: M8, M10, M12 y M14 de la sección 5.3 del compendio
+      ([STAGE4_KERNELS](STAGE4_KERNELS.md)), agente 1.2.0, lista de tareas n.º 3. Los cálculos M5, M7 y M18
+      quedan aplazados: en los trabajos faltan reglas para determinarlos de forma inequívoca.
 - [ ] **Tareas con un criterio exacto y barato de corrección.** Ejemplo: para la regresión ridge, el nodo
       comprueba la condición de óptimo en una sola pasada por los datos. Pregunta: qué proporción del trabajo de la red
       cabe en tales tareas. Empezar por esta dirección: garantiza un pago falso nulo. *Resultado:* se sostiene para una clase estrecha de tareas, se desconoce la proporción de ese trabajo.

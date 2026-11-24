@@ -173,7 +173,7 @@ class Integration(unittest.TestCase):
     def test_seq2_and_older_agent(self):
         index = json.loads(Path(helpers.REPO_ROOT, "tasks/index.json").read_bytes())
         new = [t for t in tasks.validate_index(index) if t.get("min_agent_seq") == 5]
-        self.assertEqual(index["seq"], 2)
+        self.assertGreaterEqual(index["seq"], 2)
         self.assertEqual({t["kernel"] for t in new}, {
             "exit-campaign-b", "apprentice-seats", "lottery-adaptive", "token-certificate"})
         with patch.object(tasks, "RELEASE_SEQ", 5):

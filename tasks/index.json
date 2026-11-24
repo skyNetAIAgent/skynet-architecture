@@ -1,7 +1,7 @@
 {
  "format": 1,
- "seq": 2,
- "issued": "2026-11-23",
+ "seq": 3,
+ "issued": "2026-11-24",
  "tasks": [
   {
    "id": "selftest-1",
@@ -760,6 +760,162 @@
     ],
     "seed": 0,
     "seeds": 10
+   }
+  },
+  {
+   "id": "stage4-t4-scale-grid",
+   "kernel": "t4-scale",
+   "kernel_version": 1,
+   "min_agent_seq": 10,
+   "units": 24,
+   "redundancy": 3,
+   "priority": 10,
+   "max_seconds": 10,
+   "title": "M8. How many submitters fit into the 20% exam overhead of T4 for a given token budget?",
+   "params": {
+    "N": [
+     100,
+     1000,
+     10000
+    ],
+    "n": [
+     10000,
+     100000
+    ],
+    "a": [
+     [
+      4,
+      36
+     ],
+     [
+      1,
+      1
+     ]
+    ],
+    "D_budget": [
+     18685186,
+     185351852
+    ],
+    "epsilon_bits": 80
+   }
+  },
+  {
+   "id": "stage4-exam-thresholds-grid",
+   "kernel": "exam-thresholds",
+   "kernel_version": 1,
+   "min_agent_seq": 10,
+   "units": 36,
+   "redundancy": 3,
+   "priority": 10,
+   "max_seconds": 10,
+   "title": "M10. Hoeffding and empirical Bernstein exam thresholds at two error levels",
+   "params": {
+    "n": [
+     10000,
+     100000,
+     1000000
+    ],
+    "epsilon_bits": [
+     40,
+     80
+    ],
+    "B": [
+     1,
+     2
+    ],
+    "variance": [
+     [
+      0,
+      1
+     ],
+     [
+      1,
+      10000
+     ],
+     [
+      1,
+      400
+     ]
+    ],
+    "digits": 8
+   }
+  },
+  {
+   "id": "stage4-m12-merge-duplicates",
+   "kernel": "merge-attribution",
+   "kernel_version": 1,
+   "min_agent_seq": 10,
+   "units": 9,
+   "redundancy": 3,
+   "priority": 10,
+   "max_seconds": 10,
+   "title": "M12. How does the owner's credit change after adding exact and noisy duplicates?",
+   "params": {
+    "scale": 4,
+    "g": [
+     -14,
+     -4
+    ],
+    "hessian": [
+     [
+      4,
+      2
+     ],
+     [
+      2,
+      4
+     ]
+    ],
+    "updates": [
+     [
+      4,
+      0
+     ],
+     [
+      0,
+      2
+     ]
+    ],
+    "owner": 0,
+    "copies": [
+     1,
+     2,
+     4
+    ],
+    "noise": [
+     [
+      0,
+      0
+     ],
+     [
+      -1,
+      1
+     ],
+     [
+      1,
+      0
+     ]
+    ],
+    "threshold": 1
+   }
+  },
+  {
+   "id": "stage4-m14-enumerations",
+   "kernel": "verification-enumerations",
+   "kernel_version": 1,
+   "min_agent_seq": 10,
+   "units": 4,
+   "redundancy": 3,
+   "priority": 10,
+   "max_seconds": 10,
+   "title": "M14. Reproduce the digit-packing hashes and the miss counts in the chain and field checks",
+   "params": {
+    "cases": [
+     "packing-8",
+     "packing-4",
+     "chain-8-2",
+     "field-5"
+    ]
    }
   }
  ]

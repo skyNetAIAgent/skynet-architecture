@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: a75066f8d65b14411a5e147276e9ead9da3618100983ef343d320b4b14a3cb8b -->
+<!-- translation of docs/ROADMAP.md, source sha256: 93653f04265bb06c4c65bc040601db4a37aeabccf6d2a88155b16231d6e81734 -->
 
 # Roadmap: protection against cheating
 
@@ -370,6 +370,9 @@ carry it to a construction or close it with a counterexample.
 
 - [x] The council of models (six works and three critics) analyzed all directions; the result and the tasks
       for mini-agents — [VERIFICATION_SEARCH](VERIFICATION_SEARCH.en.md), 24 November 2026.
+- [x] The first exact calculations for mini-agents: M8, M10, M12, and M14 from section 5.3 of the
+      compendium ([STAGE4_KERNELS](STAGE4_KERNELS.en.md)), agent 1.2.0, task list No. 3. The calculations for M5, M7, and M18
+      are postponed: the works lack the rules needed to determine them unambiguously.
 - [ ] **Tasks with a cheap exact correctness criterion.** Example: for ridge regression, a node
       checks the optimality condition in one pass over the data. Question: what share of the
       network's work fits into such tasks. Start from this direction: it gives a zero false payout. *Result:* it holds for a narrow class of

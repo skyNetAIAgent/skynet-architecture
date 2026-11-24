@@ -10,12 +10,17 @@ Every task is checked with the same code the agents use: the structure of the
 list, the parameters of each kernel, and (for AI questions) that the context
 documents in the repository match the hashes in the task. A list that an agent
 would reject is not signed.
+
+Kernels that exist only in the Go agent (from release 1.2.0) are checked by the Go
+agent's own code: `go run ./cmd/taskcheck` in agent-go. Set the Go command with --go
+or the environment variable SKYNET_GO (default: go).
 """
 
 import argparse
 import hashlib
 import json
 import os
+import subprocess
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -27,10 +32,25 @@ from skynet_agent import ed25519, signed, tasks  # noqa: E402
 from skynet_agent.kernels import REGISTRY  # noqa: E402
 
 
-def check(index, root, fix_hashes=False):
+def go_check(root, go):
+    """Run the Go agent's task check; return {task id: reason} for rejected tasks."""
+    proc = subprocess.run([go, "run", "-buildvcs=false", "./cmd/taskcheck", os.path.join(root, "tasks", "index.json")],
+                          cwd=os.path.join(root, "agent-go"), capture_output=True, text=True, encoding="utf-8")
+    if "task(s)," not in proc.stdout:
+        raise SystemExit("Go task check failed: %s" % (proc.stderr or proc.stdout).strip())
+    rejected = {}
+    for line in proc.stdout.splitlines():
+        if line.startswith("PROBLEM "):
+            ident, _, reason = line[len("PROBLEM "):].partition(": ")
+            rejected[ident] = reason
+    return rejected
+
+
+def check(index, root, fix_hashes=False, go="go"):
     """Return (problems, changed)."""
     problems = []
     changed = False
+    go_only = []
     try:
         task_list = tasks.validate_index(index)
     except tasks.IndexError_ as e:
@@ -38,7 +58,7 @@ def check(index, root, fix_hashes=False):
     for task in task_list:
         module = REGISTRY.get(task["kernel"])
         if module is None:
-            problems.append("%s: unknown kernel %s" % (task["id"], task["kernel"]))
+            go_only.append(task["id"])
             continue
         if module.VERSION != task["kernel_version"]:
             problems.append("%s: kernel version %d, the agent has %d" % (
@@ -63,6 +83,9 @@ def check(index, root, fix_hashes=False):
             module.validate(task["params"], task["units"])
         except ValueError as e:
             problems.append("%s: %s" % (task["id"], e))
+    if go_only:
+        rejected = go_check(root, go)
+        problems += ["%s: %s (Go agent)" % (i, rejected[i]) for i in go_only if i in rejected]
     return problems, changed
 
 
@@ -72,6 +95,7 @@ def main(argv=None):
     parser.add_argument("--root", default=os.path.join(HERE, ".."))
     parser.add_argument("--check", action="store_true")
     parser.add_argument("--fix-hashes", action="store_true")
+    parser.add_argument("--go", default=os.environ.get("SKYNET_GO", "go"))
     args = parser.parse_args(argv)
     root = os.path.abspath(args.root)
     index_path = os.path.join(root, "tasks", "index.json")
@@ -82,7 +106,7 @@ def main(argv=None):
     except ValueError as e:
         print("tasks/index.json is not valid JSON: %s" % e)
         return 1
-    problems, changed = check(index, root, fix_hashes=args.fix_hashes)
+    problems, changed = check(index, root, fix_hashes=args.fix_hashes, go=args.go)
     if changed:
         raw = (json.dumps(index, indent=1, ensure_ascii=False) + "\n").encode("utf-8")
         with open(index_path, "wb") as f:

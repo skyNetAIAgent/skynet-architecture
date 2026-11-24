@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: a75066f8d65b14411a5e147276e9ead9da3618100983ef343d320b4b14a3cb8b -->
+<!-- translation of docs/ROADMAP.md, source sha256: 93653f04265bb06c4c65bc040601db4a37aeabccf6d2a88155b16231d6e81734 -->
 
 # Roteiro: defesa contra fraude
 
@@ -377,6 +377,9 @@ construção ou fechá-la com um contraexemplo.
 
 - [x] O conselho de modelos (seis trabalhos e três críticas) analisou todas as direções; o resultado e as
       tarefas para os miniagentes estão em [VERIFICATION_SEARCH](VERIFICATION_SEARCH.md), 24 de novembro de 2026.
+- [x] Primeiros cálculos exatos para os miniagentes: M8, M10, M12 e M14 da seção 5.3 do compêndio
+      ([STAGE4_KERNELS](STAGE4_KERNELS.md)), agente 1.2.0, lista de tarefas nº 3. Os cálculos M5, M7 e
+      M18 foram adiados: os trabalhos não têm regras suficientes para defini-los de forma inequívoca.
 - [ ] **Tarefas com um sinal exato e barato de correção.** Exemplo: para a regressão ridge, o nó verifica
       a condição de ótimo em uma única passada pelos dados. Pergunta: qual parcela do trabalho da rede se
       encaixa em tais tarefas. Começar por essa direção: ela dá pagamento indevido nulo. *Resultado:* mantém-se

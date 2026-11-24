@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: a75066f8d65b14411a5e147276e9ead9da3618100983ef343d320b4b14a3cb8b -->
+<!-- translation of docs/ROADMAP.md, source sha256: 93653f04265bb06c4c65bc040601db4a37aeabccf6d2a88155b16231d6e81734 -->
 
 # Feuille de route : protection contre la fraude
 
@@ -388,6 +388,9 @@ les données, la probabilité d'erreur et le coût d'une requête ou d'une étap
 une construction ou la fermer par un contre-exemple.
 
 - [x] Le conseil de modèles (six travaux et trois critiques) a analysé toutes les directions ; le bilan et les tâches pour les mini-agents — [VERIFICATION_SEARCH](VERIFICATION_SEARCH.md), 24 novembre 2026.
+- [x] Premiers calculs exacts pour les mini-agents : M8, M10, M12 et M14 de la section 5.3 du recueil
+      ([STAGE4_KERNELS](STAGE4_KERNELS.md)), agent 1.2.0, liste de tâches n° 3. Les calculs M5, M7 et M18
+      sont reportés : les travaux ne contiennent pas assez de règles pour les définir sans ambiguïté.
 - [ ] **Tâches pour lesquelles un critère exact permet de vérifier le résultat à faible coût.** Exemple : pour la régression ridge, le nœud
       vérifie la condition d'optimalité en un seul passage sur les données. Question : quelle part du travail
       du réseau tient dans de telles tâches. Commencer par cette direction : elle garantit qu’aucun résultat falsifié n’est rémunéré. *Bilan :* tient pour une classe étroite de tâches, la part d'un tel travail est inconnue.

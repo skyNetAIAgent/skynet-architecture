@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: a75066f8d65b14411a5e147276e9ead9da3618100983ef343d320b4b14a3cb8b -->
+<!-- translation of docs/ROADMAP.md, source sha256: 93653f04265bb06c4c65bc040601db4a37aeabccf6d2a88155b16231d6e81734 -->
 
 # Roadmap: Schutz vor Betrug
 
@@ -406,6 +406,10 @@ schließen.
 
 - [x] Der Modellrat (sechs Arbeiten und drei Kritiken) hat alle Richtungen durchgearbeitet; Ergebnis
       und Aufgaben für die Mini-Agenten — [VERIFICATION_SEARCH](VERIFICATION_SEARCH.md), 24. November 2026.
+- [x] Erste exakte Berechnungen für die Mini-Agenten: M8, M10, M12 und M14 aus Abschnitt 5.3 der
+      Zusammenfassung ([STAGE4_KERNELS](STAGE4_KERNELS.md)), Agent 1.2.0, Aufgabenliste Nr. 3. Die
+      Berechnungen M5, M7 und M18 wurden zurückgestellt: In den Arbeiten fehlen die Regeln, um sie
+      eindeutig zu bestimmen.
 - [ ] **Aufgaben mit billigem exaktem Richtigkeitsmerkmal.** Beispiel: Bei der Ridge-Regression
       prüft ein Knoten die Optimalitätsbedingung in einem Durchlauf über die Daten. Frage: Welcher
       Anteil der Netzarbeit passt in solche Aufgaben. Mit dieser Richtung beginnen: Sie führt zu null unberechtigten Auszahlungen. *Ergebnis:* Hält für eine enge Klasse von Aufgaben; der Anteil solcher Arbeit ist unbekannt.

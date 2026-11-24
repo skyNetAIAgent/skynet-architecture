@@ -336,8 +336,8 @@ class IndexReview(unittest.TestCase):
     def test_index_structure(self):
         index = json.loads(Path(helpers.REPO_ROOT, "tasks", "index.json").read_text())
         task_list = tasks.validate_index(index)
-        self.assertEqual(index["seq"], 2)
-        self.assertEqual(len(task_list), 13)
+        self.assertGreaterEqual(index["seq"], 2)
+        self.assertGreaterEqual(len(task_list), 13)
         new = [t for t in task_list if t.get("min_agent_seq") == 5]
         self.assertEqual([t["kernel"] for t in new],
                          ["exit-campaign-b", "apprentice-seats",

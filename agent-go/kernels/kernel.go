@@ -1,4 +1,4 @@
-// Package kernels runs the seven built-in version 1 computations on strict JSON data.
+// Package kernels runs built-in version 1 computations on strict JSON data.
 package kernels
 
 import (
@@ -18,6 +18,8 @@ var registry = map[string]builder{
 	"selftest": selftest, "lottery-b": lottery, "exit-scam-a": exitScam,
 	"apprentice-seats": seats, "exit-campaign-b": campaign,
 	"lottery-adaptive": adaptive, "token-certificate": token,
+	"t4-scale": t4Scale, "exam-thresholds": examThresholds,
+	"merge-attribution": mergeAttribution, "verification-enumerations": verificationEnumerations,
 }
 
 func Supported(name string, version int64) bool {
