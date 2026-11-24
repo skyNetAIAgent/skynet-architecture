@@ -18,6 +18,8 @@ What it does:
   * POST /v1/status           stores the latest signed status for an agent
   * GET  /v1/agents           lists agents seen in status updates or result records
   * GET  /agents              displays agent hardware, activity and totals
+  * answers agents on the same private network over UDP (same port number), so that
+    computers behind a router without NAT loopback still find this node (--no-lan-answer)
   * every few minutes pulls new records from the public relays (--no-relays turns
     this off). Passing records received over HTTP on to the relays is OFF unless
     --push-to-relays is given: a free key costs nothing, and a node must not become
@@ -467,6 +469,50 @@ def bridge(store, data_dir, interval, push, stop, log):
         stop.wait(interval)
 
 
+LAN_QUESTION = b"SKYNET-NODE? v1"
+
+
+def answer_lan(port, stop, log):
+    """Tell agents on the same private network where this node is (UDP, same port number).
+
+    Many routers do not let a computer reach its own network's public address, so an agent
+    next to the node could not deliver anything. Only questions from private or loopback
+    addresses get an answer, at most one per address and second; the answer holds only the port.
+    """
+    try:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        sock.bind(("0.0.0.0", port))
+        sock.settimeout(1.0)
+    except OSError as e:
+        log("LAN answers are off: %s" % e)
+        return
+    last = {}
+    answer = b"SKYNET-NODE v1 %d" % port
+    while not stop.is_set():
+        try:
+            data, (address, sender_port) = sock.recvfrom(64)
+        except socket.timeout:
+            continue
+        except OSError:
+            continue
+        try:
+            ip = ipaddress.ip_address(address)
+        except ValueError:
+            continue
+        now = time.monotonic()
+        if data != LAN_QUESTION or not (ip.is_private or ip.is_loopback) or now - last.get(address, -2) < 1:
+            continue
+        if len(last) > 4096:
+            last.clear()
+        last[address] = now
+        try:
+            sock.sendto(answer, (address, sender_port))
+        except OSError:
+            pass
+    sock.close()
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description="SkyNet research network: full node (record receiver and relay bridge)")
     ap.add_argument("--data", required=True, help="folder for the record log")
@@ -478,6 +524,7 @@ def main(argv=None):
     ap.add_argument("--reads", type=int, default=120, help="page reads per minute from one address")
     ap.add_argument("--max-mb", type=int, default=2048, help="the store stops growing at this size")
     ap.add_argument("--bridge-minutes", type=float, default=5.0)
+    ap.add_argument("--no-lan-answer", action="store_true", help="do not answer agents on the local network (UDP)")
     ap.add_argument("--no-relays", action="store_true", help="do not talk to public relays at all")
     ap.add_argument("--push-to-relays", action="store_true",
                     help="also publish records received over HTTP to the relays (off by default)")
@@ -496,6 +543,8 @@ def main(argv=None):
     if not args.no_relays:
         threading.Thread(target=bridge, args=(store, data_dir, args.bridge_minutes * 60, args.push_to_relays,
                                               stop, log), daemon=True).start()
+    if not args.no_lan_answer:
+        threading.Thread(target=answer_lan, args=(args.port, stop, log), daemon=True).start()
     count, size = store.count()
     log("skynet-node %s: %d records (%d bytes), listening on %s:%d, net %s"
         % (__version__, count, size, args.host, server.server_address[1], trust.NET_ID))

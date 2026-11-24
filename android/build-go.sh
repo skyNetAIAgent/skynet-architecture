@@ -18,8 +18,8 @@ build_agent() {
     local arch=$1 abi=$2 machine=$3 tool=$4 root=$5
     local binary="$build_tmp/$abi/libskynet.so" flags='-s -w -linkmode=internal -I /system/bin/linker64'
     mkdir -p "$(dirname "$binary")"
-    # Go engine of desktop release 14 (1.3.3). APK versionCode is separate.
-    flags+=' -X main.version=1.3.3 -X main.releaseSeq=14'
+    # Go engine of desktop release 15 (1.3.4). APK versionCode is separate.
+    flags+=' -X main.version=1.3.4 -X main.releaseSeq=15'
     if [[ $arch == amd64 ]]; then flags+=' -R 16384'; fi
     GOOS=android GOARCH="$arch" GOROOT="$root" "$tool" build -buildvcs=false -trimpath \
         -buildmode=pie -ldflags="$flags" -o "$binary" ./cmd/skynet-agent

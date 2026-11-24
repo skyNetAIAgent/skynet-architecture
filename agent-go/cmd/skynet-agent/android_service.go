@@ -136,7 +136,7 @@ func androidCommand(ctx context.Context, args []string) (int, error) {
 		go host.readControl(os.Stdin, stop)
 		go host.monitor(ctx, stop)
 	}
-	return 0, host.loop(ctx, transport.Default(), os.Stdout)
+	return 0, host.loop(ctx, transport.Default().WithLAN(ctx), os.Stdout)
 }
 
 func androidStatus(home string, cfg, state Object, note, code, current string) error {

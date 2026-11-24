@@ -344,7 +344,7 @@ func execute(ctx context.Context, args []string) (int, error) {
 	case "version":
 		fmt.Printf("skynet-agent %s (release %d), %s, %s-%s\n", config.Version, config.Sequence, runtime.Version(), runtime.GOOS, runtime.GOARCH)
 	case "run":
-		return run(ctx, home, n, args)
+		return run(ctx, home, n.WithLAN(ctx), args)
 	case "status":
 		err = status(home)
 	case "tasks":

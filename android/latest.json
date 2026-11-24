@@ -1,10 +1,10 @@
 {
   "format": 1,
-  "version_code": 6,
-  "version_name": "0.4.2",
+  "version_code": 7,
+  "version_name": "0.4.3",
   "min_sdk": 24,
-  "notes": "Starts again after a reboot by default.",
-  "url": "https://github.com/skyNetAIAgent/skynet-architecture/releases/download/v1.3.3/skynet-agent-0.4.2.apk",
-  "size": 8203077,
-  "sha256": "020fb805672ebbcac604b7baaa016f6a3a922b10581183b4f4185870259f0499"
+  "notes": "Finds a full node on the local network by itself.",
+  "url": "https://github.com/skyNetAIAgent/skynet-architecture/releases/download/v1.3.4/skynet-agent-0.4.3.apk",
+  "size": 8223557,
+  "sha256": "3061028a2cbd273880029153f8a733aa9138f92fda0f75a7dec25ec0d5fed25f"
 }
