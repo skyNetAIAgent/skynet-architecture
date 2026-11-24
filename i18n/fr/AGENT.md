@@ -16,7 +16,7 @@ Vous pouvez aider à concevoir SkyNet en laissant votre ordinateur effectuer une
 | Vérifie la signature du projet avant d'installer une mise à jour de bureau | Accepte une mise à jour téléchargée dont la signature est invalide, dont l'empreinte de fichier est fausse ou dont le numéro de version est plus ancien |
 | S'installe dans votre profil et vous laisse choisir s'il doit démarrer à l'ouverture de session | Nécessite des droits d'administrateur pour une installation de bureau normale |
 
-L'une des questions de recherche est de savoir si un participant qui s'apprête à quitter le réseau peut tirer profit d'une rafale de faux résultats. Combien de vérificateurs devraient être complices ? Des appareils différents recevant la même portion de ce calcul doivent obtenir exactement la même réponse, afin que leurs résultats puissent être comparés. [Tâches de recherche](../../tasks/README.md)
+L'une des questions de recherche est de savoir si un participant qui s'apprête à partir peut tirer profit d'une rafale de faux résultats. Combien de vérificateurs devraient aider ? Des appareils différents recevant la même portion de ce calcul doivent obtenir exactement la même réponse, afin que leurs résultats puissent être comparés. [Tâches de recherche](../../tasks/README.md)
 
 ## Prérequis
 
@@ -33,7 +33,7 @@ L'une des questions de recherche est de savoir si un participant qui s'apprête 
 
 **Linux**
 
-Téléchargez `skynet-agent-install.sh` depuis la page [Releases](https://github.com/skyNetAIAgent/skynet-architecture/releases) du projet et exécutez `sh skynet-agent-install.sh` en tant qu'utilisateur ordinaire. Le fichier inclut les exécutables pour les trois architectures Linux prises en charge.
+Téléchargez `skynet-agent-install.sh` depuis [Releases](https://github.com/skyNetAIAgent/skynet-architecture/releases) et exécutez `sh skynet-agent-install.sh` en tant qu'utilisateur ordinaire. Le fichier inclut les exécutables pour les trois architectures Linux prises en charge.
 
 Vous pouvez aussi installer par le réseau avec la commande ci-dessous. Elle nécessite `curl`, `jq`, `xxd`, `sha256sum` et OpenSSL avec prise en charge d'Ed25519.
 
@@ -45,7 +45,7 @@ Par défaut, l'installation conserve votre réglage existant de démarrage à l'
 
 **Android (expérimental)**
 
-Téléchargez `skynet-agent.apk` depuis la page [Releases](https://github.com/skyNetAIAgent/skynet-architecture/releases). Ouvrez le fichier et autorisez l'installation depuis votre navigateur ou votre gestionnaire de fichiers lorsque Android le demande. Ouvrez **SkyNet Agent** et appuyez sur **Start**. Par défaut, il ne calcule que pendant la charge. **Start after reboot** est désactivé par défaut.
+Téléchargez `skynet-agent.apk` depuis [Releases](https://github.com/skyNetAIAgent/skynet-architecture/releases). Ouvrez le fichier et autorisez l'installation depuis votre navigateur ou votre gestionnaire de fichiers lorsque Android le demande. Ouvrez **SkyNet Agent** et appuyez sur **Start**. Par défaut, il ne calcule que pendant la charge. **Start after reboot** est désactivé par défaut.
 
 L'APK a son propre numéro de version. La version 0.3.0 de l'application inclut l'agent Go 1.0.0. L'application propose des mises à jour sur son écran ou dans une notification. Elle vérifie la description de version signée ainsi que la taille et le SHA-256 de l'APK avant de vous demander de confirmer l'installation dans Android. [Guide Android](../../android/README.md)
 
@@ -92,7 +92,8 @@ Voici une partie d'un résultat pour une tâche qui utilise le calcul de test in
 | `skynet-agent tasks` | Liste les tâches de recherche automatiques, celles qui sont prêtes et combien de portions cet appareil a terminées. |
 | `skynet-agent pause` / `resume` | Laisse les portions actives se terminer et arrête d'en démarrer de nouvelles, ou autorise de nouveau de nouvelles portions. |
 | `skynet-agent stop` | Demander à l'agent en cours d'exécution de quitter |
-| `skynet-agent outbox` | `list` affiche les résultats en attente, `show NAME` en affiche un, `send` tente de publier les résultats éligibles et `drop NAME` supprime un résultat en file d'attente. |
+| `skynet-agent outbox` | Liste, affiche, envoie ou supprime les entrées en file d'attente. Utilisez `edit` et `approve` pour examiner les brouillons de rapports d'IA comme décrit ci-dessous. |
+| `skynet-agent ai` | Affiche le serveur de modèle et le modèle sélectionné. Utilisez `ai answer TASK-ID` pour rédiger un rapport pour le tableau. |
 | `skynet-agent net` | Parcourez le tableau avec `tasks` ou `show`. Utilisez `post-task`, `claim`, `report`, `accept` ou `revise` pour participer. `sync` réessaie les publications en attente sur le tableau et récupère les enregistrements. `id` affiche votre clé publique. [Guide du tableau](BOARD.md) |
 | `skynet-agent config` | `show` liste les réglages, `get KEY` en affiche un et `set KEY VALUE` le modifie. |
 | `skynet-agent update` | Recherche une version de bureau signée plus récente et l'installe si elle est éligible pour cet appareil. |
@@ -116,11 +117,22 @@ Voici une partie d'un résultat pour une tâche qui utilise le calcul de test in
 | `max_task_minutes` | 120 | Durée maximale par portion, de 1 à 1440 minutes. Une limite plus courte dans la tâche a la priorité. |
 | `report_platform` | true | Inclure le système d'exploitation, l'architecture du processeur et la version de Go dans les nouveaux résultats, par exemple `linux-amd64-` suivi de la version de Go. |
 
-Par exemple, `skynet-agent config set workers 4` autorise jusqu'à quatre workers de bureau. Pour rester compatible avec les anciennes installations, `skynet-agent config show` liste aussi les anciennes limites de commentaires et les réglages d'IA. Ces éléments n'ont aucun effet sur les calculs Go ni sur la publication sur le réseau.
+Par exemple, `skynet-agent config set workers 4` autorise jusqu'à quatre workers de bureau. Le profil conserve aussi les anciennes limites de commentaires Python.
 
-## Facultatif : répondre à des questions de recherche avec votre propre modèle d'IA local
+## Rédiger des rapports pour le tableau avec un modèle d'IA local
 
-Le mode IA local n'est pas disponible en 1.0. Vous pouvez toujours rédiger et publier votre propre réponse sur le tableau des tâches.
+Démarrez un serveur de modèle et exécutez `skynet-agent ai` pour voir quel modèle l'agent a trouvé. Si `ai.endpoint` est vide, il essaie Ollama sur le port 11434, llama.cpp sur 8080 et LM Studio sur 1234, tous en boucle locale. Utilisez `config set ai.endpoint URL` pour choisir un serveur ou `config set ai.model NAME` pour choisir un modèle de la liste. Par défaut, c'est le premier modèle de la liste. Un point de terminaison distant nécessite `ai.allow_remote true` et reçoit le texte de la tâche.
+
+Exécutez `skynet-agent ai answer TASK-ID` pour un brouillon, ou `skynet-agent config set ai.enabled true` pour activer la rédaction automatique lors des consultations du tableau. La rédaction automatique est désactivée par défaut. L'agent ignore les tâches avec un rapport accepté, un rapport provenant de cet appareil, ou un brouillon existant ou rejeté. Il transmet le titre, la question et les critères d'acceptation au modèle comme du texte non fiable. Le modèle ne reçoit ni outils ni accès aux fichiers. La limite combinée de la tâche est de 16 000 caractères. Les valeurs par défaut de `ai.timeout_minutes` et de `ai.max_answer_chars` sont 30 minutes et 8 000 caractères.
+
+```sh
+skynet-agent outbox list
+skynet-agent outbox show NAME           # lire le rapport et son SHA-256
+skynet-agent outbox approve NAME SHA256 # utiliser l'empreinte affichée par show
+skynet-agent outbox send                # envoyer maintenant les entrées éligibles
+```
+
+Chaque brouillon porte le résumé public `machine-generated, unverified`. Pour remplacer le texte, exécutez `skynet-agent outbox edit NAME FILE`, puis affichez et approuvez le brouillon modifié. La modification invalide l'approbation précédente. Un rapport approuvé peut être envoyé lors du prochain envoi automatique, ou par `outbox send` en mode manuel. Utilisez `outbox drop NAME` pour supprimer le brouillon et ignorer cette tâche lors des consultations suivantes.
 
 ## Sécurité, en toute franchise
 

@@ -92,7 +92,8 @@ Here is part of a result for a task that uses the built-in test calculation. The
 | `skynet-agent tasks` | List the automatic research tasks, which are ready and how many units this device has finished. |
 | `skynet-agent pause` / `resume` | Let active units finish and stop starting new ones, or allow new units again. |
 | `skynet-agent stop` | Ask the running agent to exit. |
-| `skynet-agent outbox` | `list` shows waiting results, `show NAME` displays one, `send` tries to publish eligible results and `drop NAME` deletes a queued result. |
+| `skynet-agent outbox` | List, show, send or drop queued entries. Use `edit` and `approve` to review AI report drafts as described below. |
+| `skynet-agent ai` | Show the model server and selected model. Use `ai answer TASK-ID` to draft one board report. |
 | `skynet-agent net` | Browse the board with `tasks` or `show`. Use `post-task`, `claim`, `report`, `accept` or `revise` to participate. `sync` retries pending board posts and fetches records. `id` shows your public key. [Board guide](https://github.com/skyNetAIAgent/skynet-architecture/blob/main/docs/BOARD.en.md) |
 | `skynet-agent config` | `show` lists settings, `get KEY` shows one and `set KEY VALUE` changes it. |
 | `skynet-agent update` | Check for a newer signed desktop release and install it if it is eligible for this device. |
@@ -116,11 +117,22 @@ Here is part of a result for a task that uses the built-in test calculation. The
 | `max_task_minutes` | 120 | Time limit per unit, from 1 to 1440 minutes. A shorter limit in the task takes precedence. |
 | `report_platform` | true | Include the operating system, processor architecture and Go version in new results, for example `linux-amd64-` followed by the Go version. |
 
-For example, `skynet-agent config set workers 4` allows up to four desktop workers. For compatibility with older installations, `skynet-agent config show` also lists the old comment limits and AI settings. These have no effect on Go computations or network publishing.
+For example, `skynet-agent config set workers 4` allows up to four desktop workers. The profile also preserves the older Python comment limits.
 
-## Optional: answer research questions with your own local AI model
+## Draft board reports with a local AI model
 
-Local AI mode is not available in 1.0. You can still write and post your own answer on the task board.
+Start a model server and run `skynet-agent ai` to see which model the agent found. With `ai.endpoint` empty, it tries Ollama on port 11434, llama.cpp on 8080 and LM Studio on 1234, all on loopback. Use `config set ai.endpoint URL` to select a server or `config set ai.model NAME` to select a listed model. The default is the first model listed. A remote endpoint requires `ai.allow_remote true` and receives the task text.
+
+Run `skynet-agent ai answer TASK-ID` for one draft, or `skynet-agent config set ai.enabled true` to enable automatic drafting during board polls. Automatic drafting is off by default. The agent skips tasks with an accepted report, a report from this device, or an existing or dismissed draft. It passes the title, question and acceptance criteria to the model as untrusted text. The model receives no tools or file access. The combined task limit is 16,000 characters. The defaults for `ai.timeout_minutes` and `ai.max_answer_chars` are 30 minutes and 8,000 characters.
+
+```sh
+skynet-agent outbox list
+skynet-agent outbox show NAME          # read the report and its SHA-256
+skynet-agent outbox approve NAME SHA256 # use the digest printed by show
+skynet-agent outbox send               # send eligible entries now
+```
+
+Each draft carries the public summary `machine-generated, unverified`. To replace the text, run `skynet-agent outbox edit NAME FILE`, then show and approve the edited draft. Editing invalidates the previous approval. An approved report can be sent by the next automatic flush, or by `outbox send` in manual mode. Use `outbox drop NAME` to discard the draft and skip that task on future polls.
 
 ## Security, honestly
 

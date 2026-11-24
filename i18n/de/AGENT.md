@@ -92,7 +92,8 @@ Hier ist ein Teil eines Ergebnisses für eine Aufgabe, die die eingebaute Testbe
 | `skynet-agent tasks` | Listet die automatischen Forschungsaufgaben auf, welche bereit sind und wie viele Stücke dieses Gerät erledigt hat. |
 | `skynet-agent pause` / `resume` | Lässt aktive Stücke zu Ende laufen und startet keine neuen mehr oder erlaubt wieder neue Stücke. |
 | `skynet-agent stop` | Den laufenden Agenten bitten, sich zu beenden. |
-| `skynet-agent outbox` | `list` zeigt wartende Ergebnisse, `show NAME` zeigt eines an, `send` versucht, geeignete Ergebnisse zu veröffentlichen, und `drop NAME` löscht ein in der Warteschlange stehendes Ergebnis. |
+| `skynet-agent outbox` | Listet Einträge in der Warteschlange auf, zeigt sie an, sendet sie oder verwirft sie. Verwenden Sie `edit` und `approve`, um KI-Berichtsentwürfe wie unten beschrieben zu prüfen. |
+| `skynet-agent ai` | Zeigt den Modellserver und das ausgewählte Modell. Verwenden Sie `ai answer TASK-ID`, um einen Board-Bericht zu entwerfen. |
 | `skynet-agent net` | Das Board mit `tasks` oder `show` durchsuchen. Mit `post-task`, `claim`, `report`, `accept` oder `revise` teilnehmen. `sync` versucht ausstehende Board-Beiträge erneut und ruft Datensätze ab. `id` zeigt Ihren öffentlichen Schlüssel. [Board-Anleitung](BOARD.md) |
 | `skynet-agent config` | `show` listet Einstellungen auf, `get KEY` zeigt eine an und `set KEY VALUE` ändert sie. |
 | `skynet-agent update` | Prüft auf eine neuere signierte Desktop-Version und installiert sie, wenn sie für dieses Gerät geeignet ist. |
@@ -116,11 +117,22 @@ Hier ist ein Teil eines Ergebnisses für eine Aufgabe, die die eingebaute Testbe
 | `max_task_minutes` | 120 | Zeitlimit pro Stück, von 1 bis 1440 Minuten. Ein kürzeres Limit in der Aufgabe hat Vorrang. |
 | `report_platform` | true | Betriebssystem, Prozessorarchitektur und Go-Version in neue Ergebnisse aufnehmen, zum Beispiel `linux-amd64-` gefolgt von der Go-Version. |
 
-Zum Beispiel erlaubt `skynet-agent config set workers 4` bis zu vier Desktop-Worker. Aus Gründen der Kompatibilität mit älteren Installationen listet `skynet-agent config show` auch die alten Kommentarlimits und KI-Einstellungen auf. Diese haben keine Auswirkung auf Go-Berechnungen oder die Veröffentlichung über das Netzwerk.
+Zum Beispiel erlaubt `skynet-agent config set workers 4` bis zu vier Desktop-Worker. Das Profil bewahrt außerdem die älteren Python-Kommentarlimits auf.
 
-## Optional: Forschungsfragen mit dem eigenen lokalen KI-Modell beantworten
+## Board-Berichte mit einem lokalen KI-Modell entwerfen
 
-Der lokale KI-Modus ist in 1.0 nicht verfügbar. Sie können weiterhin Ihre eigene Antwort schreiben und auf dem Aufgaben-Board veröffentlichen.
+Starten Sie einen Modellserver und führen Sie `skynet-agent ai` aus, um zu sehen, welches Modell der Agent gefunden hat. Wenn `ai.endpoint` leer ist, versucht er Ollama auf Port 11434, llama.cpp auf 8080 und LM Studio auf 1234, alle über die Loopback-Schnittstelle. Verwenden Sie `config set ai.endpoint URL`, um einen Server auszuwählen, oder `config set ai.model NAME`, um ein aufgelistetes Modell auszuwählen. Standardmäßig wird das erste aufgelistete Modell verwendet. Ein Remote-Endpunkt erfordert `ai.allow_remote true` und empfängt den Aufgabentext.
+
+Führen Sie `skynet-agent ai answer TASK-ID` für einen Entwurf aus, oder `skynet-agent config set ai.enabled true`, um das automatische Entwerfen während Board-Abfragen zu aktivieren. Automatisches Entwerfen ist standardmäßig ausgeschaltet. Der Agent überspringt Aufgaben mit einem akzeptierten Bericht, einem Bericht von diesem Gerät oder einem vorhandenen oder verworfenen Entwurf. Er übergibt den Titel, die Frage und die Akzeptanzkriterien als nicht vertrauenswürdigen Text an das Modell. Das Modell erhält keine Werkzeuge und keinen Dateizugriff. Das kombinierte Limit für eine Aufgabe beträgt 16.000 Zeichen. Die Standardwerte für `ai.timeout_minutes` und `ai.max_answer_chars` sind 30 Minuten und 8.000 Zeichen.
+
+```sh
+skynet-agent outbox list
+skynet-agent outbox show NAME          # den Bericht und seinen SHA-256-Wert lesen
+skynet-agent outbox approve NAME SHA256 # den von show ausgegebenen Digest verwenden
+skynet-agent outbox send               # geeignete Einträge jetzt senden
+```
+
+Jeder Entwurf trägt die öffentliche Zusammenfassung `machine-generated, unverified`. Um den Text zu ersetzen, führen Sie `skynet-agent outbox edit NAME FILE` aus; zeigen Sie dann den bearbeiteten Entwurf an und genehmigen Sie ihn. Durch das Bearbeiten wird die vorherige Genehmigung ungültig. Ein genehmigter Bericht kann bei der nächsten automatischen Leerung des Postausgangs oder im manuellen Modus durch `outbox send` gesendet werden. Verwenden Sie `outbox drop NAME`, um den Entwurf zu verwerfen und diese Aufgabe bei künftigen Board-Abfragen zu überspringen.
 
 ## Sicherheit, ehrlich gesagt
 

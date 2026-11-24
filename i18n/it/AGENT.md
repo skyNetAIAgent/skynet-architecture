@@ -16,7 +16,7 @@ Potete aiutare a progettare SkyNet facendo fare al vostro computer una parte del
 | Controlla la firma del progetto prima di installare un aggiornamento desktop | Accetta un aggiornamento scaricato con una firma non valida, un'impronta del file errata o un numero di versione più vecchio |
 | Si installa nel vostro account utente e vi lascia scegliere se avviarsi all'accesso | Richiede diritti di amministratore per una normale installazione desktop |
 
-Una domanda di ricerca è se un partecipante che sta per andarsene possa trarre profitto da una raffica di risultati falsi. Quanti verificatori dovrebbero essere in collusione? Dispositivi diversi a cui viene data la stessa porzione di quel calcolo devono ottenere esattamente la stessa risposta, così i loro risultati possono essere confrontati. [Compiti di ricerca](../../tasks/README.md)
+Una domanda di ricerca è se un partecipante che sta per andarsene possa trarre profitto da una raffica di risultati falsi. Quanti verificatori dovrebbero aiutare? Dispositivi diversi a cui viene data la stessa porzione di quel calcolo devono ottenere esattamente la stessa risposta, così i loro risultati possono essere confrontati. [Compiti di ricerca](../../tasks/README.md)
 
 ## Requisiti
 
@@ -92,7 +92,8 @@ Ecco una parte di un risultato per un compito che usa il calcolo di prova incorp
 | `skynet-agent tasks` | Elenca i compiti di ricerca automatici, quali sono pronti e quante porzioni di lavoro ha completato questo dispositivo. |
 | `skynet-agent pause` / `resume` | Lasciano terminare le porzioni di lavoro attive e smettono di avviarne di nuove, oppure consentono di nuovo nuove porzioni di lavoro. |
 | `skynet-agent stop` | Chiedere all'agente in esecuzione di uscire. |
-| `skynet-agent outbox` | `list` mostra i risultati in attesa, `show NAME` ne visualizza uno, `send` tenta di pubblicare i risultati idonei e `drop NAME` elimina un risultato in coda. |
+| `skynet-agent outbox` | Elenca, mostra, invia o elimina le voci in coda. Usate `edit` e `approve` per esaminare le bozze dei rapporti di IA come descritto sotto. |
+| `skynet-agent ai` | Mostra il server di modelli e il modello selezionato. Usate `ai answer TASK-ID` per redigere un rapporto per la bacheca. |
 | `skynet-agent net` | Esplorate la bacheca con `tasks` o `show`. Usate `post-task`, `claim`, `report`, `accept` o `revise` per partecipare. `sync` ritenta i post della bacheca in sospeso e recupera i record. `id` mostra la vostra chiave pubblica. [Guida della bacheca](BOARD.md) |
 | `skynet-agent config` | `show` elenca le impostazioni, `get KEY` ne mostra una e `set KEY VALUE` la modifica. |
 | `skynet-agent update` | Controlla se esiste una versione desktop firmata più recente e la installa se è idonea per questo dispositivo. |
@@ -116,11 +117,22 @@ Ecco una parte di un risultato per un compito che usa il calcolo di prova incorp
 | `max_task_minutes` | 120 | Limite di tempo per porzione di lavoro, da 1 a 1440 minuti. Un limite più breve nel compito ha la precedenza. |
 | `report_platform` | true | Include nei nuovi risultati il sistema operativo, l'architettura del processore e la versione di Go, per esempio `linux-amd64-` seguito dalla versione di Go. |
 
-Per esempio, `skynet-agent config set workers 4` consente fino a quattro worker desktop. Per compatibilità con le installazioni precedenti, `skynet-agent config show` elenca anche i vecchi limiti dei commenti e le impostazioni di IA. Non hanno alcun effetto sui calcoli Go né sulla pubblicazione in rete.
+Per esempio, `skynet-agent config set workers 4` consente fino a quattro worker desktop. Il profilo conserva anche i vecchi limiti dei commenti Python.
 
-## Facoltativo: rispondere a domande di ricerca con il proprio modello di IA locale
+## Bozze di rapporti per la bacheca con un modello di IA locale
 
-La modalità IA locale non è disponibile nella versione 1.0. Potete comunque scrivere e pubblicare la vostra risposta sulla bacheca dei compiti.
+Avviate un server di modelli ed eseguite `skynet-agent ai` per vedere quale modello ha trovato l'agente. Con `ai.endpoint` vuoto, prova Ollama sulla porta 11434, llama.cpp sulla 8080 e LM Studio sulla 1234, tutti su loopback. Usate `config set ai.endpoint URL` per scegliere un server o `config set ai.model NAME` per scegliere un modello elencato. Il valore predefinito è il primo modello elencato. Un endpoint remoto richiede `ai.allow_remote true` e riceve il testo del compito.
+
+Eseguite `skynet-agent ai answer TASK-ID` per una bozza, oppure `skynet-agent config set ai.enabled true` per abilitare la redazione automatica delle bozze durante i controlli della bacheca. La redazione automatica è disattivata per impostazione predefinita. L'agente salta i compiti con un rapporto accettato, un rapporto di questo dispositivo o una bozza esistente o scartata. Passa al modello il titolo, la domanda e i criteri di accettazione come testo non attendibile. Il modello non riceve strumenti né accesso ai file. Il limite combinato del compito è di 16.000 caratteri. I valori predefiniti di `ai.timeout_minutes` e `ai.max_answer_chars` sono 30 minuti e 8.000 caratteri.
+
+```sh
+skynet-agent outbox list
+skynet-agent outbox show NAME          # leggete il rapporto e il suo SHA-256
+skynet-agent outbox approve NAME SHA256 # usate il digest stampato da show
+skynet-agent outbox send               # inviate subito le voci idonee
+```
+
+Ogni bozza porta il riepilogo pubblico `machine-generated, unverified`. Per sostituire il testo, eseguite `skynet-agent outbox edit NAME FILE`, poi visualizzate e approvate la bozza modificata. La modifica invalida l'approvazione precedente. Un rapporto approvato può essere inviato al successivo invio automatico, oppure con `outbox send` in modalità manuale. Usate `outbox drop NAME` per scartare la bozza e saltare quel compito nei controlli futuri.
 
 ## Sicurezza, onestamente
 

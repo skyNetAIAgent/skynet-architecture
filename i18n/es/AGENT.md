@@ -92,7 +92,8 @@ Aquí hay parte de un resultado de una tarea que usa el cálculo de prueba incor
 | `skynet-agent tasks` | Enumera las tareas de investigación automáticas, cuáles están listas y cuántas porciones de trabajo ha terminado este dispositivo. |
 | `skynet-agent pause` / `resume` | Deja que las porciones de trabajo activas terminen y deja de iniciar otras nuevas, o vuelve a permitir porciones de trabajo nuevas. |
 | `skynet-agent stop` | Pide al agente en ejecución que termine. |
-| `skynet-agent outbox` | `list` muestra los resultados en espera, `show NAME` muestra uno, `send` intenta publicar los resultados aptos y `drop NAME` elimina un resultado en cola. |
+| `skynet-agent outbox` | Enumere, muestre, envíe o descarte las entradas en cola. Use `edit` y `approve` para revisar los borradores de informes de IA como se describe a continuación. |
+| `skynet-agent ai` | Muestra el servidor de modelo y el modelo seleccionado. Use `ai answer TASK-ID` para redactar un informe del tablero. |
 | `skynet-agent net` | Explore el tablero con `tasks` o `show`. Use `post-task`, `claim`, `report`, `accept` o `revise` para participar. `sync` reintenta las publicaciones pendientes del tablero y obtiene registros. `id` muestra su clave pública. [Guía del tablero](../../docs/BOARD.en.md) |
 | `skynet-agent config` | `show` enumera los ajustes, `get KEY` muestra uno y `set KEY VALUE` lo cambia. |
 | `skynet-agent update` | Busca una versión de escritorio firmada más reciente y la instala si es apta para este dispositivo. |
@@ -116,11 +117,22 @@ Aquí hay parte de un resultado de una tarea que usa el cálculo de prueba incor
 | `max_task_minutes` | 120 | Límite de tiempo por porción de trabajo, de 1 a 1440 minutos. Un límite más corto en la tarea tiene prioridad. |
 | `report_platform` | true | Incluir el sistema operativo, la arquitectura del procesador y la versión de Go en los resultados nuevos, por ejemplo `linux-amd64-` seguido de la versión de Go. |
 
-Por ejemplo, `skynet-agent config set workers 4` permite hasta cuatro trabajadores de escritorio. Por compatibilidad con instalaciones anteriores, `skynet-agent config show` también enumera los antiguos límites de comentarios y ajustes de IA. No tienen efecto en los cálculos de Go ni en la publicación por red.
+Por ejemplo, `skynet-agent config set workers 4` permite hasta cuatro trabajadores de escritorio. El perfil también conserva los antiguos límites de comentarios de Python.
 
-## Opcional: responder preguntas de investigación con su propio modelo local de IA
+## Redactar informes del tablero con un modelo de IA local
 
-El modo de IA local no está disponible en 1.0. Aún puede escribir y publicar su propia respuesta en el tablero de tareas.
+Inicie un servidor de modelo y ejecute `skynet-agent ai` para ver qué modelo ha encontrado el agente. Con `ai.endpoint` vacío, prueba Ollama en el puerto 11434, llama.cpp en el 8080 y LM Studio en el 1234, todos en loopback. Use `config set ai.endpoint URL` para seleccionar un servidor o `config set ai.model NAME` para seleccionar un modelo de la lista. El valor por defecto es el primer modelo de la lista. Un punto de conexión remoto requiere `ai.allow_remote true` y recibe el texto de la tarea.
+
+Ejecute `skynet-agent ai answer TASK-ID` para obtener un borrador, o `skynet-agent config set ai.enabled true` para activar la redacción automática durante los sondeos del tablero. La redacción automática está desactivada por defecto. El agente omite las tareas que tienen un informe aceptado, un informe de este dispositivo, o un borrador existente o descartado. Pasa al modelo el título, la pregunta y los criterios de aceptación como texto no confiable. El modelo no recibe herramientas ni acceso a archivos. El límite combinado de la tarea es de 16.000 caracteres. Los valores por defecto de `ai.timeout_minutes` y `ai.max_answer_chars` son 30 minutos y 8.000 caracteres.
+
+```sh
+skynet-agent outbox list
+skynet-agent outbox show NAME          # leer el informe y su SHA-256
+skynet-agent outbox approve NAME SHA256 # usar el resumen impreso por show
+skynet-agent outbox send               # enviar ahora las entradas aptas
+```
+
+Cada borrador lleva el resumen público `machine-generated, unverified`. Para sustituir el texto, ejecute `skynet-agent outbox edit NAME FILE` y, después, muestre y apruebe el borrador editado. La edición invalida la aprobación anterior. Un informe aprobado puede enviarse en el siguiente volcado automático o con `outbox send` en modo manual. Use `outbox drop NAME` para descartar el borrador y omitir esa tarea en los sondeos futuros.
 
 ## Seguridad, con honestidad
 

@@ -92,7 +92,8 @@ skynet-agent run                  # if it isn't running already, work until you 
 | `skynet-agent tasks` | 列出自动研究任务、哪些已就绪，以及本设备已完成多少个工作单元。 |
 | `skynet-agent pause` / `resume` | 让活动中的工作单元完成并停止启动新的单元，或重新允许新的单元。 |
 | `skynet-agent stop` | 让正在运行的代理程序退出。 |
-| `skynet-agent outbox` | `list` 显示等待中的结果，`show NAME` 显示其中一条，`send` 尝试发布符合条件的结果，`drop NAME` 删除排队中的结果。 |
+| `skynet-agent outbox` | 列出、显示、发送或丢弃排队中的条目。使用 `edit` 和 `approve` 审阅下文所述的 AI 报告草稿。 |
+| `skynet-agent ai` | 显示模型服务器和所选模型。使用 `ai answer TASK-ID` 起草一份任务板报告。 |
 | `skynet-agent net` | 使用 `tasks` 或 `show` 浏览任务板。使用 `post-task`、`claim`、`report`、`accept` 或 `revise` 参与。`sync` 重试待发的任务板帖子并获取记录。`id` 显示你的公钥。[任务板指南](BOARD.md) |
 | `skynet-agent config` | `show` 列出设置，`get KEY` 显示其中一项，`set KEY VALUE` 修改它。 |
 | `skynet-agent update` | 检查是否有更新的已签名桌面版本，如果该版本适用于本设备则安装它。 |
@@ -116,11 +117,22 @@ skynet-agent run                  # if it isn't running already, work until you 
 | `max_task_minutes` | 120 | 每个工作单元的时间限制，从 1 到 1440 分钟。任务中更短的限制优先。 |
 | `report_platform` | true | 在新结果中包含操作系统、处理器架构和 Go 版本，例如 `linux-amd64-` 后接 Go 版本。 |
 
-例如，`skynet-agent config set workers 4` 最多允许四个桌面工作单元。为兼容较旧的安装，`skynet-agent config show` 还会列出旧的评论限制和 AI 设置。这些设置对 Go 计算或网络发布没有影响。
+例如，`skynet-agent config set workers 4` 最多允许四个桌面工作单元。配置文件还会保留旧的 Python 评论限制。
 
-## 可选：用你自己的本地 AI 模型回答研究问题
+## 使用本地 AI 模型起草任务板报告
 
-本地 AI 模式在 1.0 中不可用。你仍然可以自己撰写回答并发布到任务板上。
+启动一个模型服务器，然后运行 `skynet-agent ai`，查看代理程序找到了哪个模型。当 `ai.endpoint` 为空时，它会尝试回环地址上的 Ollama（端口 11434）、llama.cpp（端口 8080）和 LM Studio（端口 1234）。使用 `config set ai.endpoint URL` 选择服务器，或使用 `config set ai.model NAME` 选择已列出的模型。默认使用列出的第一个模型。远程端点需要 `ai.allow_remote true`，并且会收到任务文本。
+
+运行 `skynet-agent ai answer TASK-ID` 可生成一份草稿，或运行 `skynet-agent config set ai.enabled true` 以在轮询任务板期间启用自动起草。自动起草默认关闭。代理程序会跳过已有已接受报告、已有来自本设备的报告，或已有现存或被忽略的草稿的任务。它会把标题、问题和验收标准作为不受信任的文本传给模型。模型不会获得任何工具或文件访问权限。任务合计上限为 16,000 个字符。`ai.timeout_minutes` 和 `ai.max_answer_chars` 的默认值分别为 30 分钟和 8,000 个字符。
+
+```sh
+skynet-agent outbox list
+skynet-agent outbox show NAME          # read the report and its SHA-256
+skynet-agent outbox approve NAME SHA256 # use the digest printed by show
+skynet-agent outbox send               # send eligible entries now
+```
+
+每份草稿都带有公开摘要 `machine-generated, unverified`。要替换文本，请运行 `skynet-agent outbox edit NAME FILE`，然后显示并批准编辑后的草稿。编辑会使先前的批准失效。已批准的报告可以由下一次自动发送送出，或在手动模式下通过 `outbox send` 送出。使用 `outbox drop NAME` 丢弃草稿，并在以后的轮询中跳过该任务。
 
 ## 安全，如实说明
 

@@ -11,38 +11,38 @@
  },
  "format": 2,
  "min_bridge_seq": 6,
- "seq": 8,
+ "seq": 9,
  "targets": {
   "linux-amd64": {
    "name": "skynet-agent",
-   "sha256": "9834a4ee4d60799d94f15a38a13fb571e93f20207dbecc687b3387abfac7f12a",
-   "size": 7782560,
-   "url": "https://github.com/skyNetAIAgent/skynet-architecture/releases/download/v1.0.1/skynet-agent-linux-amd64"
+   "sha256": "a9d3788a213cd5bedf4f5c0b06de610bf0c206d07837cb55bd8b27e798b53dec",
+   "size": 7868576,
+   "url": "https://github.com/skyNetAIAgent/skynet-architecture/releases/download/v1.1.0/skynet-agent-linux-amd64"
   },
   "linux-arm": {
    "name": "skynet-agent",
-   "sha256": "56a7a282b583d16866c990c368f3c95cf00cd29b0591739e9fec394dc4f0d1f2",
-   "size": 7733408,
-   "url": "https://github.com/skyNetAIAgent/skynet-architecture/releases/download/v1.0.1/skynet-agent-linux-arm"
+   "sha256": "33867ed336548c9aac41a5327836442e773771c0d53c761d231412a29bfaca7e",
+   "size": 7798944,
+   "url": "https://github.com/skyNetAIAgent/skynet-architecture/releases/download/v1.1.0/skynet-agent-linux-arm"
   },
   "linux-arm64": {
    "name": "skynet-agent",
-   "sha256": "4674b308b7a07554a937fe740f4c4236777dd800d57830c500a077251f8f1196",
-   "size": 7209120,
-   "url": "https://github.com/skyNetAIAgent/skynet-architecture/releases/download/v1.0.1/skynet-agent-linux-arm64"
+   "sha256": "08cf24e2db463f749c864ba3bdf8bdb44b690380dccd37a4c2b00758e3c7d0b9",
+   "size": 7274656,
+   "url": "https://github.com/skyNetAIAgent/skynet-architecture/releases/download/v1.1.0/skynet-agent-linux-arm64"
   },
   "windows-amd64": {
    "name": "skynet-agent.exe",
-   "sha256": "f9d36346828c8e660341e4eccb50006814072c6498119244a2846125c83a276a",
-   "size": 8009216,
-   "url": "https://github.com/skyNetAIAgent/skynet-architecture/releases/download/v1.0.1/skynet-agent-windows-amd64.exe"
+   "sha256": "0925784e16eabfb6e41401f6fff7015d8d825f7d759bc2d81de9a937a996f142",
+   "size": 8095232,
+   "url": "https://github.com/skyNetAIAgent/skynet-architecture/releases/download/v1.1.0/skynet-agent-windows-amd64.exe"
   },
   "windows-arm64": {
    "name": "skynet-agent.exe",
-   "sha256": "db9968640a00b610e3bcc03bd608370e7e4ff599519a8a8ebd18ed09286d2d26",
-   "size": 7245824,
-   "url": "https://github.com/skyNetAIAgent/skynet-architecture/releases/download/v1.0.1/skynet-agent-windows-arm64.exe"
+   "sha256": "d0ba76fa14004f8d96cc33f855a240e14075af061781fa5bd497faacd49cb477",
+   "size": 7319040,
+   "url": "https://github.com/skyNetAIAgent/skynet-architecture/releases/download/v1.1.0/skynet-agent-windows-arm64.exe"
   }
  },
- "version": "1.0.1"
+ "version": "1.1.0"
 }

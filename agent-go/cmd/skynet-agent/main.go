@@ -29,7 +29,7 @@ type Object = config.Object
 var version, releaseSeq string
 
 var desktopCommands = map[string]func([]string) int{}
-var usage = "skynet-agent android-service | verify-apk-manifest | run | status | tasks | pause | resume | stop | outbox | net | config | selftest | version"
+var usage = "skynet-agent android-service | verify-apk-manifest | run | status | tasks | pause | resume | stop | outbox | net | ai | config | selftest | version"
 
 func init() {
 	registerUpdateCommands(func(name, _ string, run func([]string) int) {
@@ -234,6 +234,9 @@ func defaultText(v any, d string) string {
 	return d
 }
 func queue(ctx context.Context, home string, n transport.Network, args []string) error {
+	if handled, err := reportQueue(ctx, home, args); handled {
+		return err
+	}
 	action := "list"
 	if len(args) > 0 {
 		action = args[0]
@@ -270,13 +273,21 @@ func queue(ctx context.Context, home string, n transport.Network, args []string)
 			fmt.Println("The outbox is empty.")
 		}
 		for _, e := range entries {
+			if e.Data["kind"] == "report" {
+				status := outbox.Reason(cfg, e.Data)
+				if status == "" {
+					status = "approved"
+				}
+				fmt.Printf("%s  report for %s  %s\n", clean(e.Name), clean(config.Str(e.Data["task"])), status)
+				continue
+			}
 			r := config.Obj(e.Data["record"])
 			fmt.Printf("%s  %s unit %v  %s\n", e.Name, r["task"], r["unit"], outbox.Reason(cfg, e.Data))
 		}
 		return nil
 	}
 	if len(args) != 2 {
-		return errors.New("usage: outbox list | show NAME | send | drop NAME")
+		return errors.New("usage: outbox list | show NAME | approve NAME SHA256 | edit NAME FILE | send | drop NAME")
 	}
 	for _, e := range entries {
 		if e.Name != args[1] {
@@ -358,6 +369,8 @@ func execute(ctx context.Context, args []string) (int, error) {
 		}
 	case "net":
 		err = netCmd(ctx, home, n, args)
+	case "ai":
+		err = aiCmd(ctx, home, n, args)
 	case "outbox":
 		err = queue(ctx, home, n, args)
 	case "selftest":

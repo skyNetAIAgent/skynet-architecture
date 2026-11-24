@@ -105,7 +105,7 @@ func show(env Object, i *board.Info, me string, jsonMode bool) error {
 	}
 	return nil
 }
-func readText(name string) (string, error) {
+func readTextFile(name string) (string, error) {
 	var r io.Reader = os.Stdin
 	if name != "-" {
 		f, err := os.Open(name)
@@ -122,7 +122,11 @@ func readText(name string) (string, error) {
 	if !utf8.Valid(b) || len(b) >= 120004 {
 		return "", errors.New("invalid or oversized UTF-8 text")
 	}
-	return strings.TrimSpace(strings.TrimPrefix(string(b), "\uFEFF")), nil
+	return string(b), nil
+}
+func readText(name string) (string, error) {
+	raw, err := readTextFile(name)
+	return strings.TrimSpace(strings.TrimPrefix(raw, "\uFEFF")), err
 }
 func netCmd(ctx context.Context, home string, n transport.Network, args []string) error {
 	f := flag.NewFlagSet("net", flag.ContinueOnError)

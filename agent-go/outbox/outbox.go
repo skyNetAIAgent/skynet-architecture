@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"sort"
 	"strings"
 	"time"
 
@@ -46,7 +47,7 @@ func Entries(home, dir string) ([]Entry, error) {
 	var out []Entry
 	for _, name := range names {
 		o, e := config.Read(filepath.Join(home, dir, name))
-		if e == nil && config.Obj(o["record"]) != nil {
+		if e == nil && (config.Obj(o["record"]) != nil || o["kind"] == "report") {
 			out = append(out, Entry{name, o})
 		}
 	}
@@ -55,6 +56,12 @@ func Entries(home, dir string) ([]Entry, error) {
 func Reason(cfg, o Object) string {
 	if config.Channel(cfg) == "github" || o["submit_via"] == "github" {
 		return "GitHub submission is unsupported"
+	}
+	if o["kind"] == "report" {
+		if !reportApproved(o) {
+			return "report waiting for approval of this text"
+		}
+		return ""
 	}
 	rec := config.Obj(o["record"])
 	res := config.Obj(rec["result"])
@@ -128,11 +135,30 @@ func archive(home string, e Entry, id string) error {
 		return err
 	}
 	names, err := Names(home, "sent")
-	if err != nil {
+	if err != nil || len(names) <= Limit {
 		return err
 	}
-	for _, old := range names[:max(0, len(names)-Limit)] {
-		if err = os.Remove(filepath.Join(home, "sent", old)); err != nil {
+	// Compute files have timestamp names and board reports have stable task-id
+	// names. Prune by archive time and keep this newly committed entry even
+	// if the filesystem clock has coarse resolution.
+	type archivedFile struct {
+		name string
+		at   time.Time
+	}
+	var history []archivedFile
+	for _, name := range names {
+		if name == e.Name {
+			continue
+		}
+		fi, err := os.Stat(filepath.Join(home, "sent", name))
+		if err != nil {
+			return err
+		}
+		history = append(history, archivedFile{name, fi.ModTime()})
+	}
+	sort.SliceStable(history, func(i, j int) bool { return history[i].at.Before(history[j].at) })
+	for _, old := range history[:len(names)-Limit] {
+		if err = os.Remove(filepath.Join(home, "sent", old.name)); err != nil {
 			return err
 		}
 	}
@@ -148,6 +174,18 @@ func Flush(ctx context.Context, home string, n transport.Network, cfg, state Obj
 	}
 	var ready []Entry
 	for _, e := range entries {
+		if e.Data["kind"] == "report" {
+			if e.Name != reportName(config.Str(e.Data["task"])) {
+				continue
+			}
+			_, err := os.Stat(dismissedPath(home, e.Name))
+			if err == nil {
+				continue
+			}
+			if !errors.Is(err, os.ErrNotExist) {
+				return 0, err
+			}
+		}
 		if Reason(cfg, e.Data) == "" {
 			ready = append(ready, e)
 			if len(ready) == 50 {
@@ -170,7 +208,7 @@ func Flush(ctx context.Context, home string, n transport.Network, cfg, state Obj
 	count := 0
 	for _, e := range ready {
 		env := config.Obj(e.Data["net_record"])
-		if e.Data["net_record"] == nil {
+		if e.Data["kind"] != "report" && e.Data["net_record"] == nil {
 			env, err = records.Make(seed, "result", Object{"record": e.Data["record"]}, time.Now().Unix())
 			if err != nil {
 				return count, err
@@ -185,19 +223,25 @@ func Flush(ctx context.Context, home string, n transport.Network, cfg, state Obj
 		} else if err != nil {
 			return count, err
 		}
-		body := config.Obj(env["body"])
-		payload := config.Obj(body["payload"])
-		inner := config.Obj(payload["record"])
-		if body["type"] != "result" || inner == nil {
-			return count, errors.New("invalid outbox net_record")
-		}
-		if Reason(cfg, Object{"record": inner, "text": payload["text"]}) != "" {
-			continue
-		}
-		a, _ := canon.Hash(inner)
-		b, _ := canon.Hash(e.Data["record"])
-		if a != b {
-			return count, errors.New("net_record does not match queued result")
+		if e.Data["kind"] == "report" {
+			if err = prepareReport(home, e, seed); err != nil {
+				return count, err
+			}
+		} else {
+			body := config.Obj(env["body"])
+			payload := config.Obj(body["payload"])
+			inner := config.Obj(payload["record"])
+			if body["type"] != "result" || inner == nil {
+				return count, errors.New("invalid outbox net_record")
+			}
+			if Reason(cfg, Object{"record": inner, "text": payload["text"]}) != "" {
+				continue
+			}
+			a, _ := canon.Hash(inner)
+			b, _ := canon.Hash(e.Data["record"])
+			if a != b {
+				return count, errors.New("net_record does not match queued result")
+			}
 		}
 		if _, err = s.Add(env); err != nil {
 			return count, err

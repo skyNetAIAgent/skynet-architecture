@@ -11,6 +11,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/skyNetAIAgent/skynet-architecture/agent-go/ai"
 	"github.com/skyNetAIAgent/skynet-architecture/agent-go/config"
 	"github.com/skyNetAIAgent/skynet-architecture/agent-go/outbox"
 	"github.com/skyNetAIAgent/skynet-architecture/agent-go/tasks"
@@ -165,12 +166,8 @@ func (s *schedule) poll(ctx context.Context, n transport.Network, home string, c
 	expire(state, s.index, now.Unix())
 	log.write("DEBUG", "next repository check %s", s.next.Format(time.RFC3339))
 }
-func waitStatus(idx *tasks.Index, cfg, state Object, waiting int, on, known bool) (note, code string) {
+func workWait(cfg, state Object, waiting int, on, known bool) (note, code string) {
 	switch {
-	case idx == nil:
-		return "no task list yet", "no_tasks"
-	case idx.Expired(time.Now()):
-		return "the task list has expired", "expired"
 	case state["halt"] != "" && (config.Num(state["halt_seq"], 0) == config.Sequence || config.Num(state["halt_through"], 0) >= config.Sequence):
 		return "paused by the maintainers", "halted"
 	case cfg["paused"] == true:
@@ -181,6 +178,15 @@ func waitStatus(idx *tasks.Index, cfg, state Object, waiting int, on, known bool
 		return "waiting for mains power", "not_charging"
 	}
 	return "", ""
+}
+func waitStatus(idx *tasks.Index, cfg, state Object, waiting int, on, known bool) (note, code string) {
+	if idx == nil {
+		return "no task list yet", "no_tasks"
+	}
+	if idx.Expired(time.Now()) {
+		return "the task list has expired", "expired"
+	}
+	return workWait(cfg, state, waiting, on, known)
 }
 func run(ctx context.Context, home string, n transport.Network, args []string) (int, error) {
 	f := flag.NewFlagSet("run", flag.ContinueOnError)
@@ -236,6 +242,10 @@ func run(ctx context.Context, home string, n transport.Network, args []string) (
 	var on, known bool
 	var ended *completion
 	confirmed := false
+	var boardDone <-chan boardPollResult
+	var cancelBoard context.CancelFunc
+	var boardOpts ai.Options
+	var polledBoard, drafted bool
 	for ctx.Err() == nil {
 		cfg, err := config.Load(home)
 		if err != nil {
@@ -287,6 +297,27 @@ func run(ctx context.Context, home string, n transport.Network, args []string) (
 			on, known = worker.Battery()
 			powerAt = time.Now()
 		}
+		// Model inference can take minutes. Keep the worker loop, repository
+		// checks and human outbox commands responsive while a board poll runs.
+		waiting := len(names) + len(busy)
+		_, boardWait := workWait(cfg, state, waiting, on, known)
+		enabled := config.Get(cfg, "ai.enabled") == true && !s.restart
+		opts := aiOptions(cfg)
+		if boardDone != nil && (!enabled || boardWait == "halted" || boardWait == "not_charging" || opts != boardOpts) {
+			cancelBoard()
+		}
+		if due && enabled && boardWait == "" && boardDone == nil && (!*once || !polledBoard) {
+			boardCtx, cancel := context.WithCancel(ctx)
+			ch := make(chan boardPollResult, 1)
+			boardDone, cancelBoard, boardOpts, polledBoard = ch, cancel, opts, true
+			wg.Add(1)
+			go func() {
+				defer wg.Done()
+				defer cancel()
+				count, err := draftBoardAnswers(boardCtx, home, n, opts, "")
+				ch <- boardPollResult{count, err}
+			}()
+		}
 		reason, _ := waitStatus(s.index, cfg, state, len(names)+len(busy), on, known)
 		slots := int(config.Num(cfg["workers"], 1))
 		if *once {
@@ -322,14 +353,18 @@ func run(ctx context.Context, home string, n transport.Network, args []string) (
 				confirmed = true
 			}
 		}
-		if *once && finished > 0 {
-			break
-		}
-		if *once && len(busy) == 0 {
+		if *once && boardDone == nil && len(busy) == 0 {
+			if finished > 0 || drafted {
+				break
+			}
 			return 3, nil
 		}
 		select {
 		case <-ctx.Done():
+		case report := <-boardDone:
+			boardDone = nil
+			drafted = report.drafts > 0
+			report.log(log)
 		case c := <-results:
 			if ctx.Err() == nil {
 				delete(busy, c.unit)

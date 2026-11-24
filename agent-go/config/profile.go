@@ -14,6 +14,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/skyNetAIAgent/skynet-architecture/agent-go/ai"
 	"github.com/skyNetAIAgent/skynet-architecture/agent-go/canon"
 )
 
@@ -51,7 +52,7 @@ func Defaults() Object {
 		"workers": 1, "poll_minutes": 30, "update": "auto", "submit": "auto", "submit_via": "net",
 		"run_on_battery": false, "paused": false, "max_task_minutes": 120, "batch_minutes": 60,
 		"max_submissions_per_day": 48, "report_platform": true,
-		"ai": Object{"enabled": false, "endpoint": "", "model": "", "allow_remote": false, "review_before_submit": true, "timeout_minutes": 30},
+		"ai": Object{"enabled": false, "endpoint": "", "model": "", "allow_remote": false, "timeout_minutes": 30, "max_answer_chars": ai.MaxAnswerChars},
 	}
 }
 func defaultState() Object {
@@ -146,7 +147,7 @@ func load(home, name string, d Object) (Object, error) {
 }
 func State(home string) (Object, error) { return load(home, "state.json", defaultState()) }
 
-var limits = map[string][2]int64{"workers": {1, 256}, "poll_minutes": {5, 1440}, "max_task_minutes": {1, 1440}, "batch_minutes": {0, 1440}, "max_submissions_per_day": {0, 500}, "ai.timeout_minutes": {1, 240}}
+var limits = map[string][2]int64{"workers": {1, 256}, "poll_minutes": {5, 1440}, "max_task_minutes": {1, 1440}, "batch_minutes": {0, 1440}, "max_submissions_per_day": {0, 500}, "ai.timeout_minutes": {1, 240}, "ai.max_answer_chars": {1, ai.MaxAnswerChars}}
 var choices = map[string][]string{"update": {"auto", "notify", "off"}, "submit": {"auto", "manual"}, "submit_via": {"net", "github"}}
 
 func field(o Object, key string) (Object, string) {
@@ -162,6 +163,8 @@ func Load(home string) (Object, error) {
 	if err != nil {
 		return nil, err
 	}
+	// Python supplied this optional switch. Board reports always require review.
+	delete(Obj(o["ai"]), "review_before_submit")
 	for key, r := range limits {
 		p, k := field(o, key)
 		p[k] = min(r[1], max(r[0], Num(p[k], 0)))

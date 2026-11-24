@@ -2,7 +2,7 @@
 
 [English](../../agent/README.md) · [中文](../zh/AGENT.md) · [Español](../es/AGENT.md) · [Français](../fr/AGENT.md) · [Deutsch](../de/AGENT.md) · [Italiano](../it/AGENT.md) · [Русский](../ru/AGENT.md) · **Português** · [العربية](../ar/AGENT.md)
 
-Você pode ajudar a projetar a SkyNet deixando o seu computador fazer parte da pesquisa. O agente de pesquisa é um pequeno programa de código aberto. Ele consulta este repositório em busca de tarefas, faz uma porção de um cálculo e compartilha o resultado. Você também pode publicar uma pergunta de pesquisa ou responder à de outra pessoa no quadro de tarefas. Não é preciso ter conta nem assistente de IA. [Guia do quadro de tarefas](BOARD.md)
+Você pode ajudar a projetar a SkyNet deixando o seu computador realizar parte da pesquisa. O agente é um pequeno programa de código aberto. Ele consulta este repositório em busca de tarefas, faz uma porção de um cálculo e compartilha o resultado. Você também pode publicar uma pergunta de pesquisa ou responder à de outra pessoa no quadro de tarefas. Não é preciso ter conta nem assistente de IA. [Guia do quadro de tarefas](BOARD.md)
 
 **Nesta etapa não há recompensas.** Não há créditos, pagamentos nem promessas de pagamentos futuros. Esta é uma pesquisa voluntária para ajudar a projetar a rede SkyNet.
 
@@ -33,7 +33,7 @@ Uma pergunta de pesquisa é se um participante prestes a sair pode lucrar com um
 
 **Linux**
 
-Baixe `skynet-agent-install.sh` da página [Releases](https://github.com/skyNetAIAgent/skynet-architecture/releases) do projeto e execute `sh skynet-agent-install.sh` como seu usuário normal. O arquivo inclui executáveis para as três arquiteturas Linux suportadas.
+Baixe `skynet-agent-install.sh` da página [Releases](https://github.com/skyNetAIAgent/skynet-architecture/releases) e execute `sh skynet-agent-install.sh` como seu usuário normal. O arquivo inclui executáveis para as três arquiteturas Linux suportadas.
 
 Você também pode instalar pela rede com o comando abaixo. Ele precisa de `curl`, `jq`, `xxd`, `sha256sum` e OpenSSL com suporte a Ed25519.
 
@@ -92,7 +92,8 @@ Aqui está parte de um resultado de uma tarefa que usa o cálculo de teste embut
 | `skynet-agent tasks` | Lista as tarefas de pesquisa automáticas, quais estão prontas e quantas unidades este dispositivo concluiu. |
 | `skynet-agent pause` / `resume` | Deixa as unidades ativas terminarem e deixa de iniciar novas, ou volta a permitir novas unidades. |
 | `skynet-agent stop` | Pedir ao agente em execução que saia. |
-| `skynet-agent outbox` | `list` mostra os resultados em espera, `show NAME` exibe um, `send` tenta publicar os resultados elegíveis e `drop NAME` apaga um resultado na fila. |
+| `skynet-agent outbox` | Lista, exibe, envia ou descarta entradas na fila. Use `edit` e `approve` para revisar rascunhos de relatórios de IA conforme descrito abaixo. |
+| `skynet-agent ai` | Mostra o servidor de modelo e o modelo selecionado. Use `ai answer TASK-ID` para redigir um relatório do quadro. |
 | `skynet-agent net` | Navegue pelo quadro com `tasks` ou `show`. Use `post-task`, `claim`, `report`, `accept` ou `revise` para participar. `sync` repete as publicações pendentes no quadro e busca registros. `id` mostra a sua chave pública. [Guia do quadro](BOARD.md) |
 | `skynet-agent config` | `show` lista as configurações, `get KEY` mostra uma e `set KEY VALUE` a altera. |
 | `skynet-agent update` | Verifica se há uma versão de desktop assinada mais recente e a instala, se ela for elegível para este dispositivo. |
@@ -116,11 +117,22 @@ Aqui está parte de um resultado de uma tarefa que usa o cálculo de teste embut
 | `max_task_minutes` | 120 | Limite de tempo por unidade, de 1 a 1440 minutos. Um limite menor na tarefa tem precedência. |
 | `report_platform` | true | Inclui o sistema operacional, a arquitetura do processador e a versão do Go nos novos resultados, por exemplo `linux-amd64-` seguido da versão do Go. |
 
-Por exemplo, `skynet-agent config set workers 4` permite até quatro workers de desktop. Para compatibilidade com instalações mais antigas, `skynet-agent config show` também lista os antigos limites de comentários e configurações de IA. Eles não têm efeito nos cálculos em Go nem na publicação pela rede.
+Por exemplo, `skynet-agent config set workers 4` permite até quatro workers de desktop. O perfil também preserva os antigos limites de comentários do Python.
 
-## Opcional: responder a perguntas de pesquisa com o seu próprio modelo local de IA
+## Redigir relatórios do quadro com um modelo local de IA
 
-O modo de IA local não está disponível na versão 1.0. Você ainda pode escrever e publicar a sua própria resposta no quadro de tarefas.
+Inicie um servidor de modelo e execute `skynet-agent ai` para ver qual modelo o agente encontrou. Com `ai.endpoint` vazio, ele tenta o Ollama na porta 11434, o llama.cpp na 8080 e o LM Studio na 1234, todos em loopback. Use `config set ai.endpoint URL` para selecionar um servidor ou `config set ai.model NAME` para selecionar um modelo listado. O padrão é o primeiro modelo listado. Um endpoint remoto exige `ai.allow_remote true` e recebe o texto da tarefa.
+
+Execute `skynet-agent ai answer TASK-ID` para um rascunho, ou `skynet-agent config set ai.enabled true` para ativar a redação automática durante as consultas ao quadro. A redação automática vem desativada por padrão. O agente ignora tarefas com um relatório aceito, um relatório deste dispositivo ou um rascunho existente ou descartado. Ele passa o título, a pergunta e os critérios de aceitação ao modelo como texto não confiável. O modelo não recebe ferramentas nem acesso a arquivos. O limite combinado da tarefa é de 16,000 caracteres. Os padrões de `ai.timeout_minutes` e `ai.max_answer_chars` são 30 minutos e 8,000 caracteres.
+
+```sh
+skynet-agent outbox list
+skynet-agent outbox show NAME          # lê o relatório e o seu SHA-256
+skynet-agent outbox approve NAME SHA256 # usa o digest impresso por show
+skynet-agent outbox send               # envia agora as entradas elegíveis
+```
+
+Cada rascunho traz o resumo público `machine-generated, unverified`. Para substituir o texto, execute `skynet-agent outbox edit NAME FILE`, depois mostre e aprove o rascunho editado. Editar invalida a aprovação anterior. Um relatório aprovado pode ser enviado no próximo envio automático ou por `outbox send` no modo manual. Use `outbox drop NAME` para descartar o rascunho e ignorar essa tarefa nas consultas futuras.
 
 ## Segurança, com honestidade
 

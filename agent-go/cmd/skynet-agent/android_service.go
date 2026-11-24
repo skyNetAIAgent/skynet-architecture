@@ -82,13 +82,23 @@ func (h *androidHost) isCharging() bool {
 	return h.charging
 }
 
-func (h *androidHost) compute(ctx context.Context, task Object, unit tasks.Unit, cfg Object, out io.Writer) (Object, error) {
+func (h *androidHost) workContext(ctx context.Context) (context.Context, func()) {
 	h.mu.Lock()
 	unitCtx, cancel := context.WithCancel(ctx)
 	h.stopUnit = cancel
 	h.enforceBatteryLocked()
 	h.mu.Unlock()
-	defer cancel()
+	return unitCtx, func() {
+		h.mu.Lock()
+		h.stopUnit = nil
+		h.mu.Unlock()
+		cancel()
+	}
+}
+
+func (h *androidHost) compute(ctx context.Context, task Object, unit tasks.Unit, cfg Object, out io.Writer) (Object, error) {
+	unitCtx, finish := h.workContext(ctx)
+	defer finish()
 
 	var outcome Object
 	var err error
@@ -98,11 +108,7 @@ func (h *androidHost) compute(ctx context.Context, task Object, unit tasks.Unit,
 			_, err = fmt.Fprintln(out, "working 0")
 		}
 	}
-	h.mu.Lock()
-	h.stopUnit = nil
-	interrupted := unitCtx.Err() != nil
-	h.mu.Unlock()
-	if interrupted {
+	if unitCtx.Err() != nil {
 		// A power transition or stop is neither a failure nor a completed unit.
 		outcome = nil
 	}
@@ -250,6 +256,29 @@ func (h *androidHost) loop(ctx context.Context, n transport.Network, out io.Writ
 		names, err := outbox.Names(home, "outbox")
 		if err != nil {
 			return err
+		}
+		// The Android service runs one computation at a time and cancels active
+		// inference on disconnect under the same power policy as a kernel.
+		if due && config.Get(cfg, "ai.enabled") == true {
+			if _, wait := workWait(cfg, state, len(names), !h.isCharging(), true); wait == "" {
+				boardCtx, finish := h.workContext(ctx)
+				count, err := draftBoardAnswers(boardCtx, home, n, aiOptions(cfg), "")
+				finish()
+				boardPollResult{count, err}.log(log)
+				if ctx.Err() != nil {
+					break
+				}
+				// A batch can outlast the polling interval. Give kernels a turn
+				// using the current settings and queue size.
+				cfg, err = config.Load(home)
+				if err != nil {
+					return err
+				}
+				names, err = outbox.Names(home, "outbox")
+				if err != nil {
+					return err
+				}
+			}
 		}
 		note, code := waitStatus(s.index, cfg, state, len(names), !h.isCharging(), true)
 		var task Object
