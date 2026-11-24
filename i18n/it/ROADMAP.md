@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: 399e88d066220832181ce47481154752f855bc304a3f7a497fc20b1fe5c6bcf5 -->
+<!-- translation of docs/ROADMAP.md, source sha256: 6f12143662929b719966cb992e7a2cc7227ba4d97d49e226216546d18695a246 -->
 
 # Tabella di marcia: difesa dall'inganno
 
@@ -117,7 +117,7 @@ non con l'assenza di idee.
 
 ## 3. Decisioni
 
-Le decisioni D1–D5 sono prese il 23 novembre 2026.
+Le decisioni D1–D5 sono prese il 23 novembre 2026, le D6–D17 il 24 novembre 2026 (su incarico del proprietario).
 
 | N. | Domanda | Decisione |
 |---|---|---|
@@ -126,6 +126,18 @@ Le decisioni D1–D5 sono prese il 23 novembre 2026.
 | D3 | Variante A o B | **La decisione viene presa dopo il confronto sugli stessi attacchi e allo stesso costo (fase 2).** Il candidato principale è la variante B |
 | D4 | Il nucleo di verifica immutabile | **Accettato in forma rafforzata.** La verifica procede automaticamente, senza intervento umano e senza votazioni. Le regole di verifica non si cambiano con una votazione. Ogni nodo esegue da sé la verifica secondo l'impronta fissata delle regole, perciò la sostituzione dell'algoritmo su un nodo o presso un fornitore del programma non cambia le decisioni degli altri. Aperto: come correggere un errore nel nucleo stesso (solo passando a una nuova rete) e come un partecipante si convince che il suo programma corrisponde all'impronta pubblicata (build riproducibile). La chiave di rilascio con cui ora si firmano i mini-agenti è uno strumento di ricerca; nella rete di destinazione non deve esserci |
 | D5 | Prima esperienza con Qwen3.5-4B ad aritmetica intera | **Consentito:** la scheda video RTX 2060 sul Linux domestico del manutentore, il suo computer e, con il consenso, i dispositivi di altri partecipanti tramite i mini-agenti. Si esegue dopo la fase 0 |
+| D6 | Il danno rientra nella D1 | **Sì** (deciso il 24 novembre 2026 su incarico del proprietario). «Il truffatore non ottiene ciò che vuole» riguarda non solo i crediti, ma anche il risultato: una risposta falsa non deve essere consegnata all'utente come verificata, un passo falso non deve entrare nel modello. Perciò il risultato si usa solo dopo una verifica indipendente dalla quota di collusione, oppure viene esplicitamente contrassegnato come non verificato |
+| D7 | Verifica indipendente dalla quota di collusione o indebolimento di D1 | **È richiesta una verifica indipendente dalla quota di collusione** (24 novembre 2026). D1 non si indebolisce fino a «finché i collusi sono meno di q\*». La fase 4 diventa la principale |
+| D8 | Controversia da un conto vuoto | **Possono aprire una controversia solo i verificatori di questo compito designati dal sorteggio e l'utente per la propria richiesta** (24 novembre 2026). Senza deposito; il flusso delle controversie è limitato dal numero di verifiche e di richieste. Gli altri segnalano il sospetto sulla bacheca, senza diritto di fermare il pagamento |
+| D9 | Chi approva il piano di addestramento | **Nessuno personalmente: il piano è ricavato da una regola fissata dal catalogo aperto e dai risultati dell'esame** (24 novembre 2026). Senza votazioni. I crediti vengono emessi solo per i compiti del piano, una volta sola per ciascun contenuto del compito |
+| D10 | Perdita di una parte nello scambio | **È considerata una violazione di D1.** Lo scambio di crediti e di altri valori passa solo attraverso il registro, con un'unica registrazione per entrambe le parti, senza una parte fidata esterna al registro |
+| D11 | Composizione del nucleo immutabile | **La verifica, la regola «si paga solo ciò che è verificato», la regola di emissione dei crediti, la controversia e le regole del registro.** Le tariffe, il contributo di rete e il catalogo dei modelli cambiano solo entro i limiti fissati nel nucleo |
+| D12 | Tempo per il peso e per la finestra di verifica | **Il tempo attivo della rete**, non il calendario: finché la rete è ferma, il peso non invecchia e la finestra di verifica non scorre |
+| D13 | Ammissione ai compiti nella variante B | **Si introduce il percorso del novizio della variante A:** l'accesso ai compiti dipende dalla somma in sospeso della chiave. La scelta definitiva tra A e B (D3) viene dopo il confronto |
+| D14 | Costo della controversia | **Per il preventivo si prende una rete di secondo livello con la registrazione più economica.** La differenza tra il costo della controversia e la somma che si può addebitare al perdente è pagata dal contributo di rete dei consumatori, non dall'emissione di crediti |
+| D15 | Verifiche ripetute e da apprendista | **Un semplice ricalcolo che si può copiare non viene pagato.** La verifica viene pagata solo dove il suo risultato non si può ottenere copiando la risposta altrui |
+| D16 | Guasto hardware onesto | **Non viene punito come inganno:** il compito non viene pagato, la somma in sospeso non si perde; il numero di tali guasti per chiave è limitato |
+| D17 | Fonte del pagamento per le richieste nella variante B | **Solo dai pagamenti degli utenti**, senza emissione di crediti |
 
 **Ordine di lavoro.** Prima si completa la fase 0 — i mini-agenti e le applicazioni per smartphone,
 perché altre persone possano collegarsi al lavoro. Poi le fasi 1–5 secondo questa tabella di marcia.
@@ -301,9 +313,7 @@ la versione Windows viene rilasciata senza firma del codice.
       rifiuterà una dichiarazione falsa in caso di collusione dell'esecutore e dei verificatori.
       Esito: né la variante A né la variante B soddisfano D1 alla lettera; un guadagno monetario è
       possibile in 24 righe della A e 25 righe della B [calcolo].
-- [ ] Risposte del proprietario alle domande della sezione 5 di [THREAT_MODEL](THREAT_MODEL.md)
-      (che cosa rientra in D1, controversia dal conto vuoto, composizione del nucleo,
-      approvazione del piano di addestramento e altre).
+- [x] Decisioni su tutte e dodici le domande della sezione 5 di [THREAT_MODEL](THREAT_MODEL.md): D6–D17.
 
 Completato quando: qualsiasi partecipante può indicare in base alla tabella un attacco non chiuso e
 verificarlo.

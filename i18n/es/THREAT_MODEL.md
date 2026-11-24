@@ -1,4 +1,4 @@
-<!-- translation of docs/THREAT_MODEL.md, source sha256: 96c64b91168c36392f3f705d1ce619df7c73340c08bffee57773d75508990fff -->
+<!-- translation of docs/THREAT_MODEL.md, source sha256: ad971a2fe29f57d18ba6e2f6d8b4b6eedb8fb813c17a1cd1343ca6b141c990a8 -->
 
 # Modelo del adversario y tabla de ataques
 
@@ -444,32 +444,32 @@ Siguen siendo discutibles (no refutadas) las evaluaciones 2.1 «abierto» en amb
 
 ## 5. Preguntas al propietario
 
-Decisiones sin las cuales no se puede cerrar la etapa 1. El consejo no las adopta.
+Decisiones sin las cuales no se puede cerrar la etapa 1. El consejo no las adopta. Las doce preguntas se resolvieron el 24 de noviembre de 2026 por encargo del propietario (decisiones D6–D17 en [ROADMAP](ROADMAP.md), sección 3).
 
-1. **¿Entra el efecto en D1?** Un trabajo propuso distinguir D1 económico (solo créditos)
+1. **¿Entra el efecto en D1?** *(Resuelto — D6: sí.)* Un trabajo propuso distinguir D1 económico (solo créditos)
    y D1 por efecto (influencia en la respuesta y el modelo, lectura de la petición, el daño en sí). Las palabras «el defraudador
    no obtiene lo que desea» en su sentido literal incluyen el efecto; entonces el uso del resultado
    antes de la verificación (N21) incumple D1 en ambas variantes con cualquier `q`, y solo se puede cerrar
    verificando antes de la entrega y de la promoción (coste: retraso y memoria).
-2. **¿Exigir una verificación que no dependa de la proporción de colusión, o debilitar D1 hasta «con `q < q*`»?**
+2. **¿Exigir una verificación que no dependa de la proporción de colusión, o debilitar D1 hasta «con `q < q*`»?** *(Resuelto — D7: se exige una verificación que no dependa de la proporción de colusión.)*
    Sin una de las dos cosas, D1 es inalcanzable ni en A ni en B.
-3. **¿Fuga de una parte en el intercambio** (4.1, 5.6): un intercambio honesto sin parte de confianza en general
+3. **¿Fuga de una parte en el intercambio** *(Resuelto — D10: incumplimiento de D1; solo se intercambia una entrada del registro.)* (4.1, 5.6): un intercambio honesto sin parte de confianza en general
    es imposible. ¿Reconocerla como supuesto explícito o considerarla un incumplimiento de D1?
-4. **¿Disputa desde la cuenta vacía** (N23): ROADMAP la exige, SPEC no. ¿Con qué limitar entonces el flujo
+4. **¿Disputa desde la cuenta vacía** *(Resuelto — D8: solo los verificadores asignados y el usuario sobre su propia petición.)* (N23): ROADMAP la exige, SPEC no. ¿Con qué limitar entonces el flujo
    de disputas falsas sin depósitos?
-5. **¿Composición del núcleo inmutable** (3.7): ¿entran en él la regla de emisión, la tarifa, la tasa de red,
+5. **¿Composición del núcleo inmutable** *(Resuelto — D11: verificación, pago de lo verificado, emisión, disputa y reglas del registro; el resto, dentro de los límites.)* (3.7): ¿entran en él la regla de emisión, la tarifa, la tasa de red,
    el freno y el catálogo, o solo la verificación?
-6. **¿Regla de aprobación del plan de entrenamiento** (1.7, ROADMAP «Lo que no está resuelto», punto 5): quién y cómo
+6. **¿Regla de aprobación del plan de entrenamiento** *(Resuelto — D9: el plan se deriva mediante una regla del catálogo y el examen.)* (1.7, ROADMAP «Lo que no está resuelto», punto 5): quién y cómo
    autoriza que una tarea emita créditos.
-7. **¿Tiempo para el peso y la ventana** (N6): tiempo natural o tiempo activo de la red.
-8. **¿Admisión a las tareas en B** (N16): introducir o no en B la dependencia del acceso respecto de `H`, sabiendo que entonces
+7. **¿Tiempo para el peso y la ventana** *(Resuelto — D12: tiempo activo de la red.)* (N6): tiempo natural o tiempo activo de la red.
+8. **¿Admisión a las tareas en B** *(Resuelto — D13: sí, el camino del novato de la variante A.)* (N16): introducir o no en B la dependencia del acceso respecto de `H`, sabiendo que entonces
    B pierde la proporción de verificación baja constante. Esto es una entrada para D3.
-9. **¿Precio de la disputa** (N3): qué cadena considerar para el presupuesto `G` y quién asume la diferencia `G − B`:
+9. **¿Precio de la disputa** *(Resuelto — D14: la red de segundo nivel más barata; la diferencia la paga la tasa de red.)* (N3): qué cadena considerar para el presupuesto `G` y quién asume la diferencia `G − B`:
    la parte derecha o la red.
-10. **¿Pagar la verificación repetida y las reverificaciones de aprendiz** (2.2, N1), si la copia no se puede
+10. **¿Pagar la verificación repetida y las reverificaciones de aprendiz** *(Resuelto — D15: el recálculo simple que se puede copiar no se paga.)* (2.2, N1), si la copia no se puede
     distinguir del recálculo?
-11. **Fallo honesto del equipo:** ¿anular por él igual que por un engaño?
-12. **Fuente del pago `R/p` en B para las peticiones** (4.3): solo de los pagos de los usuarios o con emisión.
+11. **Fallo honesto del equipo:** *(Resuelto — D16: no; la tarea no se paga, la suma en espera no se quema.)* ¿anular por él igual que por un engaño?
+12. **Fuente del pago `R/p` en B para las peticiones** *(Resuelto — D17: solo de los pagos de los usuarios.)* (4.3): solo de los pagos de los usuarios o con emisión.
 
 ---
 

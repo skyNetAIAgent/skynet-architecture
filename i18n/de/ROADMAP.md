@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: 399e88d066220832181ce47481154752f855bc304a3f7a497fc20b1fe5c6bcf5 -->
+<!-- translation of docs/ROADMAP.md, source sha256: 6f12143662929b719966cb992e7a2cc7227ba4d97d49e226216546d18695a246 -->
 
 # Roadmap: Schutz vor Betrug
 
@@ -124,7 +124,7 @@ benannten Daten des Prüfers gezeigt, nicht durch das Fehlen von Ideen.
 
 ## 3. Entscheidungen
 
-Die Entscheidungen D1–D5 wurden am 23. November 2026 getroffen.
+Die Entscheidungen D1–D5 wurden am 23. November 2026 getroffen, D6–D17 am 24. November 2026 (im Auftrag des Eigentümers).
 
 | Nr. | Frage | Entscheidung |
 |---|---|---|
@@ -133,6 +133,18 @@ Die Entscheidungen D1–D5 wurden am 23. November 2026 getroffen.
 | D3 | Variante A oder B | **Die Entscheidung wird nach dem Vergleich bei gleichen Angriffen und gleichem Preis (Phase 2) getroffen.** Hauptkandidat ist Variante B |
 | D4 | Unveränderlicher Prüfkern | **Angenommen in verstärkter Form.** Die Prüfung läuft automatisch, ohne Beteiligung eines Menschen und ohne Abstimmungen. Die Regeln der Prüfung werden nicht per Abstimmung geändert. Jeder Knoten führt die Prüfung selbst nach dem festgeschriebenen Fingerabdruck der Regeln aus, deshalb ändert ein Austausch des Algorithmus auf einem Knoten oder bei einem Anbieter des Programms nichts an den Entscheidungen der anderen. Offen: wie ein Fehler im Kern selbst behoben wird (nur durch den Übergang zu einem neuen Netz) und wie ein Teilnehmer sich vergewissert, dass sein Programm dem veröffentlichten Fingerabdruck entspricht (reproduzierbarer Build). Der Release-Schlüssel, mit dem derzeit die Mini-Agenten signiert werden, ist ein Werkzeug der Forschung; im Zielnetz darf es ihn nicht geben |
 | D5 | Erster Versuch mit dem ganzzahligen Qwen3.5-4B | **Erlaubt:** eine Grafikkarte RTX 2060 auf dem heimischen Linux des Betreuers, dessen Computer und, mit Einverständnis, Geräte anderer Teilnehmer über Mini-Agenten. Wird nach Phase 0 ausgeführt |
+| D6 | Gehört Schaden zu D1 | **Ja** (entschieden am 24. November 2026 im Auftrag des Eigentümers). „Der Betrüger bekommt nicht, was er will“ bezieht sich nicht nur auf Credits, sondern auch auf das Ergebnis: Eine falsche Antwort darf dem Nutzer nicht als geprüft ausgegeben werden, ein falscher Schritt nicht ins Modell eingehen. Deshalb wird ein Ergebnis nur nach einer Prüfung genutzt, die nicht vom Abspracheanteil abhängt, oder ausdrücklich als ungeprüft gekennzeichnet |
+| D7 | Prüfung unabhängig vom Abspracheanteil oder Abschwächung von D1 | **Eine Prüfung, die nicht vom Abspracheanteil abhängt, ist erforderlich** (24. November 2026). D1 wird nicht auf „solange die Verschworenen weniger als q\* sind“ abgeschwächt. Phase 4 wird zur Hauptphase |
+| D8 | Streitfall ab leerem Konto | **Streiten können nur die durch Los bestimmten Prüfer dieser Aufgabe und der Nutzer für seine eigene Anfrage** (24. November 2026). Ohne Pfand; der Strom der Streitfälle ist durch die Zahl der Prüfungen und Anfragen begrenzt. Alle übrigen melden einen Verdacht auf dem Brett, ohne das Recht, eine Auszahlung zu stoppen |
+| D9 | Wer den Trainingsplan genehmigt | **Niemand persönlich: Der Plan wird durch eine festgeschriebene Regel aus dem offenen Katalog und den Ergebnissen des Examens abgeleitet** (24. November 2026). Ohne Abstimmungen. Credits werden nur für Aufgaben des Plans ausgegeben, einmal je Aufgabeninhalt |
+| D10 | Leckage eines Teils beim Tausch | **Gilt als Verletzung von D1.** Der Tausch von Credits und anderen Werten läuft nur über das Journal, mit einem einzigen Eintrag für beide Teile, ohne eine vertrauenswürdige Partei außerhalb des Journals |
+| D11 | Zusammensetzung des unveränderlichen Kerns | **Die Prüfung, die Regel „Bezahlt wird nur das Geprüfte“, die Regel der Credit-Ausgabe, der Streitfall und die Journalregeln.** Tarife, Netzgebühr und Modellkatalog ändern sich nur innerhalb der im Kern festgeschriebenen Grenzen |
+| D12 | Zeit für Gewicht und Prüffenster | **Die aktive Zeit des Netzes**, nicht der Kalender: Solange das Netz stillsteht, altert das Gewicht nicht und das Prüffenster läuft nicht |
+| D13 | Zugang zu Aufgaben in Variante B | **Der Neulingsweg aus Variante A wird eingeführt:** Der Zugang zu Aufgaben hängt vom ausstehenden Betrag des Schlüssels ab. Die endgültige Wahl zwischen A und B (D3) erfolgt nach dem Vergleich |
+| D14 | Preis des Streitfalls | **Für den Kostenvoranschlag wird ein Layer-2-Netz mit dem billigsten Eintrag genommen.** Die Differenz zwischen dem Preis des Streitfalls und dem Betrag, der vom Verlierer abgezogen werden kann, bezahlt die Netzgebühr der Verbraucher, nicht die Ausgabe von Credits |
+| D15 | Wiederholte Prüfungen und Lehrlingsprüfungen | **Eine einfache Neuberechnung, die sich kopieren lässt, wird nicht bezahlt.** Eine Prüfung wird nur dort bezahlt, wo ihr Ergebnis nicht durch Kopieren der Antwort eines anderen erhalten werden kann |
+| D16 | Ehrlicher Geräteausfall | **Wird nicht als Betrug bestraft:** Die Aufgabe wird nicht bezahlt, der ausstehende Betrag verfällt nicht; die Zahl solcher Ausfälle pro Schlüssel ist begrenzt |
+| D17 | Quelle der Auszahlung für Anfragen in Variante B | **Nur aus den Zahlungen der Nutzer**, ohne Ausgabe von Credits |
 
 **Reihenfolge der Arbeit.** Zuerst wird Phase 0 abgeschlossen — die Mini-Agenten und die
 Anwendungen für Smartphones, damit sich andere Menschen an der Arbeit beteiligen können. Danach
@@ -312,9 +324,7 @@ gemacht; die Windows-Version wird ohne Codesignatur veröffentlicht.
       eine falsche Meldung bei Absprache von Ausführendem und Prüfern verwirft. Ergebnis: Weder
       Variante A noch Variante B erfüllt D1 wörtlich; ein Geldgewinn ist in 24 Zeilen von A und 25
       Zeilen von B möglich [Berechnung].
-- [ ] Antworten des Eigentümers auf die Fragen aus Abschnitt 5 von [THREAT_MODEL](THREAT_MODEL.md)
-      (was D1 umfasst, Streitfall ab leerem Konto, Zusammensetzung des Kerns, Genehmigung des
-      Trainingsplans und weitere).
+- [x] Entscheidungen zu allen zwölf Fragen aus Abschnitt 5 von [THREAT_MODEL](THREAT_MODEL.md): D6–D17.
 
 Fertig, wenn: jeder Teilnehmer anhand der Tabelle einen nicht geschlossenen Angriff nennen und
 dies prüfen kann.

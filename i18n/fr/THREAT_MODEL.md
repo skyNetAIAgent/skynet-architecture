@@ -1,4 +1,4 @@
-<!-- translation of docs/THREAT_MODEL.md, source sha256: 96c64b91168c36392f3f705d1ce619df7c73340c08bffee57773d75508990fff -->
+<!-- translation of docs/THREAT_MODEL.md, source sha256: ad971a2fe29f57d18ba6e2f6d8b4b6eedb8fb813c17a1cd1343ca6b141c990a8 -->
 
 # Modèle de l'adversaire et tableau des attaques
 
@@ -446,32 +446,32 @@ Restent contestées (non réfutées) les évaluations 2.1 « ouverte » dans les
 
 ## 5. Questions au propriétaire
 
-Décisions sans lesquelles l'étape 1 ne peut pas être fermée. Le conseil ne les prend pas.
+Décisions sans lesquelles l'étape 1 ne peut pas être fermée. Le conseil ne les prend pas. Les douze questions ont toutes été tranchées le 24 novembre 2026 sur instruction du propriétaire (décisions D6–D17 dans [ROADMAP](ROADMAP.md), section 3).
 
-1. **L'effet entre-t-il dans D1 ?** Un travail a proposé de distinguer D1 économique (crédits seulement)
+1. **L'effet entre-t-il dans D1 ?** *(Tranché — D6 : oui.)* Un travail a proposé de distinguer D1 économique (crédits seulement)
    et D1 par effet (influence sur la réponse et le modèle, lecture de la requête, le mal lui-même). Les mots « le fraudeur
    n'obtient pas ce qu'il veut » au sens littéral incluent l'effet ; alors l'utilisation du résultat
    avant vérification (N21) viole D1 dans les deux variantes pour tout `q`, et on ne peut la fermer que par une
    vérification avant délivrance et promotion (coût — latence et mémoire).
-2. **Exiger une vérification indépendante de la part de collusion, ou affaiblir D1 jusqu'à « pour `q < q*` » ?**
+2. **Exiger une vérification indépendante de la part de collusion, ou affaiblir D1 jusqu'à « pour `q < q*` » ?** *(Tranché — D7 : une vérification indépendante de la part de collusion est exigée.)*
    Sans l'un des deux, D1 est inatteignable ni en A ni en B.
-3. **Fuite d'une partie lors de l'échange** (4.1, 5.6) : un échange honnête sans partie de confiance en général
+3. **Fuite d'une partie lors de l'échange** *(Tranché — D10 : violation de D1 ; échange d'une seule entrée du journal.)* (4.1, 5.6) : un échange honnête sans partie de confiance en général
    est impossible. La reconnaître comme hypothèse explicite ou la considérer comme une violation de D1 ?
-4. **Litige depuis un compte vide** (N23) : ROADMAP l'exige, SPEC — non. Par quoi alors limiter le flux
+4. **Litige depuis un compte vide** *(Tranché — D8 : seulement les vérificateurs désignés et l'utilisateur pour sa propre requête.)* (N23) : ROADMAP l'exige, SPEC — non. Par quoi alors limiter le flux
    de faux litiges sans cautions ?
-5. **Composition du noyau immuable** (3.7) : y entrent la règle d'émission, le taux, le prélèvement réseau,
+5. **Composition du noyau immuable** *(Tranché — D11 : vérification, paiement de ce qui est vérifié, émission, litige et règles du journal ; le reste dans les limites.)* (3.7) : y entrent la règle d'émission, le taux, le prélèvement réseau,
    le frein et le catalogue, ou seulement la vérification ?
-6. **Règle d'approbation du plan d'apprentissage** (1.7, ROADMAP « Ce qui n'est pas résolu », point 5) : qui et comment
+6. **Règle d'approbation du plan d'apprentissage** *(Tranché — D9 : le plan est dérivé par une règle du catalogue et de l'examen.)* (1.7, ROADMAP « Ce qui n'est pas résolu », point 5) : qui et comment
    autorise une tâche à émettre des crédits.
-7. **Temps pour le poids et la fenêtre** (N6) : temps calendaire ou temps actif du réseau.
-8. **Admission aux tâches en B** (N16) : introduire en B une dépendance de l'accès à `H`, en sachant qu'alors
+7. **Temps pour le poids et la fenêtre** *(Tranché — D12 : temps actif du réseau.)* (N6) : temps calendaire ou temps actif du réseau.
+8. **Admission aux tâches en B** *(Tranché — D13 : oui, le chemin du débutant de la variante A.)* (N16) : introduire en B une dépendance de l'accès à `H`, en sachant qu'alors
    B perd la part de vérification constante et basse. C'est une entrée pour D3.
-9. **Prix du litige** (N3) : quelle chaîne considérer pour l'estimation `G` et qui supporte la différence `G − B` —
+9. **Prix du litige** *(Tranché — D14 : le réseau de second niveau le moins cher ; la différence est payée par le prélèvement réseau.)* (N3) : quelle chaîne considérer pour l'estimation `G` et qui supporte la différence `G − B` —
    la partie de droite ou le réseau.
-10. **Faut-il payer pour une revérification répétée et pour les revérifications d'apprenti** (2.2, N1), si une copie est indiscernable
+10. **Faut-il payer pour une revérification répétée et pour les revérifications d'apprenti** *(Tranché — D15 : un simple recalcul, qui peut être copié, n'est pas payé.)* (2.2, N1), si une copie est indiscernable
     d'un recalcul ?
-11. **Panne matérielle honnête :** l'annuler comme une tromperie.
-12. **Source du paiement `R/p` en B pour les requêtes** (4.3) : seulement sur les paiements des utilisateurs ou avec émission.
+11. **Panne matérielle honnête :** *(Tranché — D16 : non ; la tâche n'est pas payée, la somme en attente ne brûle pas.)* l'annuler comme une tromperie.
+12. **Source du paiement `R/p` en B pour les requêtes** *(Tranché — D17 : seulement sur les paiements des utilisateurs.)* (4.3) : seulement sur les paiements des utilisateurs ou avec émission.
 
 ---
 

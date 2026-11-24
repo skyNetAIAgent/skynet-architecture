@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: 399e88d066220832181ce47481154752f855bc304a3f7a497fc20b1fe5c6bcf5 -->
+<!-- translation of docs/ROADMAP.md, source sha256: 6f12143662929b719966cb992e7a2cc7227ba4d97d49e226216546d18695a246 -->
 
 # Feuille de route : protection contre la fraude
 
@@ -113,7 +113,7 @@ vérificateur, et non par l'absence d'idées.
 
 ## 3. Décisions
 
-Les décisions D1–D5 sont prises le 23 novembre 2026.
+Les décisions D1–D5 sont prises le 23 novembre 2026, D6–D17 le 24 novembre 2026 (sur instruction du propriétaire).
 
 | N° | Question | Décision |
 |---|---|---|
@@ -122,6 +122,18 @@ Les décisions D1–D5 sont prises le 23 novembre 2026.
 | D3 | Variante A ou B | **La décision est prise après comparaison sur les mêmes attaques et au même coût (étape 2).** Le candidat principal est la variante B |
 | D4 | Le noyau de vérification immuable | **Accepté sous une forme renforcée.** La vérification se déroule automatiquement, sans intervention humaine et sans votes. Les règles de vérification ne sont pas modifiées par un vote. Chaque nœud exécute lui-même la vérification d'après l'empreinte fixée des règles, c'est pourquoi la substitution de l'algorithme sur un nœud ou chez un fournisseur du programme ne change pas la décision des autres. Ouvert : comment corriger une erreur dans le noyau lui-même (uniquement par le passage à un nouveau réseau) et comment un participant s'assure que son programme correspond à l'empreinte publiée (construction reproductible). La clé de publication, avec laquelle les mini-agents sont actuellement signés, est un outil de recherche ; elle ne doit pas exister dans le réseau cible |
 | D5 | La première expérience avec Qwen3.5-4B en arithmétique entière | **Autorisée :** la carte graphique RTX 2060 sur le Linux domestique du mainteneur, son ordinateur et, avec l'accord, les appareils d'autres participants via les mini-agents. S'exécute après l'étape 0 |
+| D6 | Le préjudice entre-t-il dans D1 | **Oui** (décidé le 24 novembre 2026 sur instruction du propriétaire). « Le fraudeur n'obtient pas ce qu'il veut » ne concerne pas seulement les crédits, mais aussi le résultat : une réponse fausse ne doit pas être remise à l'utilisateur comme vérifiée, une fausse étape ne doit pas entrer dans le modèle. C'est pourquoi le résultat n'est utilisé qu'après une vérification indépendante de la part de collusion, ou bien il est explicitement marqué comme non vérifié |
+| D7 | Vérification indépendante de la part de collusion ou affaiblissement de D1 | **Une vérification indépendante de la part de collusion est exigée** (24 novembre 2026). D1 n'est pas affaibli jusqu'à « tant que les collusionnés sont moins de q\* ». L'étape 4 devient principale |
+| D8 | Litige depuis un compte à zéro | **Seuls les vérificateurs désignés par tirage au sort pour cette tâche et l'utilisateur, pour sa propre requête, peuvent ouvrir un litige** (24 novembre 2026). Sans caution ; le flux de litiges est limité par le nombre de vérifications et de requêtes. Les autres signalent un soupçon sur le tableau, sans droit d'arrêter le paiement |
+| D9 | Qui approuve le plan d'apprentissage | **Personne en particulier : le plan est déduit par une règle fixée à partir du catalogue ouvert et des résultats de l'examen** (24 novembre 2026). Sans votes. Les crédits ne sont émis que pour les tâches du plan, une seule fois par contenu de tâche |
+| D10 | Fuite d'une seule partie lors d'un échange | **Est considérée comme une violation de D1.** L'échange de crédits et d'autres valeurs passe uniquement par le journal, par un seul enregistrement pour les deux parties, sans tiers de confiance hors du journal |
+| D11 | Composition du noyau immuable | **La vérification, la règle « seul ce qui est vérifié est payé », la règle d'émission des crédits, le litige et les règles du journal.** Les taux, le prélèvement du réseau et le catalogue de modèles ne changent que dans les limites fixées dans le noyau |
+| D12 | Temps pour le poids et fenêtres de vérification | **Le temps actif du réseau**, et non le calendrier : tant que le réseau est arrêté, le poids ne vieillit pas et la fenêtre de vérification ne court pas |
+| D13 | Accès aux tâches dans la variante B | **On introduit le parcours du débutant de la variante A :** l'accès aux tâches dépend de la somme en attente de la clé. Le choix définitif entre A et B (D3) intervient après la comparaison |
+| D14 | Coût du litige | **Pour l'estimation, on prend un réseau de second niveau avec l'enregistrement le moins cher.** La différence entre le coût du litige et la somme qui peut être débitée de la partie perdante est payée par le prélèvement du réseau sur les consommateurs, et non par l'émission de crédits |
+| D15 | Vérifications répétées et vérifications d'apprenti | **Un simple recalcul, qui peut être copié, n'est pas payé.** Une vérification n'est payée que là où son résultat ne peut pas être obtenu en copiant la réponse d'un autre |
+| D16 | Panne matérielle honnête | **N'est pas punie comme une fraude :** la tâche n'est pas payée, la somme en attente n'est pas perdue ; le nombre de telles pannes par clé est limité |
+| D17 | Source du paiement des requêtes dans la variante B | **Uniquement à partir des paiements des utilisateurs**, sans émission de crédits |
 
 **Ordre du travail.** D'abord l'étape 0 est menée à terme — les mini-agents et les applications pour smartphones, afin que d'autres personnes puissent rejoindre le travail. Ensuite les étapes 1–5 selon cette feuille de route.
 
@@ -298,9 +310,7 @@ version Windows est publiée sans signature de code.
       rejettera la fausse déclaration en cas de collusion de l'exécutant et des vérificateurs. Bilan : ni la
       variante A ni la variante B ne satisfont D1 littéralement ; un gain pécuniaire est possible dans
       24 lignes de A et 25 lignes de B [calcul].
-- [ ] Les réponses du propriétaire aux questions de la section 5 de [THREAT_MODEL](THREAT_MODEL.md) (ce qui
-      entre dans D1, litige depuis un compte à zéro, composition du noyau, approbation du plan
-      d'apprentissage et autres).
+- [x] Les décisions sur les douze questions de la section 5 de [THREAT_MODEL](THREAT_MODEL.md) : D6–D17.
 
 Terminé quand : tout participant peut, à l'aide du tableau, identifier une attaque qui reste sans parade et vérifier que c’est bien le cas.
 

@@ -1,4 +1,4 @@
-<!-- translation of docs/THREAT_MODEL.md, source sha256: 96c64b91168c36392f3f705d1ce619df7c73340c08bffee57773d75508990fff -->
+<!-- translation of docs/THREAT_MODEL.md, source sha256: ad971a2fe29f57d18ba6e2f6d8b4b6eedb8fb813c17a1cd1343ca6b141c990a8 -->
 
 # Adversary model and attack table
 
@@ -460,33 +460,33 @@ the critics disagreed (rows 2.1 and 3.7 of the table).
 
 ## 5. Questions for the owner
 
-Decisions without which stage 1 cannot be closed. The council does not make them.
+Decisions without which stage 1 cannot be closed. The council does not make them. All twelve questions were decided on 24 November 2026 at the owner's instruction (decisions D6–D17 in [ROADMAP](ROADMAP.en.md), section 3).
 
-1. **Is effect included in D1?** One paper proposed distinguishing economic D1 (credits only)
+1. **Is effect included in D1?** *(Decided — D6: yes.)* One paper proposed distinguishing economic D1 (credits only)
    and effect D1 (influence on the answer and model, reading the request, the harm itself). The words
    "the cheater does not get what they want" in their literal sense include effect; then the use of a
    result before verification (N21) violates D1 in both variants at any `q`, and it can be closed only
    by verification before delivery and promotion (the cost is delay and memory).
-2. **Require verification independent of the collusion share, or weaken D1 to "at `q < q*`"?**
+2. **Require verification independent of the collusion share, or weaken D1 to "at `q < q*`"?** *(Decided — D7: verification independent of the collusion share is required.)*
    Without one of the two, D1 is unachievable in either A or B.
-3. **Leakage of one part during an exchange** (4.1, 5.6): an honest exchange without a trusted party
+3. **Leakage of one part during an exchange** *(Decided — D10: a violation of D1; exchange only through one ledger record.)* (4.1, 5.6): an honest exchange without a trusted party
    is impossible in the general case. Should it be recognised as an explicit assumption or considered
    a violation of D1?
-4. **A dispute from a zero account** (N23): ROADMAP requires it, SPEC does not. What then limits the
+4. **A dispute from a zero account** *(Decided — D8: only assigned verifiers and the user for their own request.)* (N23): ROADMAP requires it, SPEC does not. What then limits the
    flow of false disputes without deposits?
-5. **The composition of the unchangeable core** (3.7): does it include the issuance rule, the rate,
+5. **The composition of the unchangeable core** *(Decided — D11: verification, payment for verified work, issuance, dispute and ledger rules; the rest within limits.)* (3.7): does it include the issuance rule, the rate,
    the network fee, the brake and the catalogue, or only verification?
-6. **The rule for approving the training plan** (1.7, ROADMAP "What is not solved", item 5): who and
+6. **The rule for approving the training plan** *(Decided — D9: the plan is derived by a rule from the catalogue and the exam.)* (1.7, ROADMAP "What is not solved", item 5): who and
    how authorises a task to issue credits.
-7. **Time for weight and the window** (N6): calendar time or active network time.
-8. **Admission to tasks in B** (N16): should B introduce access depending on `H`, knowing that then
+7. **Time for weight and the window** *(Decided — D12: active network time.)* (N6): calendar time or active network time.
+8. **Admission to tasks in B** *(Decided — D13: yes, the newcomer path from Variant A.)* (N16): should B introduce access depending on `H`, knowing that then
    B loses the constant low verification share. This is an input for D3.
-9. **The price of a dispute** (N3): which chain to consider for the estimate of `G`, and who bears the
+9. **The price of a dispute** *(Decided — D14: the cheapest second-layer network; the network fee pays the difference.)* (N3): which chain to consider for the estimate of `G`, and who bears the
    difference `G − B` — the party in the right or the network.
-10. **Should one pay for repeated verification and apprentice re-checks** (2.2, N1), if a copy cannot
+10. **Should one pay for repeated verification and apprentice re-checks** *(Decided — D15: simple recomputation that can be copied is not paid.)* (2.2, N1), if a copy cannot
     be distinguished from a recomputation?
-11. **An honest hardware failure:** should it be cancelled in the same way as cheating.
-12. **The source of the `R/p` payment in B for requests** (4.3): only from user payments or with issuance.
+11. **An honest hardware failure:** *(Decided — D16: no; the task is not paid, the pending amount does not burn.)* should it be cancelled in the same way as cheating.
+12. **The source of the `R/p` payment in B for requests** *(Decided — D17: only from user payments.)* (4.3): only from user payments or with issuance.
 
 ---
 

@@ -1,4 +1,4 @@
-<!-- translation of docs/THREAT_MODEL.md, source sha256: 96c64b91168c36392f3f705d1ce619df7c73340c08bffee57773d75508990fff -->
+<!-- translation of docs/THREAT_MODEL.md, source sha256: ad971a2fe29f57d18ba6e2f6d8b4b6eedb8fb813c17a1cd1343ca6b141c990a8 -->
 
 # Gegnermodell und Angriffstabelle
 
@@ -446,32 +446,32 @@ Strittig (nicht widerlegt) bleiben die Einschätzungen 2.1 „offen“ in beiden
 
 ## 5. Fragen an den Eigentümer
 
-Entscheidungen, ohne die Phase 1 nicht geschlossen werden kann. Der Rat trifft sie nicht.
+Entscheidungen, ohne die Phase 1 nicht geschlossen werden kann. Der Rat trifft sie nicht. Alle zwölf Fragen wurden am 24. November 2026 im Auftrag des Eigentümers entschieden (Entscheidungen D6–D17 in [ROADMAP](ROADMAP.md), Abschnitt 3).
 
-1. **Gehört der Effekt in D1?** Eine Arbeit schlug vor, D1 wirtschaftlich (nur Credits)
+1. **Gehört der Effekt in D1?** *(Entschieden — D6: ja.)* Eine Arbeit schlug vor, D1 wirtschaftlich (nur Credits)
    und D1 nach dem Effekt (Einfluss auf Antwort und Modell, Lesen der Anfrage, der Schaden selbst) zu unterscheiden. Die Worte „der Betrüger
    bekommt nicht, was er will“ schließen nach dem wörtlichen Sinn den Effekt ein; dann verletzt die Nutzung des Ergebnisses
    vor der Prüfung (N21) D1 in beiden Varianten bei jedem `q`, und schließen lässt er sich nur durch
    eine Prüfung vor Ausgabe und Übernahme (Preis — Verzögerung und Speicher).
-2. **Eine Prüfung verlangen, die nicht vom Abspracheanteil abhängt, oder D1 auf „bei `q < q*`“ abschwächen?**
+2. **Eine Prüfung verlangen, die nicht vom Abspracheanteil abhängt, oder D1 auf „bei `q < q*`“ abschwächen?** *(Entschieden — D7: eine Prüfung ist erforderlich, die nicht vom Abspracheanteil abhängt.)*
    Ohne eines von beidem ist D1 weder in A noch in B erreichbar.
-3. **Leckage eines Teils beim Austausch** (4.1, 5.6): ein ehrlicher Austausch ohne vertrauenswürdige Partei ist im Allgemeinen
+3. **Leckage eines Teils beim Austausch** *(Entschieden — D10: Verletzung von D1; Austausch nur eines einzigen Journal-Eintrags.)* (4.1, 5.6): ein ehrlicher Austausch ohne vertrauenswürdige Partei ist im Allgemeinen
    unmöglich. Sie als ausdrückliche Annahme anerkennen oder als Verletzung von D1 werten?
-4. **Streitfall von einem leeren Konto** (N23): die ROADMAP verlangt ihn, die SPEC — nicht. Womit dann den Strom
+4. **Streitfall von einem leeren Konto** *(Entschieden — D8: nur die zugewiesenen Prüfer und der Nutzer für seine eigene Anfrage.)* (N23): die ROADMAP verlangt ihn, die SPEC — nicht. Womit dann den Strom
    falscher Streitfälle ohne Pfänder begrenzen?
-5. **Zusammensetzung des unveränderlichen Kerns** (3.7): gehören dazu die Regel der Ausgabe, der Bezahlungssatz, das Netzentgelt,
+5. **Zusammensetzung des unveränderlichen Kerns** *(Entschieden — D11: Prüfung, Bezahlung des Geprüften, Ausgabe, Streitfall und Regeln des Journals; das Übrige im Rahmen.)* (3.7): gehören dazu die Regel der Ausgabe, der Bezahlungssatz, das Netzentgelt,
    die Bremse und der Katalog, oder nur die Prüfung?
-6. **Regel der Genehmigung des Trainingsplans** (1.7, ROADMAP „Was nicht gelöst ist“, Nr. 5): wer und wie
+6. **Regel der Genehmigung des Trainingsplans** *(Entschieden — D9: der Plan wird durch eine Regel aus Katalog und Examen abgeleitet.)* (1.7, ROADMAP „Was nicht gelöst ist“, Nr. 5): wer und wie
    erlaubt, dass eine Aufgabe Credits ausgibt.
-7. **Zeit für Gewicht und Fenster** (N6): Kalender- oder aktive Zeit des Netzes.
-8. **Zulassung zu Aufgaben in B** (N16): ob in B die Abhängigkeit des Zugangs von `H` eingeführt wird, im Wissen, dass dann
+7. **Zeit für Gewicht und Fenster** *(Entschieden — D12: aktive Zeit des Netzes.)* (N6): Kalender- oder aktive Zeit des Netzes.
+8. **Zulassung zu Aufgaben in B** *(Entschieden — D13: ja, der Weg des Neulings aus Variante A.)* (N16): ob in B die Abhängigkeit des Zugangs von `H` eingeführt wird, im Wissen, dass dann
    B den konstanten niedrigen Prüfanteil verliert. Das ist ein Eingang für D3.
-9. **Preis des Streitfalls** (N3): welche Chain für den Kostenvoranschlag `G` zu betrachten ist und wer die Differenz `G − B` trägt —
+9. **Preis des Streitfalls** *(Entschieden — D14: das billigste Netz der zweiten Ebene; die Differenz zahlt das Netzentgelt.)* (N3): welche Chain für den Kostenvoranschlag `G` zu betrachten ist und wer die Differenz `G − B` trägt —
    die rechte Seite oder das Netz.
-10. **Ob für die wiederholte Prüfung und die Lehrlings-Nachprüfungen gezahlt wird** (2.2, N1), wenn die Kopie nicht
+10. **Ob für die wiederholte Prüfung und die Lehrlings-Nachprüfungen gezahlt wird** *(Entschieden — D15: eine einfache Neuberechnung, die sich kopieren lässt, wird nicht bezahlt.)* (2.2, N1), wenn die Kopie nicht
     von der Neuberechnung zu unterscheiden ist?
-11. **Ehrlicher Hardware-Ausfall:** ob dafür dasselbe abgezogen wird wie für Betrug.
-12. **Quelle der Auszahlung `R/p` in B für Anfragen** (4.3): nur aus den Zahlungen der Nutzer oder mit Ausgabe.
+11. **Ehrlicher Hardware-Ausfall:** *(Entschieden — D16: nein; die Aufgabe wird nicht bezahlt, der ausstehende Betrag verbrennt nicht.)* ob dafür dasselbe abgezogen wird wie für Betrug.
+12. **Quelle der Auszahlung `R/p` in B für Anfragen** *(Entschieden — D17: nur aus den Zahlungen der Nutzer.)* (4.3): nur aus den Zahlungen der Nutzer oder mit Ausgabe.
 
 ---
 

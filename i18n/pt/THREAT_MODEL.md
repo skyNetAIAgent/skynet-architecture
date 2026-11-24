@@ -1,4 +1,4 @@
-<!-- translation of docs/THREAT_MODEL.md, source sha256: 96c64b91168c36392f3f705d1ce619df7c73340c08bffee57773d75508990fff -->
+<!-- translation of docs/THREAT_MODEL.md, source sha256: ad971a2fe29f57d18ba6e2f6d8b4b6eedb8fb813c17a1cd1343ca6b141c990a8 -->
 
 # Modelo do adversário e tabela de ataques
 
@@ -467,32 +467,32 @@ Permanecem controvertidas (não refutadas) as avaliações 2.1 «aberta» nos do
 
 ## 5. Questões ao dono
 
-Decisões sem as quais a etapa 1 não pode ser fechada. O conselho não as toma.
+Decisões sem as quais a etapa 1 não pode ser fechada. O conselho não as toma. Todas as doze questões foram resolvidas em 24 de novembro de 2026 por delegação do dono (decisões D6–D17 em [ROADMAP](ROADMAP.md), seção 3).
 
-1. **O efeito entra em D1?** Um trabalho propôs distinguir D1 econômico (apenas créditos) e D1 por
+1. **O efeito entra em D1?** *(Decidido — D6: sim.)* Um trabalho propôs distinguir D1 econômico (apenas créditos) e D1 por
    efeito (influência sobre a resposta e o modelo, leitura da solicitação, o próprio dano). As palavras
    «o fraudador não obtém o que deseja» no sentido literal incluem o efeito; então o uso do resultado
    antes da verificação (N21) viola D1 em ambas as variantes para qualquer `q`, e só se pode fechá-lo
    com verificação antes da entrega e da promoção (custo — atraso e memória).
 2. **Exigir uma verificação que não dependa da parcela de conluio, ou enfraquecer D1 para «com
-   `q < q*`»?** Sem uma das duas, D1 é inalcançável tanto em A como em B.
-3. **Vazamento de uma parte na troca** (4.1, 5.6): a troca honesta sem uma parte confiável é
+   `q < q*`»?** *(Decidido — D7: é exigida uma verificação que não dependa da parcela de conluio.)* Sem uma das duas, D1 é inalcançável tanto em A como em B.
+3. **Vazamento de uma parte na troca** *(Decidido — D10: violação de D1; troca apenas de uma entrada do registro.)* (4.1, 5.6): a troca honesta sem uma parte confiável é
    impossível no caso geral. Reconhecê-lo como suposição explícita ou considerá-lo violação de D1?
-4. **Disputa a partir de conta zero** (N23): o ROADMAP a exige, a SPEC não. Com o que, então, limitar
+4. **Disputa a partir de conta zero** *(Decidido — D8: apenas os verificadores designados e o usuário quanto à sua própria solicitação.)* (N23): o ROADMAP a exige, a SPEC não. Com o que, então, limitar
    o fluxo de disputas falsas sem depósitos?
-5. **Composição do núcleo imutável** (3.7): entram nele a regra de emissão, a aposta, a cobrança da
+5. **Composição do núcleo imutável** *(Decidido — D11: verificação, pagamento do verificado, emissão, disputa e regras do registro; o restante dentro dos limites.)* (3.7): entram nele a regra de emissão, a aposta, a cobrança da
    rede, o freio e o catálogo, ou apenas a verificação?
-6. **Regra de aprovação do plano de treinamento** (1.7, ROADMAP «O que não foi resolvido», item 5):
+6. **Regra de aprovação do plano de treinamento** *(Decidido — D9: o plano é derivado por uma regra do catálogo e do exame.)* (1.7, ROADMAP «O que não foi resolvido», item 5):
    quem e como autoriza que uma tarefa emita créditos.
-7. **Tempo para o peso e a janela** (N6): tempo corrido ou tempo ativo da rede.
-8. **Admissão às tarefas em B** (N16): introduzir em B a dependência do acesso em relação a `H`,
+7. **Tempo para o peso e a janela** *(Decidido — D12: tempo ativo da rede.)* (N6): tempo corrido ou tempo ativo da rede.
+8. **Admissão às tarefas em B** *(Decidido — D13: sim, o caminho do novato da variante A.)* (N16): introduzir em B a dependência do acesso em relação a `H`,
    sabendo que então B perde a parcela de verificação baixa constante. Isso é uma entrada para D3.
-9. **Preço da disputa** (N3): qual cadeia considerar para o orçamento `G` e quem arca com a diferença
+9. **Preço da disputa** *(Decidido — D14: a rede de segundo nível mais barata; a diferença é paga pela cobrança da rede.)* (N3): qual cadeia considerar para o orçamento `G` e quem arca com a diferença
    `G − B` — o lado certo ou a rede.
-10. **Pagar ou não pela verificação repetida e pelas reverificações de aprendiz** (2.2, N1), se a
+10. **Pagar ou não pela verificação repetida e pelas reverificações de aprendiz** *(Decidido — D15: o recálculo simples, que pode ser copiado, não é pago.)* (2.2, N1), se a
     cópia não se distingue do recálculo?
-11. **Falha honesta de hardware:** debitar por ela da mesma forma que pela fraude.
-12. **Fonte do pagamento `R/p` em B para solicitações** (4.3): apenas dos pagamentos dos usuários ou
+11. **Falha honesta de hardware:** *(Decidido — D16: não; a tarefa não é paga, o valor pendente não é queimado.)* debitar por ela da mesma forma que pela fraude.
+12. **Fonte do pagamento `R/p` em B para solicitações** *(Decidido — D17: apenas dos pagamentos dos usuários.)* (4.3): apenas dos pagamentos dos usuários ou
     com emissão.
 
 ---

@@ -1,4 +1,4 @@
-<!-- translation of docs/THREAT_MODEL.md, source sha256: 96c64b91168c36392f3f705d1ce619df7c73340c08bffee57773d75508990fff -->
+<!-- translation of docs/THREAT_MODEL.md, source sha256: ad971a2fe29f57d18ba6e2f6d8b4b6eedb8fb813c17a1cd1343ca6b141c990a8 -->
 
 # Modello dell'avversario e tabella degli attacchi
 
@@ -462,33 +462,33 @@ Restano controverse (non confutate) le valutazioni 2.1 «aperto» in entrambi i 
 
 ## 5. Domande al proprietario
 
-Decisioni senza le quali la fase 1 non si può chiudere. Il consiglio non le prende.
+Decisioni senza le quali la fase 1 non si può chiudere. Il consiglio non le prende. Tutte e dodici le domande sono state decise il 24 novembre 2026 su incarico del proprietario (decisioni D6–D17 in [ROADMAP](ROADMAP.md), sezione 3).
 
-1. **L'effetto rientra in D1?** Un lavoro ha proposto di distinguere D1 economico (solo crediti)
+1. **L'effetto rientra in D1?** *(Deciso — D6: sì.)* Un lavoro ha proposto di distinguere D1 economico (solo crediti)
    e D1 per effetto (influenza sulla risposta e sul modello, lettura della richiesta, il danno in sé).
    Le parole «il truffatore non ottiene ciò che vuole» nel senso letterale includono l'effetto; allora
    l'uso del risultato prima della verifica (N21) viola D1 in entrambe le varianti con qualsiasi `q`,
    e lo si può chiudere solo con una verifica prima della consegna e della promozione (costo — ritardo
    e memoria).
-2. **Richiedere una verifica indipendente dalla quota di collusione, oppure indebolire D1 a «con `q < q*`»?**
+2. **Richiedere una verifica indipendente dalla quota di collusione, oppure indebolire D1 a «con `q < q*`»?** *(Deciso — D7: è richiesta una verifica indipendente dalla quota di collusione.)*
    Senza una delle due, D1 è irraggiungibile né in A né in B.
-3. **Perdita di una parte nello scambio** (4.1, 5.6): uno scambio onesto senza una parte fidata nel caso
+3. **Perdita di una parte nello scambio** *(Deciso — D10: violazione di D1; scambio solo di una riga del registro.)* (4.1, 5.6): uno scambio onesto senza una parte fidata nel caso
    generale è impossibile. Riconoscerla come ipotesi esplicita o considerarla una violazione di D1?
-4. **Controversia da un conto a zero** (N23): la ROADMAP la richiede, la SPEC no. Con che cosa allora
+4. **Controversia da un conto a zero** *(Deciso — D8: solo i verificatori assegnati e l'utente su propria richiesta.)* (N23): la ROADMAP la richiede, la SPEC no. Con che cosa allora
    limitare il flusso di controversie false senza depositi?
-5. **Composizione del nucleo immutabile** (3.7): vi rientrano la regola di emissione, il tasso, la commissione
+5. **Composizione del nucleo immutabile** *(Deciso — D11: la verifica, il pagamento di ciò che è verificato, l'emissione, la controversia e le regole del registro; il resto nei limiti.)* (3.7): vi rientrano la regola di emissione, il tasso, la commissione
    di rete, il freno e il catalogo, o solo la verifica?
-6. **Regola di approvazione del piano di addestramento** (1.7, ROADMAP «Che cosa non è risolto», punto 5):
+6. **Regola di approvazione del piano di addestramento** *(Deciso — D9: il piano si ricava con una regola dal catalogo e dall'esame.)* (1.7, ROADMAP «Che cosa non è risolto», punto 5):
    chi e come autorizza un compito a emettere crediti.
-7. **Tempo per il peso e la finestra** (N6): tempo di calendario o tempo attivo della rete.
-8. **Ammissione ai compiti in B** (N16): introdurre in B la dipendenza dell'accesso da `H`, sapendo che
+7. **Tempo per il peso e la finestra** *(Deciso — D12: tempo attivo della rete.)* (N6): tempo di calendario o tempo attivo della rete.
+8. **Ammissione ai compiti in B** *(Deciso — D13: sì, il percorso del novizio della variante A.)* (N16): introdurre in B la dipendenza dell'accesso da `H`, sapendo che
    allora B perde la quota di verifica bassa costante. È un input per D3.
-9. **Prezzo della controversia** (N3): quale catena considerare per il preventivo di `G` e chi sostiene
+9. **Prezzo della controversia** *(Deciso — D14: la rete di secondo livello più economica; la differenza la paga la commissione di rete.)* (N3): quale catena considerare per il preventivo di `G` e chi sostiene
    la differenza `G − B` — la parte lesa o la rete.
-10. **Pagare o no la verifica ripetuta e le riverifiche da apprendista** (2.2, N1), se una copia non
+10. **Pagare o no la verifica ripetuta e le riverifiche da apprendista** *(Deciso — D15: un semplice ricalcolo che si può copiare non viene pagato.)* (2.2, N1), se una copia non
     si può distinguere dal ricalcolo?
-11. **Guasto hardware onesto:** addebitarlo allo stesso modo dell'inganno?
-12. **Fonte del pagamento `R/p` in B per le richieste** (4.3): solo dai pagamenti degli utenti o con emissione.
+11. **Guasto hardware onesto:** *(Deciso — D16: no; il compito non viene pagato, la somma in sospeso non viene bruciata.)* addebitarlo allo stesso modo dell'inganno?
+12. **Fonte del pagamento `R/p` in B per le richieste** *(Deciso — D17: solo dai pagamenti degli utenti.)* (4.3): solo dai pagamenti degli utenti o con emissione.
 
 ---
 

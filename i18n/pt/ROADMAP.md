@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: 399e88d066220832181ce47481154752f855bc304a3f7a497fc20b1fe5c6bcf5 -->
+<!-- translation of docs/ROADMAP.md, source sha256: 6f12143662929b719966cb992e7a2cc7227ba4d97d49e226216546d18695a246 -->
 
 # Roteiro: defesa contra fraude
 
@@ -113,7 +113,7 @@ e não pela ausência de ideias.
 
 ## 3. Decisões
 
-As decisões D1–D5 foram tomadas em 23 de novembro de 2026.
+As decisões D1–D5 foram tomadas em 23 de novembro de 2026, e as D6–D17, em 24 de novembro de 2026 (por determinação do dono).
 
 | Nº | Questão | Decisão |
 |---|---|---|
@@ -122,6 +122,18 @@ As decisões D1–D5 foram tomadas em 23 de novembro de 2026.
 | D3 | Variante A ou B | **A decisão é tomada após a comparação nos mesmos ataques e ao mesmo preço (etapa 2).** O candidato principal é a variante B |
 | D4 | Núcleo de verificação imutável | **Aceito em forma reforçada.** A verificação ocorre automaticamente, sem participação humana e sem votações. As regras de verificação não mudam por votação. Cada nó executa a verificação por conta própria segundo a impressão digital fixada das regras, portanto a substituição do algoritmo em um nó ou por um fornecedor do programa não muda a decisão dos demais. Aberto: como corrigir um erro no próprio núcleo (apenas com a transição para uma nova rede) e como o participante se convence de que seu programa corresponde à impressão digital publicada (compilação reproduzível). A chave de lançamento com que os miniagentes são assinados hoje é uma ferramenta de pesquisa; ela não deve existir na rede alvo |
 | D5 | Primeira experiência com o Qwen3.5-4B com aritmética inteira | **Permitida:** a placa de vídeo RTX 2060 no Linux doméstico do mantenedor, o computador dele e, com consentimento, os dispositivos de outros participantes por meio dos miniagentes. É executada após a etapa 0 |
+| D6 | O dano entra no D1 | **Sim** (decidido em 24 de novembro de 2026 por determinação do dono). «O fraudador não obtém o que deseja» refere-se não apenas aos créditos, mas também ao resultado: uma resposta falsa não deve ser entregue ao usuário como verificada, nem uma etapa falsa deve entrar no modelo. Por isso o resultado só é usado após uma verificação que não dependa da parcela de conluio, ou é explicitamente marcado como não verificado |
+| D7 | Verificação que não depende da parcela de conluio, ou enfraquecimento do D1 | **É exigida uma verificação que não dependa da parcela de conluio** (24 de novembro de 2026). O D1 não é enfraquecido para «enquanto os que estão em conluio forem menos que q\*». A etapa 4 passa a ser a principal |
+| D8 | Disputa a partir de conta zero | **Só podem disputar os verificadores designados por sorteio para essa tarefa e o usuário em relação à sua própria solicitação** (24 de novembro de 2026). Sem depósito; o fluxo de disputas é limitado pelo número de verificações e solicitações. Os demais comunicam a suspeita no quadro, sem direito de interromper o pagamento |
+| D9 | Quem aprova o plano de treinamento | **Ninguém pessoalmente: o plano é derivado por uma regra fixada a partir do catálogo aberto e dos resultados do exame** (24 de novembro de 2026). Sem votações. Os créditos são emitidos apenas para tarefas do plano, uma única vez por conteúdo de tarefa |
+| D10 | Vazamento de uma parte na troca | **É considerado violação do D1.** A troca de créditos e outros valores passa apenas pelo registro, com uma única entrada para ambas as partes, sem uma parte confiável fora do registro |
+| D11 | Composição do núcleo imutável | **A verificação, a regra «só o verificado é pago», a regra de emissão de créditos, a disputa e as regras do registro.** As tarifas, a taxa da rede e o catálogo de modelos mudam apenas dentro dos limites fixados no núcleo |
+| D12 | Tempo para o peso e janelas de verificação | **Tempo ativo da rede**, e não o calendário: enquanto a rede está parada, o peso não envelhece e a janela de verificação não corre |
+| D13 | Admissão às tarefas na variante B | **É introduzido o caminho do novato da variante A:** o acesso às tarefas depende do valor pendente da chave. A escolha final entre A e B (D3) ocorre após a comparação |
+| D14 | Preço da disputa | **Para o orçamento, toma-se uma rede de segunda camada com o registro mais barato.** A diferença entre o preço da disputa e o valor que se pode debitar do perdedor é paga pela taxa de rede dos consumidores, e não pela emissão de créditos |
+| D15 | Verificações repetidas e de aprendiz | **O recálculo simples, que pode ser copiado, não é pago.** A verificação só é paga onde seu resultado não pode ser obtido copiando a resposta de outra pessoa |
+| D16 | Falha honesta de hardware | **Não é punida como fraude:** a tarefa não é paga, o valor pendente não é perdido; o número dessas falhas por chave é limitado |
+| D17 | Fonte do pagamento pelas solicitações na variante B | **Apenas dos pagamentos dos usuários**, sem emissão de créditos |
 
 **Ordem de trabalho.** Primeiro é concluída a etapa 0 — miniagentes e aplicativos para smartphones,
 para que outras pessoas possam se juntar ao trabalho. Depois, as etapas 1–5 segundo este roteiro.
@@ -290,8 +302,7 @@ para Windows é lançada sem assinatura de código.
       a declaração falsa em conluio do executor e dos verificadores. Resultado: nem a variante A nem a
       variante B cumprem D1 literalmente; o ganho monetário é possível em 24 linhas de A e 25 linhas de B
       [cálculo].
-- [ ] Respostas do dono às perguntas da seção 5 do [THREAT_MODEL](THREAT_MODEL.md) (o que entra em D1,
-      disputa a partir de conta zero, composição do núcleo, aprovação do plano de treinamento e outras).
+- [x] Decisões sobre todas as doze perguntas da seção 5 do [THREAT_MODEL](THREAT_MODEL.md): D6–D17.
 
 Pronto quando: qualquer participante puder nomear pela tabela um ataque não fechado e conferir isso.
 

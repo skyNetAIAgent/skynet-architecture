@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: 399e88d066220832181ce47481154752f855bc304a3f7a497fc20b1fe5c6bcf5 -->
+<!-- translation of docs/ROADMAP.md, source sha256: 6f12143662929b719966cb992e7a2cc7227ba4d97d49e226216546d18695a246 -->
 
 # Roadmap: protection against cheating
 
@@ -112,7 +112,7 @@ of ideas.
 
 ## 3. Decisions
 
-Decisions D1–D5 were made on 23 November 2026.
+Decisions D1–D5 were made on 23 November 2026, and D6–D17 on 24 November 2026 (at the owner's direction).
 
 | № | Question | Decision |
 |---|---|---|
@@ -121,6 +121,18 @@ Decisions D1–D5 were made on 23 November 2026.
 | D3 | Variant A or B | **The decision is made after comparison on the same attacks and the same price (stage 2).** The main candidate is Variant B |
 | D4 | The unchangeable verification core | **Accepted in a strengthened form.** The check runs automatically, without human involvement and without votes. The rules of the check are not changed by vote. Each node itself executes the check according to the pinned fingerprint of the rules, so replacing the algorithm on one node or at one program vendor does not change the decisions of others. Open: how to fix an error in the core itself (only by moving to a new network) and how a participant can make sure their program matches the published fingerprint (a reproducible build). The release key with which mini-agents are currently signed is a research tool; it must not exist in the target network |
 | D5 | The first experiment with integer Qwen3.5-4B | **Permitted:** an RTX 2060 GPU on the maintainer's home Linux, their computer, and, with consent, the devices of other participants via mini-agents. It is carried out after stage 0 |
+| D6 | Whether harm falls under D1 | **Yes** (decided on 24 November 2026 at the owner's direction). "The cheater does not get what they want" applies not only to credits but also to the result: a false answer must not be handed to the user as verified, and a false step must not enter the model. Therefore a result is used only after a check independent of the collusion share, or is explicitly marked as unverified |
+| D7 | A check independent of the collusion share, or weakening D1 | **A check independent of the collusion share is required** (24 November 2026). D1 is not weakened to "as long as the colluding share is less than q\*". Stage 4 becomes the main one |
+| D8 | A dispute from an empty account | **Only the verifiers of this task assigned by the draw and the user, for their own request, may dispute** (24 November 2026). Without a deposit; the flow of disputes is limited by the number of checks and requests. Others report a suspicion on the board, without the right to stop a payout |
+| D9 | Who approves the training plan | **No one personally: the plan is derived by a pinned rule from the open catalog and the exam results** (24 November 2026). Without votes. Credits are issued only for the tasks of the plan, once per task content |
+| D10 | Leakage of one side in an exchange | **Counts as a violation of D1.** An exchange of credits and other assets takes place only through the ledger, as a single record for both sides, without a trusted party outside the ledger |
+| D11 | Composition of the unchangeable core | **The check, the rule "only verified work is paid", the credit issuance rule, disputes, and the ledger rules.** Rates, the network fee, and the model catalog change only within limits pinned in the core |
+| D12 | Time for weight and verification windows | **Active network time**, not calendar time: while the network is stopped, weight does not age and the verification window does not run |
+| D13 | Admission to tasks in Variant B | **The newcomer path from Variant A is introduced:** access to tasks depends on the key's pending amount. The final choice between A and B (D3) is made after the comparison |
+| D14 | The price of a dispute | **For the estimate, a second-layer network with the cheapest record is taken.** The difference between the price of a dispute and the amount that can be charged to the loser is paid by the consumers' network fee, not by issuing credits |
+| D15 | Repeat and apprentice checks | **A simple recomputation that can be copied is not paid.** A check is paid only where its result cannot be obtained by copying someone else's answer |
+| D16 | An honest hardware failure | **It is not punished as cheating:** the task is not paid, the pending amount is not burned; the number of such failures per key is limited |
+| D17 | The source of payment for requests in Variant B | **Only from user payments**, without issuing credits |
 
 **Order of work.** Stage 0 is completed first — mini-agents and smartphone apps, so that other people can join the work. Then stages 1–5 according to this map.
 
@@ -279,9 +291,7 @@ removed.
       false claim under collusion of the performer and the verifiers. Result: neither Variant A nor
       Variant B satisfies D1 literally; a monetary gain is possible in 24 rows of A and 25 rows of B
       [calculated].
-- [ ] The owner's answers to the questions in section 5 of [THREAT_MODEL](THREAT_MODEL.en.md) (what D1
-      covers, a dispute from a zero account, the composition of the core, approval of the training
-      plan, and others).
+- [x] Decisions on all twelve questions of section 5 of [THREAT_MODEL](THREAT_MODEL.en.md): D6–D17.
 
 Done when: any participant can use the table to name an attack that is still open and verify this.
 
