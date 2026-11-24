@@ -45,6 +45,7 @@ func TestDRMAndNvidia(t *testing.T) {
 	writeAttribute(t, dir, "card1/device/mem_info_vram_total", "4294967296\n")
 	writeAttribute(t, dir, "card1-HDMI-A-1/device/vendor", "0x1002\n")
 	writeAttribute(t, dir, "renderD128/device/vendor", "0x1002\n")
+	writeAttribute(t, dir, "card2/device/vendor", "0x1234\n") // QEMU standard VGA: not a compute GPU
 	nvidia := GPU{Name: "NVIDIA test", VRAMMB: 2048}
 	amd := GPU{Name: "Radeon test", VRAMMB: 4096}
 	want := []GPU{nvidia, amd}

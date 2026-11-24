@@ -71,6 +71,8 @@ func drmGPUs(root string, gpus []GPU) []GPU {
 			vendor = "AMD"
 		case "0x8086":
 			vendor = "Intel"
+		default:
+			continue // virtual display adapters (QEMU, VirtualBox, ...) are not compute GPUs
 		}
 		name := attribute("product_name")
 		if name == "" {

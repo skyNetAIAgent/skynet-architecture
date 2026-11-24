@@ -55,11 +55,13 @@ func checkURL(u *url.URL) error {
 		return nil
 	}
 	if u.Scheme == "http" {
-		if host := u.Hostname(); strings.EqualFold(host, "localhost") || net.ParseIP(host).IsLoopback() {
+		// Plain HTTP only inside this computer or a private network: a full node on the same LAN
+		// (set with SKYNET_AGENT_RECEIVERS) is reachable when the router does not loop back its public address.
+		if host := u.Hostname(); strings.EqualFold(host, "localhost") || net.ParseIP(host).IsLoopback() || net.ParseIP(host).IsPrivate() {
 			return nil
 		}
 	}
-	return errors.New("HTTPS required outside loopback")
+	return errors.New("HTTPS required outside loopback and private networks")
 }
 
 func checkReceiverURL(u *url.URL) error {
