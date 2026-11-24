@@ -1,4 +1,4 @@
-<!-- translation of docs/CONNECT.md, source sha256: bd3f9740a67100d72b7a87b5073daf071ecf7c9648582be1586e382d46869750 -->
+<!-- translation of docs/CONNECT.md, source sha256: 125af61335dde49176b5b023903489a40b1792ebe8e8eb04a960681206774db9 -->
 
 # Mitmachen
 
@@ -20,9 +20,15 @@ das SkyNet-Netz selbst.
 
 macOS und iPhone werden nicht unterstützt.
 
-Das Installationsprogramm fragt, ob der Agent jetzt und bei der Anmeldung starten soll. Danach gibt
-es nichts weiter zu tun: Der Agent aktualisiert sich selbst (nur auf Versionen, die vom Projekt
-signiert sind), nimmt Aufgaben an und veröffentlicht Ergebnisse von selbst.
+Das Installationsprogramm startet den Agenten sofort und sorgt dafür, dass er nach einem Neustart
+erneut startet (unter Windows können Sie dies deaktivieren; unter Android drücken Sie einmal
+**Start**). Danach gibt es nichts weiter zu tun: Der Agent aktualisiert sich selbst (nur auf
+Versionen, die vom Projekt signiert sind), nimmt Aufgaben an und veröffentlicht Ergebnisse von
+selbst. Er findet von selbst einen Full Node in Ihrem lokalen Netzwerk, falls es einen gibt.
+
+Die derzeit online befindlichen Agenten sind unter http://62.213.14.254:8790/agents aufgeführt:
+System, Prozessor, Arbeitsspeicher, Grafikkarte, Version und berechnete Einheiten. Es werden weder
+IP-Adresse noch Computername angezeigt.
 
 ## Was er nutzt und was er niemals tut
 

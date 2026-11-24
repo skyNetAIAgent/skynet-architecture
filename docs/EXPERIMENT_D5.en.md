@@ -1,10 +1,11 @@
-<!-- translation of docs/EXPERIMENT_D5.md, source sha256: 8c74b11b335ebd7a0797e908c40ed9e4c2b98395835bb319e3272b464224875d -->
+<!-- translation of docs/EXPERIMENT_D5.md, source sha256: 8344ba8a8a4752fc05abdf96a28bee33a5bbf79f5b62c3aa773ea9041db4a33a -->
 
 # Experiment D5: integer Qwen3.5-4B
 
 **English** · [中文](../i18n/zh/EXPERIMENT_D5.md) · [Español](../i18n/es/EXPERIMENT_D5.md) · [Français](../i18n/fr/EXPERIMENT_D5.md) · [Deutsch](../i18n/de/EXPERIMENT_D5.md) · [Italiano](../i18n/it/EXPERIMENT_D5.md) · [Русский](EXPERIMENT_D5.md) · [Português](../i18n/pt/EXPERIMENT_D5.md) · [العربية](../i18n/ar/EXPERIMENT_D5.md)
 
-Status as of 24 November 2026: **experiment plan, no measurements yet.** The experiment is authorized by decision D5
+Status as of 25 November 2026: **first results on short inputs (section 7); long
+context, speed and quality have not yet been measured.** The experiment is authorized by decision D5
 ([ROADMAP](ROADMAP.en.md), section 3) and is part of stage 5 of the roadmap. It tests the main unmeasured
 assumption of the best candidate of stage 4 — verification of the response by the payer themselves (PPS,
 [VERIFICATION_SEARCH](VERIFICATION_SEARCH.en.md), sections 3.2 and 5.2).
@@ -105,3 +106,34 @@ applies only to the tested devices and versions. The result of each experiment i
 - **Cross-critique:** ChatGPT analyzed both projects, DeepSeek analyzed both projects;
   recalculations of memory and bounds, checking of the short recursion and of the attention corrections on small brute-force searches.
 - **Reconciliation and decisions on the plan:** Claude.
+- **Preparation, profiles v1 and v2, the processor reference and the GPU version:** ChatGPT.
+- **Independent checks:** DeepSeek — model import with the official forward, the unambiguity
+  and overflow bounds of profile v2.
+- **GPU runs and verification of the results:** Claude (the GPU is unavailable from the model
+  sandbox).
+
+## 7. Results
+
+**24 November 2026, short inputs.** Inputs: two histories of 8 + 8 tokens each and six short
+texts (Russian, English, Chinese, arithmetic, code, a recipe), depth 4 and 32 blocks; batch 1.
+
+- **Model import.** The usual floating-point computation, written according to the source, matched
+  the official Transformers 5.24.0 forward: the same selected token in 130 of 130 positions,
+  logit deviation no greater than 3,6·10⁻⁵ (checked by ChatGPT and independently by DeepSeek).
+- **Profile v1 rejected.** It reproduced bit for bit, but the 1/1024 scale was too coarse:
+  the output of the DeltaNet recursion was almost entirely rounded to zero, the match of the selected token
+  with the model — 5 of 8, the logit correlation about 0,8.
+- **Profile v2** (activations with a binary exponent per vector and a 16-bit mantissa, the remainder
+  and the recursion state with step 2⁻²⁰, attention keys and values in 32 bits): the same token as
+  the official model in 90 of 90 positions, mean logit correlation 0,9996, minimum
+  0,998. The state and cache occupy 238 MiB at 3000 positions versus 95 for v1; the number of multiplications
+  per token is the same — 4,2 billion.
+- **O2 (one device).** Generation one token at a time and a pass over the finished response split
+  into 1, 3 and 8 positions give the same bits of all logits, selected tokens and state hashes.
+- **O1 (different devices).** The processor (Xeon, Linux), RTX 2060 (Turing, Linux, CuPy) and RTX 4070
+  Laptop (Ada, Windows, CuPy): 88 comparisons on each card, 242 360 320 logits each,
+  976 selected tokens and 37 152 state hashes — **not a single difference**.
+
+Limitations: short inputs and batch 1; simple integer kernels without tensor cores; the time
+of these runs is not a measurement of O3 and O4. Next — a long context of up to thousands of tokens,
+fast kernels with the same arithmetic, then O3–O5.

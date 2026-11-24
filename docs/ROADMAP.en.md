@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: 12b7bca8ea86e93bfc2e59f9b55ac57a13e76ffa228340f784c320b126825db8 -->
+<!-- translation of docs/ROADMAP.md, source sha256: e306af2e0763d72cf2991ea47e2452f6ee2a0fd29c5a79f12d1d82272dde3e37 -->
 
 # Roadmap: protection against cheating
 
@@ -62,7 +62,7 @@ of ideas.
 | Deferred payment instead of a deposit: a participant can lose only the pending amount | Accepted | CURRENT_DESIGN, section 2 |
 | Variant A: verification by sampling, with cancellation of pending rewards when fraud is detected | Current specification | CURRENT_DESIGN, section 3 |
 | Variant B: the network pays only for verified tasks, paying `1/p` times the base price for each | Main candidate; the choice after comparison (D3) | CURRENT_DESIGN, section 3 |
-| Bit-for-bit match of the result through integer arithmetic | Candidate, not measured | OPEN_QUESTIONS, Q2 |
+| Bit-for-bit match of the result through integer arithmetic | Measured on short inputs: the CPU, RTX 2060, and RTX 4070 Laptop give the same bits for integer Qwen3.5-4B (24 November 2026); long context, speed, and quality have not yet been measured | [EXPERIMENT_D5](EXPERIMENT_D5.md), section 7 |
 | Dispute by halving with recomputation of one step in the ledger | Measured for one row of the model; not built for the full model | [PILOT_RESULTS](PILOT_RESULTS.en.md) |
 | Verification of matrix multiplication with a random vector inside a dispute | Candidate, only a calculated estimate exists | CURRENT_DESIGN, section 3 |
 | An unchangeable verification core that cannot be revoked by a vote | Accepted (D4) | CURRENT_DESIGN, section 8 |
@@ -106,7 +106,8 @@ of ideas.
    but self-assigned task must not yield credits.
 6. A rare model: the circle of verifiers is small, and `q` for it can be close to one.
 7. Data availability and a dispute over a private request without revealing the request.
-8. Bit-for-bit match and the speed of the integer model are not measured.
+8. Bit-for-bit match of the integer model has been confirmed only on short inputs of three
+   devices; long context, speed, and quality have not been measured.
 9. A saboteur who needs no profit, and poisoning of training data. Economic defense does not act
    against them.
 
@@ -205,6 +206,11 @@ Already done:
       store works).
 - [x] Starting after a reboot by a user toggle (tested on the emulator).
 - [x] Checking the update on top of APK 0.1.0 on the Android 14 emulator: the data is preserved.
+- [x] APK 0.4.1 (24 November 2026): result submission has been fixed — Android forbade the
+      method of storing the device key; on the emulator, 4 of 4 results were computed and sent
+      without a token.
+- [x] APK 0.4.2: starting after a reboot is enabled by default (checked by rebooting the
+      emulator). The old trial release 0.1.0, which asked for a token, is marked obsolete.
 - [ ] Checking the new-APK offer by the app itself (will work with the next APK version).
 - [ ] **Live check on a real phone** (a participant with a phone is needed): installation,
       working while charging, reboot, the manufacturer's power saving.
@@ -216,7 +222,8 @@ Already done:
       signature are published alongside. Installs into the user profile, without administrator
       rights, works without the network.
 - [x] Shortcuts in the "Start" menu: agent status, pause, resume, stop, uninstall.
-- [x] A "start at login" checkbox in the installer; the choice is preserved on update.
+- [x] The "run now" and "start at login" checkboxes in the installer are enabled by default
+      (since 1.3.3); the choice is preserved on update.
 - [x] Uninstalling via "Apps"; when uninstalling, the device key can be kept.
 - [x] An automatic check in CI on a clean Windows without Python: installation, self-check,
       uninstallation.
@@ -227,8 +234,14 @@ Already done:
 - [x] The installer uses the system Python 3.9+, and if there is none, installs a portable Python
       and checks its hash. There is also a one-file installer that works without the network
       (release v0.2.2).
-- [x] A systemd user service with the user's consent; running without logging in is a separate
-      checkbox.
+- [x] Since 1.3.3 the installer starts the agent immediately, registers a systemd user service
+      (start after reboot), and tries to enable operation without logging in (linger);
+      `--no-autostart` means installation only.
+- [x] Since 1.3.4 the agent finds a full node in its local network by itself (a UDP query, the
+      answer only to private addresses). This is needed where the router does not let traffic
+      from inside the network to the node's external address; previously this was worked around
+      by manually setting the address.
+- [ ] A live check of finding a node in the local network on a freshly installed computer.
 - [x] A check in CI: Debian 12 without Python and Ubuntu 24.04 with Python; a live installation
       on Linux Mint.
 - [ ] A live check with a participant not connected with the maintainers.
@@ -250,6 +263,9 @@ removed.
       switched to Go 1.0.1 by themselves.
 - [x] Installers in Go: Windows 4.7 MB, Linux as a single file; the Android app 0.3.0 with a Go
       engine, about 8 MB instead of 40 (checked on the Android 14 emulator).
+- [x] Releases in Go 1.1.0–1.3.4 (24 November 2026): answers from the local AI model, stage 4
+      calculations, the agents page, autostart, finding a node in the local network; installed
+      agents updated themselves.
 - [ ] Remove the bridge and the Python copies after two verified releases in Go.
 
 **Step 6. Task flow**
@@ -270,15 +286,20 @@ removed.
 
 **Step 7. Pilot with other people**
 
-- [ ] The "How to connect" page in nine languages: one link per system.
+- [x] The ["How to connect"](CONNECT.md) page in nine languages: one link per system.
+- [x] The agents-online page on the full node: `http://62.213.14.254:8790/agents` — OS,
+      processor, RAM, GPUs, version, chunks; without IP addresses or computer names. The agent
+      reports about itself once every 2 minutes; 5 minutes of silence removes it from the list
+      (agent 1.3.0+).
 - [ ] One participant per platform not connected with the maintainers; the stage readiness
       criteria are met.
 - [ ] Second and third full nodes with different owners.
 
 **Step 8. AI agents**
 
-- [ ] The agent itself picks up new board tasks and passes them to the participant's local model;
-      the answer is sent only after a person approves. The task text is considered untrusted.
+- [x] The agent itself picks up new board tasks and passes them to the participant's local model;
+      the answer is sent only after a person approves. The task text is considered untrusted
+      (agent 1.1.0, off by default).
 - [ ] Instructions for an AI assistant: how to take a task from the board, submit a report, and
       check someone else's.
 - [ ] A report for a board task from a participant not connected with the maintainers.
@@ -422,7 +443,14 @@ or a proven bound. A construction is considered found if it satisfies all the cr
 - [x] Experiment plan: integer Qwen3.5-4B profile, protocols O1–O5 and refutation criteria
       before the run — [EXPERIMENT_D5](EXPERIMENT_D5.en.md), 24 November 2026. The second GPU is
       an RTX 4070 Laptop on the owner's computer.
-- [ ] Integer Qwen3.5-4B on two different GPUs: whether the bits match.
+- [x] Preparation (P0) and profile v2: the model was checked against the official reference; on
+      the CPU the integer profile selects the same token as the official model in 90 of 90
+      positions (logit correlation 0.9996). The first profile, v1, lost accuracy and was replaced.
+- [x] Short inputs: the CPU, RTX 2060 (Linux), and RTX 4070 Laptop (Windows) give the same bits —
+      242 million logits, 976 tokens, and 37 thousand state hashes per device; generation one
+      token at a time and a pass over a ready answer agree (O1 and O2, 24 November 2026).
+- [ ] Integer Qwen3.5-4B on two different GPUs on a long context: whether the bits match.
+- [ ] The share of answer-verification time relative to generation (O3).
 - [ ] Its speed relative to the usual profile on the same cards.
 - [ ] Its quality relative to the usual profile on the same set of tasks.
 - [ ] Separate measurement plans (outside D5): verification energy, integer training.

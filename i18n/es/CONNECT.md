@@ -1,4 +1,4 @@
-<!-- translation of docs/CONNECT.md, source sha256: bd3f9740a67100d72b7a87b5073daf071ecf7c9648582be1586e382d46869750 -->
+<!-- translation of docs/CONNECT.md, source sha256: 125af61335dde49176b5b023903489a40b1792ebe8e8eb04a960681206774db9 -->
 
 # Cómo participar
 
@@ -20,9 +20,15 @@ SkyNet.
 
 macOS e iPhone no son compatibles.
 
-El instalador le pregunta si quiere iniciar el agente ahora y al iniciar sesión. Después no hay nada
-más que hacer: el agente se actualiza solo (únicamente a versiones firmadas por el proyecto), toma
-tareas y publica resultados por su cuenta.
+El instalador inicia el agente de inmediato y lo configura para que se inicie de nuevo tras un
+reinicio (en Windows puede desmarcar esta opción; en Android pulse **Iniciar** una vez). Después no
+hay nada más que hacer: el agente se actualiza solo (únicamente a versiones firmadas por el
+proyecto), toma tareas y publica resultados por su cuenta. Encuentra por sí mismo un nodo completo
+en su red local si hay alguno.
+
+Los agentes conectados en este momento se muestran en http://62.213.14.254:8790/agents: sistema,
+procesador, memoria, tarjeta gráfica, versión y unidades calculadas. No se muestra ninguna dirección
+IP ni ningún nombre de equipo.
 
 ## Qué usa y qué no hace nunca
 

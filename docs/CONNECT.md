@@ -17,9 +17,13 @@ volunteer help for the research, not the SkyNet network itself.
 
 macOS and iPhone are not supported.
 
-The installer asks whether to start the agent now and at sign-in. After that there is nothing else
-to do: the agent updates itself (only to versions signed by the project), takes tasks and publishes
-results on its own.
+The installer starts the agent right away and sets it to start again after a reboot (on Windows
+you can untick this; on Android press **Start** once). After that there is nothing else to do: the
+agent updates itself (only to versions signed by the project), takes tasks and publishes results on
+its own. It finds a full node on your local network by itself if there is one.
+
+The agents online right now are listed at http://62.213.14.254:8790/agents: system, processor,
+memory, graphics card, version and computed units. No IP address or computer name is shown.
 
 ## What it uses and what it never does
 

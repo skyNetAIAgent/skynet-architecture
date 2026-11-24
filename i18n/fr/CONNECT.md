@@ -1,4 +1,4 @@
-<!-- translation of docs/CONNECT.md, source sha256: bd3f9740a67100d72b7a87b5073daf071ecf7c9648582be1586e382d46869750 -->
+<!-- translation of docs/CONNECT.md, source sha256: 125af61335dde49176b5b023903489a40b1792ebe8e8eb04a960681206774db9 -->
 
 # Comment participer
 
@@ -20,9 +20,15 @@ le réseau SkyNet lui-même.
 
 macOS et iPhone ne sont pas pris en charge.
 
-L'installateur vous demande si vous voulez démarrer l'agent maintenant et à l'ouverture de session.
-Ensuite, il n'y a rien d'autre à faire : l'agent se met à jour tout seul (uniquement vers des
-versions signées par le projet), prend des tâches et publie les résultats de lui-même.
+L'installateur démarre l'agent immédiatement et le configure pour qu'il se lance à nouveau après un
+redémarrage (sous Windows, vous pouvez décocher cette option ; sous Android, appuyez une fois sur
+**Start**). Ensuite, il n'y a rien d'autre à faire : l'agent se met à jour tout seul (uniquement vers
+des versions signées par le projet), prend des tâches et publie les résultats de lui-même. Il trouve
+tout seul un nœud complet sur votre réseau local s'il y en a un.
+
+Les agents actuellement en ligne sont listés à l'adresse http://62.213.14.254:8790/agents : système,
+processeur, mémoire, carte graphique, version et unités calculées. Aucune adresse IP ni nom
+d'ordinateur n'est affiché.
 
 ## Ce qu'il utilise et ce qu'il ne fait jamais
 

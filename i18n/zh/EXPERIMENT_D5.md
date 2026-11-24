@@ -1,10 +1,10 @@
-<!-- translation of docs/EXPERIMENT_D5.md, source sha256: 8c74b11b335ebd7a0797e908c40ed9e4c2b98395835bb319e3272b464224875d -->
+<!-- translation of docs/EXPERIMENT_D5.md, source sha256: 8344ba8a8a4752fc05abdf96a28bee33a5bbf79f5b62c3aa773ea9041db4a33a -->
 
 # 实验 D5：整数 Qwen3.5-4B
 
 [English](../../docs/EXPERIMENT_D5.en.md) · **中文** · [Español](../es/EXPERIMENT_D5.md) · [Français](../fr/EXPERIMENT_D5.md) · [Deutsch](../de/EXPERIMENT_D5.md) · [Italiano](../it/EXPERIMENT_D5.md) · [Русский](../../docs/EXPERIMENT_D5.md) · [Português](../pt/EXPERIMENT_D5.md) · [العربية](../ar/EXPERIMENT_D5.md)
 
-状态截至 2026 年 11 月 24 日：**实验计划，尚无测量。** 实验由决定 D5
+状态截至 2026 年 11 月 25 日：**短输入上的首批结果（第 7 节）；长上下文、速度和质量尚未测量。** 实验由决定 D5
 （[ROADMAP](ROADMAP.md)，第 3 节）允许，并属于路线图的阶段 5。它检验阶段 4 最佳候选的主要
 未测量假设——由付款人自行验证回答（PPS，
 [VERIFICATION_SEARCH](VERIFICATION_SEARCH.md)，第 3.2 节和第 5.2 节）。
@@ -104,3 +104,30 @@ ChatGPT 方案中的数值图，并带有两位评审者的修正：
 - **交叉批评：** ChatGPT 分析了两份方案，DeepSeek 分析了两份方案；
   重新计算内存和边界，在小规模穷举上检查短递归和注意力修正。
 - **汇总和计划决定：** Claude。
+
+- **准备、配置 v1 和 v2、处理器上的基准和显卡版本：** ChatGPT。
+- **独立检查：** DeepSeek——用官方 forward 导入模型，配置 v2 的无歧义性和溢出边界。
+- **显卡上的运行和结果检查：** Claude（从模型沙箱无法访问显卡）。
+
+## 7. 结果
+
+**2026 年 11 月 24 日，短输入。** 输入：两段各为 8 + 8 个 token 的历史记录和六段短文本
+（俄语、英语、汉语、算术、代码、菜谱），深度 4 和 32 个块；批量 1。
+
+- **模型导入。** 依据源码编写的普通浮点计算与官方 Transformers 5.24.0 的 forward 一致：
+  在 130 个位置中的 130 个都选择了同一个 token，logits 偏差不超过 3,6·10⁻⁵
+  （由 ChatGPT 检查，并由 DeepSeek 独立检查）。
+- **配置 v1 被否决。** 它能逐位复现，但 1/1024 的尺度过于粗糙：DeltaNet 递归的输出
+  几乎全部被舍入为零，所选 token 与模型的一致数为 8 个中的 5 个，logits 相关性约为 0,8。
+- **配置 v2**（激活为每个向量带二进制指数和 16 位尾数，余量和递归状态的步长为 2⁻²⁰，
+  注意力的键和值为 32 位）：与官方模型相同的 token 在 90 个位置中的 90 个都一致，
+  logits 平均相关性为 0,9996，最低为 0,998。在 3000 个位置时，状态和缓存占用 238 MiB，
+  而 v1 为 95；每个 token 的乘法次数相同——42 亿。
+- **O2（单一设备）。** 逐 token 生成与对已完成回答按 1、3 和 8 个位置切分做一次遍历，
+  得到所有 logits、所选 token 和状态哈希的相同位。
+- **O1（不同设备）。** 处理器（Xeon，Linux）、RTX 2060（Turing，Linux，CuPy）和 RTX 4070
+  Laptop（Ada，Windows，CuPy）：每块显卡上 88 次比较，各含 242 360 320 个 logits、
+  976 个所选 token 和 37 152 个状态哈希——**没有任何差异**。
+
+限制：短输入和批量 1；不使用张量块的简单整数内核；这些运行的时间不构成对 O3 和 O4
+的测量。接下来是长达数千个 token 的长上下文、具有相同算术的快速内核，然后是 O3–O5。

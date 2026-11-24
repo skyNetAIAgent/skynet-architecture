@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: 12b7bca8ea86e93bfc2e59f9b55ac57a13e76ffa228340f784c320b126825db8 -->
+<!-- translation of docs/ROADMAP.md, source sha256: e306af2e0763d72cf2991ea47e2452f6ee2a0fd29c5a79f12d1d82272dde3e37 -->
 
 # Roadmap: Schutz vor Betrug
 
@@ -66,7 +66,7 @@ benannten Daten des Prüfers gezeigt, nicht durch das Fehlen von Ideen.
 | Aufgeschobene Auszahlung statt Pfand: Der Teilnehmer haftet nur mit dem ausstehenden Betrag | Angenommen | CURRENT_DESIGN, Abschnitt 2 |
 | Variante A: Stichprobenprüfung mit Abzug | Aktuelle Spezifikation | CURRENT_DESIGN, Abschnitt 3 |
 | Variante B: Das Netz bezahlt nur für geprüfte Aufgaben, und zwar zum `1/p`-Fachen des regulären Preises | Hauptkandidat; Wahl nach dem Vergleich (D3) | CURRENT_DESIGN, Abschnitt 3 |
-| Übereinstimmung des Ergebnisses bis aufs Bit durch ganzzahlige Arithmetik | Kandidat, nicht gemessen | OPEN_QUESTIONS, Q2 |
+| Übereinstimmung des Ergebnisses bis aufs Bit durch ganzzahlige Arithmetik | Auf kurzen Eingaben gemessen: Prozessor, RTX 2060 und RTX 4070 Laptop liefern dieselben Bits für das ganzzahlige Qwen3.5-4B (24. November 2026); langer Kontext, Geschwindigkeit und Qualität sind noch nicht gemessen | [EXPERIMENT_D5](EXPERIMENT_D5.md), Abschnitt 7 |
 | Streitfall durch Halbieren mit Neuberechnung eines Schritts im Journal | Gemessen für eine Zeile des Modells; für das vollständige Modell nicht gebaut | [PILOT_RESULTS](PILOT_RESULTS.md) |
 | Prüfung der Matrixmultiplikation mit einem Zufallsvektor innerhalb des Streitfalls | Kandidat, es gibt nur eine rechnerische Schätzung | CURRENT_DESIGN, Abschnitt 3 |
 | Ein unveränderlicher Prüfkern, der nicht per Abstimmung abgeschafft werden kann | Angenommen (D4) | CURRENT_DESIGN, Abschnitt 8 |
@@ -117,8 +117,8 @@ benannten Daten des Prüfers gezeigt, nicht durch das Fehlen von Ideen.
    geben.
 6. Seltenes Modell: Der Kreis der Prüfer ist klein, und `q` kann dafür nahe bei eins liegen.
 7. Verfügbarkeit der Daten und Streitfall über eine private Anfrage ohne Offenlegung der Anfrage.
-8. Die Übereinstimmung bis aufs Bit und die Geschwindigkeit des ganzzahligen Modells sind nicht
-   gemessen.
+8. Die Übereinstimmung bis aufs Bit des ganzzahligen Modells ist nur auf kurzen Eingaben von drei
+   Geräten bestätigt; langer Kontext, Geschwindigkeit und Qualität sind nicht gemessen.
 9. Ein Saboteur, der keinen Nutzen braucht, und die Vergiftung von Trainingsdaten. Der
    wirtschaftliche Schutz wirkt bei ihnen nicht.
 
@@ -230,6 +230,12 @@ Bereits erledigt:
       Android außerhalb des Stores aufgebaut).
 - [x] Start nach dem Neustart über einen Schalter des Nutzers (auf dem Emulator geprüft).
 - [x] Prüfung der Aktualisierung über APK 0.1.0 im Emulator Android 14: die Daten bleiben erhalten.
+- [x] APK 0.4.1 (24. November 2026): Der Versand der Ergebnisse wurde behoben — Android verbot die
+      Art der Speicherung des Geräteschlüssels; auf dem Emulator wurden 4 von 4 ohne Token gerechnet
+      und gesendet.
+- [x] APK 0.4.2: Der Start nach dem Neustart ist standardmäßig aktiviert (durch einen Neustart des
+      Emulators geprüft). Der alte Testrelease 0.1.0, der einen Token verlangte, ist als veraltet
+      gekennzeichnet.
 - [ ] Prüfung des Angebots einer neuen APK durch die Anwendung selbst (greift mit der nächsten
       APK-Version).
 - [ ] **Prüfung auf einem echten Telefon** (ein Teilnehmer mit einem Telefon ist nötig):
@@ -242,8 +248,8 @@ Bereits erledigt:
       sein Hash und die Signatur des Projekts veröffentlicht. Installation ins Profil des
       Nutzers, ohne Administratorrechte, funktioniert ohne Netz.
 - [x] Verknüpfungen im Startmenü: Status des Agenten, Pause, Fortsetzen, Beenden, Deinstallation.
-- [x] Ein Häkchen „beim Anmelden starten“ im Installer; die Wahl bleibt bei der Aktualisierung
-      erhalten.
+- [x] Die Häkchen „jetzt starten“ und „beim Anmelden starten“ im Installer sind standardmäßig
+      aktiviert (ab 1.3.3); die Wahl bleibt bei der Aktualisierung erhalten.
 - [x] Deinstallation über „Apps“; bei der Deinstallation kann der Geräteschlüssel behalten
       werden.
 - [x] Automatische Prüfung in CI auf einem sauberen Windows ohne Python: Installation,
@@ -256,8 +262,15 @@ Bereits erledigt:
 - [x] Der Installer nutzt das systemweite Python 3.9+, und wenn es fehlt, installiert er ein portables
       Python und prüft dessen Hash. Es gibt auch einen Installer als eine Datei, der ohne Netz
       funktioniert (Release v0.2.2).
-- [x] Ein systemd-Benutzerdienst mit Einverständnis des Nutzers; Arbeit ohne Anmeldung ist ein
-      gesondertes Häkchen.
+- [x] Ab 1.3.3 startet der Installer den Agenten sofort, registriert einen systemd-Benutzerdienst
+      (Start nach dem Neustart) und versucht, den Betrieb ohne Anmeldung zu aktivieren (linger);
+      `--no-autostart` — nur Installation.
+- [x] Ab 1.3.4 findet der Agent selbst einen vollständigen Knoten in seinem lokalen Netz (Anfrage
+      per UDP, Antwort nur an private Adressen). Nötig dort, wo der Router von innerhalb des Netzes
+      nicht zur externen Adresse des Knotens durchlässt; früher wurde dies durch manuelle
+      Einstellung der Adresse umgangen.
+- [ ] Live-Prüfung der Suche nach einem Knoten im lokalen Netz auf einem gerade erst installierten
+      Computer.
 - [x] Prüfung in CI: Debian 12 ohne Python und Ubuntu 24.04 mit Python; Live-Installation auf Linux Mint.
 - [ ] Live-Prüfung bei einem Teilnehmer, der nicht mit den Betreuern verbunden ist.
 
@@ -278,6 +291,9 @@ Python und seine Aktualisierung werden nicht mehr benötigt, deshalb ist der fr�
       Windows des Eigentümers sind selbst auf Go 1.0.1 übergegangen.
 - [x] Installer in Go: Windows 4,7 MB, Linux als eine Datei; Android-Anwendung 0.3.0 mit Go-Engine,
       etwa 8 MB statt 40 (geprüft auf dem Emulator Android 14).
+- [x] Releases in Go 1.1.0–1.3.4 (24. November 2026): Antworten des lokalen KI-Modells,
+      Berechnungen der Phase 4, Agentenseite, Autostart, Suche nach einem Knoten im lokalen Netz;
+      installierte Agenten aktualisierten sich selbst.
 - [ ] Die Brücke und die Python-Kopien nach zwei geprüften Releases in Go entfernen.
 
 **Schritt 6. Aufgabenstrom**
@@ -299,16 +315,20 @@ Python und seine Aktualisierung werden nicht mehr benötigt, deshalb ist der fr�
 
 **Schritt 7. Pilot mit anderen Menschen**
 
-- [ ] Seite „Wie man sich anschließt“ in neun Sprachen: ein Link für jedes System.
+- [x] Seite [„Wie man sich anschließt“](CONNECT.md) in neun Sprachen: ein Link für jedes System.
+- [x] Agentenseite online auf dem vollständigen Knoten: `http://62.213.14.254:8790/agents` —
+      Betriebssystem, Prozessor, RAM, Grafikkarten, Version, Portionen; ohne IP-Adressen und
+      Computernamen. Der Agent meldet sich alle 2 Minuten, 5 Minuten Stille entfernen ihn aus der
+      Liste (Agent 1.3.0+).
 - [ ] Je ein Teilnehmer, der nicht mit den Betreuern verbunden ist, auf jeder Plattform; die
       Fertigstellungskriterien der Phase sind erfüllt.
 - [ ] Zweiter und dritter vollständiger Knoten bei verschiedenen Besitzern.
 
 **Schritt 8. KI-Agenten**
 
-- [ ] Der Agent holt selbst neue Aufgaben des Bretts und übergibt sie dem lokalen Modell des
+- [x] Der Agent holt selbst neue Aufgaben des Bretts und übergibt sie dem lokalen Modell des
       Teilnehmers; die Antwort wird erst nach Freigabe durch den Menschen gesendet. Der Text der
-      Aufgabe gilt als nicht vertrauenswürdig.
+      Aufgabe gilt als nicht vertrauenswürdig (Agent 1.1.0, standardmäßig ausgeschaltet).
 - [ ] Anleitung für den KI-Assistenten: wie man eine Aufgabe vom Brett nimmt, einen Bericht
       einreicht und einen fremden prüft.
 - [ ] Bericht zu einer Brettaufgabe von einem Teilnehmer, der nicht mit den Betreuern verbunden
@@ -460,7 +480,17 @@ aus Abschnitt 1 erfüllt.
 - [x] Versuchsplan: ganzzahliges Profil Qwen3.5-4B, Protokolle O1–O5 und Widerlegungskriterien
       vor dem Start — [EXPERIMENT_D5](EXPERIMENT_D5.md), 24. November 2026. Die zweite Grafikkarte —
       RTX 4070 Laptop auf dem Computer des Eigentümers.
-- [ ] Ganzzahliges Qwen3.5-4B auf zwei verschiedenen Grafikkarten: ob die Bits übereinstimmen.
+- [x] Vorbereitung (P0) und Profil v2: Das Modell wurde mit dem offiziellen Quelltext abgeglichen;
+      auf dem Prozessor wählt das ganzzahlige Profil denselben Token wie das offizielle Modell, in
+      90 von 90 Positionen (Korrelation der Logits 0,9996). Das erste Profil v1 verlor an Genauigkeit
+      und wurde ersetzt.
+- [x] Kurze Eingaben: Prozessor, RTX 2060 (Linux) und RTX 4070 Laptop (Windows) liefern dieselben
+      Bits — je 242 Mio. Logits, 976 Tokens und 37 Tsd. Zustands-Hashes pro Gerät; die Erzeugung
+      Token für Token und der Durchlauf über eine fertige Antwort stimmen überein (O1 und O2,
+      24. November 2026).
+- [ ] Ganzzahliges Qwen3.5-4B auf zwei verschiedenen Grafikkarten bei langem Kontext: ob die Bits
+      übereinstimmen.
+- [ ] Anteil der Zeit für die Prüfung einer Antwort an der Erzeugung (O3).
 - [ ] Seine Geschwindigkeit gegenüber dem gewöhnlichen Profil auf denselben Karten.
 - [ ] Seine Qualität gegenüber dem gewöhnlichen Profil auf derselben Aufgabensammlung.
 - [ ] Gesonderte Messpläne (außerhalb von D5): Energie der Prüfung, ganzzahliges Training.

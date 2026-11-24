@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: 12b7bca8ea86e93bfc2e59f9b55ac57a13e76ffa228340f784c320b126825db8 -->
+<!-- translation of docs/ROADMAP.md, source sha256: e306af2e0763d72cf2991ea47e2452f6ee2a0fd29c5a79f12d1d82272dde3e37 -->
 
 # Feuille de route : protection contre la fraude
 
@@ -62,7 +62,7 @@ vérificateur, et non par l'absence d'idées.
 | Paiement différé au lieu d'une caution : le participant ne répond qu'à hauteur de la somme en attente | Accepté | CURRENT_DESIGN, section 2 |
 | Variante A : vérification par échantillonnage avec annulation | Spécification actuelle | CURRENT_DESIGN, section 3 |
 | Variante B : le réseau ne paie que les tâches vérifiées, `1/p` fois plus cher | Candidat principal ; choix après comparaison (D3) | CURRENT_DESIGN, section 3 |
-| Concordance du résultat bit à bit par l'arithmétique entière | Candidat, pas mesuré | OPEN_QUESTIONS, Q2 |
+| Concordance du résultat bit à bit par l'arithmétique entière | Mesuré sur des entrées courtes : le processeur, la RTX 2060 et la RTX 4070 Laptop donnent les mêmes bits pour Qwen3.5-4B en arithmétique entière (24 novembre 2026) ; le contexte long, la vitesse et la qualité ne sont pas encore mesurés | [EXPERIMENT_D5](EXPERIMENT_D5.md), section 7 |
 | Litige par division en deux avec recalcul d'une étape dans le journal | Mesuré pour une ligne du modèle ; pas construit pour le modèle complet | [PILOT_RESULTS](PILOT_RESULTS.md) |
 | Utilisation d’un vecteur aléatoire pour vérifier le produit de deux matrices dans le litige | Candidat, il n'existe qu'une estimation calculée | CURRENT_DESIGN, section 3 |
 | Noyau de vérification immuable, qu'aucun vote ne peut annuler | Accepté (D4) | CURRENT_DESIGN, section 8 |
@@ -107,7 +107,7 @@ vérificateur, et non par l'absence d'idées.
    tâche correctement exécutée mais auto-attribuée ne doit pas donner de crédits.
 6. Un modèle rare : le cercle des vérificateurs est petit, et `q` pour lui peut être proche de 1.
 7. La disponibilité des données et le litige sur une requête privée sans révéler la requête.
-8. La concordance bit à bit et la vitesse du modèle en arithmétique entière ne sont pas mesurées.
+8. La concordance bit à bit du modèle en arithmétique entière n'est confirmée que sur des entrées courtes de trois appareils ; le contexte long, la vitesse et la qualité ne sont pas mesurés.
 9. Un saboteur qui n'a pas besoin de profit, et l'empoisonnement des données d'apprentissage. La protection
    économique n'agit pas contre eux.
 
@@ -217,6 +217,11 @@ Déjà fait :
 - [x] Lancement après le redémarrage selon l'interrupteur de l'utilisateur (vérifié sur l'émulateur).
 - [x] Vérification de la mise à jour par-dessus l'APK 0.1.0 sur l'émulateur Android 14 : les données
       sont conservées.
+- [x] APK 0.4.1 (24 novembre 2026) : envoi des résultats corrigé — Android interdisait la méthode
+      d'enregistrement de la clé de l'appareil ; sur l'émulateur, 4 sur 4 ont été calculés et envoyés
+      sans jeton.
+- [x] APK 0.4.2 : le lancement après le redémarrage est activé par défaut (vérifié par un redémarrage
+      de l'émulateur). L'ancienne version d'essai 0.1.0, qui demandait un jeton, est marquée comme obsolète.
 - [ ] Vérification de la proposition d'un nouvel APK par l'application elle-même (fonctionnera avec la
       prochaine version de l'APK).
 - [ ] **Vérification en conditions réelles sur un vrai téléphone** (il faut un participant avec un
@@ -230,7 +235,8 @@ Déjà fait :
       et la signature du projet. Installation dans le profil de l'utilisateur, sans droits
       d'administrateur, fonctionne sans réseau.
 - [x] Raccourcis dans le menu « Démarrer » : état de l'agent, pause, reprise, arrêt, désinstallation.
-- [x] Case « lancer à la connexion » dans l'installateur ; le choix est conservé lors de la mise à jour.
+- [x] Les cases « lancer maintenant » et « lancer à la connexion » de l'installateur sont cochées par
+      défaut (depuis 1.3.3) ; le choix est conservé lors de la mise à jour.
 - [x] Désinstallation via « Applications » ; lors de la désinstallation, on peut conserver la clé de
       l'appareil.
 - [x] Vérification automatique dans la CI sur un Windows propre sans Python : installation,
@@ -243,8 +249,15 @@ Déjà fait :
 - [x] L'installateur utilise le Python système 3.9+, et s'il n'y en a pas, installe un Python portable et
       vérifie son empreinte. Il existe aussi un installateur en un seul fichier, sans réseau (version
       v0.2.2).
-- [x] Service utilisateur systemd avec l'accord de l'utilisateur ; le fonctionnement sans ouverture de
-      session est une case séparée.
+- [x] Depuis 1.3.3, l'installateur lance immédiatement l'agent, enregistre le service utilisateur
+      systemd (lancement après redémarrage) et tente d'activer le fonctionnement sans ouverture de
+      session (linger) ; `--no-autostart` — installation seule.
+- [x] Depuis 1.3.4, l'agent trouve lui-même un nœud complet dans son réseau local (question en UDP,
+      réponse uniquement vers des adresses privées). Nécessaire là où le routeur ne laisse pas passer,
+      depuis l'intérieur du réseau, vers l'adresse externe du nœud ; auparavant, on contournait cela
+      par un réglage manuel de l'adresse.
+- [ ] Vérification en conditions réelles de la recherche du nœud dans le réseau local sur un ordinateur
+      fraîchement installé.
 - [x] Vérification dans la CI : Debian 12 sans Python et Ubuntu 24.04 avec Python ; installation en
       conditions réelles sur Linux Mint.
 - [ ] Vérification en conditions réelles chez un participant sans lien avec les mainteneurs.
@@ -266,6 +279,9 @@ mise à jour ne sont plus requis, c'est pourquoi l'ancien point « mise à jour 
       Linux domestique et le Windows du propriétaire sont passés d'eux-mêmes à Go 1.0.1.
 - [x] Installateurs en Go : Windows 4,7 Mo, Linux en un seul fichier ; application Android 0.3.0 avec
       moteur Go, environ 8 Mo au lieu de 40 (vérifié sur l'émulateur Android 14).
+- [x] Versions Go 1.1.0–1.3.4 (24 novembre 2026) : réponses du modèle d'IA local, calculs de l'étape 4,
+      page des agents, démarrage automatique, recherche du nœud dans le réseau local ; les agents
+      installés se sont mis à jour eux-mêmes.
 - [ ] Supprimer le pont et les copies Python après deux versions Go vérifiées.
 
 **Point 6. Flux des tâches**
@@ -287,16 +303,20 @@ mise à jour ne sont plus requis, c'est pourquoi l'ancien point « mise à jour 
 
 **Point 7. Pilote avec d'autres personnes**
 
-- [ ] Page « Comment se connecter » en neuf langues : un lien pour chaque système.
+- [x] Page [« Comment se connecter »](CONNECT.md) en neuf langues : un lien pour chaque système.
+- [x] Page des agents en ligne sur le nœud complet : `http://62.213.14.254:8790/agents` — système
+      d'exploitation, processeur, RAM, cartes graphiques, version, portions ; sans IP ni noms
+      d'ordinateurs. L'agent se signale toutes les 2 minutes, un silence de 5 minutes le retire de la
+      liste (agent 1.3.0+).
 - [ ] Un participant sans lien avec les mainteneurs sur chaque plateforme ; les critères d'achèvement de
       l'étape sont remplis.
 - [ ] Deuxième et troisième nœuds complets chez des propriétaires différents.
 
 **Point 8. Agents IA**
 
-- [ ] L'agent récupère lui-même les nouvelles tâches du tableau et les transmet au modèle local du
+- [x] L'agent récupère lui-même les nouvelles tâches du tableau et les transmet au modèle local du
       participant ; la réponse n'est envoyée qu'après l'approbation d'une personne. Le texte de la tâche
-      est considéré comme non fiable.
+      est considéré comme non fiable (agent 1.1.0, désactivé par défaut).
 - [ ] Instructions pour un assistant IA : comment prendre une tâche du tableau, remettre un rapport et
       vérifier celui d'un autre.
 - [ ] Rapport sur une tâche du tableau remis par un participant sans lien avec les mainteneurs.
@@ -433,7 +453,17 @@ borne prouvée. Est considérée comme trouvée la construction qui remplit tous
 - [x] Plan de l'expérience : profil en arithmétique entière de Qwen3.5-4B, protocoles O1–O5 et critères de
       réfutation avant le lancement — [EXPERIMENT_D5](EXPERIMENT_D5.md), 24 novembre 2026. La seconde carte
       graphique est une RTX 4070 Laptop sur l'ordinateur du propriétaire.
-- [ ] Qwen3.5-4B en arithmétique entière sur deux cartes graphiques différentes : les bits coïncident-ils.
+- [x] Préparation (P0) et profil v2 : le modèle a été comparé au code source officiel ; sur le
+      processeur, le profil en arithmétique entière choisit le même jeton que le modèle officiel dans
+      90 positions sur 90 (corrélation des logits 0,9996). Le premier profil v1 perdait en précision et
+      a été remplacé.
+- [x] Entrées courtes : le processeur, la RTX 2060 (Linux) et la RTX 4070 Laptop (Windows) donnent les
+      mêmes bits — 242 millions de logits, 976 jetons et 37 000 empreintes d'état par appareil ; la
+      génération jeton par jeton et le passage sur une réponse complète coïncident (O1 et O2, 24 novembre
+      2026).
+- [ ] Qwen3.5-4B en arithmétique entière sur deux cartes graphiques différentes et un contexte long :
+      les bits coïncident-ils.
+- [ ] Part du temps de vérification de la réponse par rapport à la génération (O3).
 - [ ] Sa vitesse par rapport au profil ordinaire sur les mêmes cartes.
 - [ ] Sa qualité par rapport au profil ordinaire sur le même ensemble de tâches.
 - [ ] Des plans de mesure séparés (hors D5) : l'énergie de la vérification, l'apprentissage en arithmétique

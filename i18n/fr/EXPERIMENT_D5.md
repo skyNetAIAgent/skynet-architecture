@@ -1,10 +1,10 @@
-<!-- translation of docs/EXPERIMENT_D5.md, source sha256: 8c74b11b335ebd7a0797e908c40ed9e4c2b98395835bb319e3272b464224875d -->
+<!-- translation of docs/EXPERIMENT_D5.md, source sha256: 8344ba8a8a4752fc05abdf96a28bee33a5bbf79f5b62c3aa773ea9041db4a33a -->
 
 # Expérience D5 : Qwen3.5-4B en arithmétique entière
 
 [English](../../docs/EXPERIMENT_D5.en.md) · [中文](../zh/EXPERIMENT_D5.md) · [Español](../es/EXPERIMENT_D5.md) · **Français** · [Deutsch](../de/EXPERIMENT_D5.md) · [Italiano](../it/EXPERIMENT_D5.md) · [Русский](../../docs/EXPERIMENT_D5.md) · [Português](../pt/EXPERIMENT_D5.md) · [العربية](../ar/EXPERIMENT_D5.md)
 
-État au 24 novembre 2026 : **plan de l'expérience, il n'y a pas encore de mesures.** L'expérience est autorisée par la décision D5
+État au 25 novembre 2026 : **premiers résultats sur des entrées courtes (section 7) ; le contexte long, la vitesse et la qualité ne sont pas encore mesurés.** L'expérience est autorisée par la décision D5
 ([ROADMAP](ROADMAP.md), section 3) et fait partie de l'étape 5 de la feuille de route. Elle vérifie la principale hypothèse non mesurée
 du meilleur candidat de l'étape 4 — la vérification de la réponse par le payeur lui-même (PPS,
 [VERIFICATION_SEARCH](VERIFICATION_SEARCH.md), sections 3.2 et 5.2).
@@ -105,3 +105,34 @@ ne concerne que les appareils et les versions testés. Le résultat de chaque ex
 - **Critique croisée :** ChatGPT a analysé les deux projets, DeepSeek a analysé les deux projets ;
   recalculs de la mémoire et des bornes, vérification de la courte récurrence et des corrections d'attention sur de petites énumérations.
 - **Synthèse et décisions sur le plan :** Claude.
+- **Préparation, profils v1 et v2, référence sur processeur et version pour la carte graphique :** ChatGPT.
+- **Vérifications indépendantes :** DeepSeek — importation du modèle avec le forward officiel, absence d'ambiguïté
+  et bornes de débordement du profil v2.
+- **Lancements sur cartes graphiques et vérification des résultats :** Claude (la carte graphique n'est pas accessible
+  depuis le bac à sable des modèles).
+
+## 7. Résultats
+
+**24 novembre 2026, entrées courtes.** Entrées : deux historiques de 8 + 8 jetons et six textes courts
+(russe, anglais, chinois, arithmétique, code, recette), profondeur 4 et 32 blocs ; lot de 1.
+
+- **Importation du modèle.** Le calcul habituel en virgule flottante, écrit d'après le source, a coïncidé
+  avec le forward officiel de Transformers 5.24.0 : le même jeton choisi dans 130 positions sur 130,
+  un écart des logits ne dépassant pas 3,6·10⁻⁵ (vérifié par ChatGPT et indépendamment par DeepSeek).
+- **Profil v1 rejeté.** Il était reproductible au bit près, mais l'échelle 1/1024 était trop grossière :
+  la sortie de la récurrence DeltaNet était presque entièrement arrondie à zéro, la concordance du jeton choisi
+  avec le modèle — 5 sur 8, la corrélation des logits environ 0,8.
+- **Profil v2** (activations avec exposant binaire par vecteur et mantisse de 16 bits, reste
+  et état de la récurrence avec un pas de 2⁻²⁰, clés et valeurs d'attention en 32 bits) : le même jeton que
+  le modèle officiel dans 90 positions sur 90, corrélation moyenne des logits 0,9996, minimale
+  0,998. L'état et le cache occupent 238 MiB à 3000 positions contre 95 pour v1 ; le nombre de multiplications
+  par jeton est le même — 4,2 milliards.
+- **O2 (un seul appareil).** La génération jeton par jeton et une passe sur la réponse prête avec un découpage
+  en 1, 3 et 8 positions donnent les mêmes bits de tous les logits, des jetons choisis et des hachages d'états.
+- **O1 (appareils différents).** Processeur (Xeon, Linux), RTX 2060 (Turing, Linux, CuPy) et RTX 4070
+  Laptop (Ada, Windows, CuPy) : 88 comparaisons sur chaque carte, 242 360 320 logits par carte,
+  976 jetons choisis et 37 152 hachages d'états — **aucune différence**.
+
+Limites : entrées courtes et lot de 1 ; noyaux entiers simples sans blocs tensoriels ; le temps
+de ces exécutions ne constitue pas une mesure de O3 et O4. Ensuite — le contexte long jusqu'à des milliers de jetons,
+des noyaux rapides avec la même arithmétique, puis O3–O5.

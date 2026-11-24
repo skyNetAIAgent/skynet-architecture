@@ -1,10 +1,11 @@
-<!-- translation of docs/EXPERIMENT_D5.md, source sha256: 8c74b11b335ebd7a0797e908c40ed9e4c2b98395835bb319e3272b464224875d -->
+<!-- translation of docs/EXPERIMENT_D5.md, source sha256: 8344ba8a8a4752fc05abdf96a28bee33a5bbf79f5b62c3aa773ea9041db4a33a -->
 
 # Experiment D5: ganzzahliges Qwen3.5-4B
 
 [English](../../docs/EXPERIMENT_D5.en.md) · [中文](../zh/EXPERIMENT_D5.md) · [Español](../es/EXPERIMENT_D5.md) · [Français](../fr/EXPERIMENT_D5.md) · **Deutsch** · [Italiano](../it/EXPERIMENT_D5.md) · [Русский](../../docs/EXPERIMENT_D5.md) · [Português](../pt/EXPERIMENT_D5.md) · [العربية](../ar/EXPERIMENT_D5.md)
 
-Stand vom 24. November 2026: **Plan des Experiments, Messungen gibt es noch keine.** Das Experiment ist durch die Entscheidung D5
+Stand vom 25. November 2026: **erste Ergebnisse bei kurzen Eingaben (Abschnitt 7); langer Kontext,
+Geschwindigkeit und Qualität sind noch nicht gemessen.** Das Experiment ist durch die Entscheidung D5
 ([ROADMAP](ROADMAP.md), Abschnitt 3) erlaubt und gehört zu Phase 5 der Roadmap. Es prüft die wichtigste ungemessene
 Annahme des besten Kandidaten aus Phase 4 — der Prüfung der Antwort durch den Zahler selbst (PPS,
 [VERIFICATION_SEARCH](VERIFICATION_SEARCH.md), Abschnitte 3.2 und 5.2).
@@ -104,3 +105,34 @@ bezieht sich nur auf die getesteten Geräte und Versionen. Das Ergebnis jedes Ex
 - **Gegenseitige Kritik:** ChatGPT analysierte beide Projekte, DeepSeek analysierte beide Projekte;
   Nachrechnungen des Speichers und der Grenzen, Prüfung der kurzen Rekurrenz und der Attention-Korrektur an kleinen Aufzählungen.
 - **Zusammenführung und Entscheidungen zum Plan:** Claude.
+- **Vorbereitung, Profile v1 und v2, Referenz auf dem Prozessor und Version für die Grafikkarte:** ChatGPT.
+- **Unabhängige Prüfungen:** DeepSeek — Import des Modells mit dem offiziellen forward, Eindeutigkeit
+  und Überlaufgrenzen des Profils v2.
+- **Läufe auf den Grafikkarten und Prüfung der Ergebnisse:** Claude (aus der Sandbox der Modelle ist die Grafikkarte
+  nicht erreichbar).
+
+## 7. Ergebnisse
+
+**24. November 2026, kurze Eingaben.** Eingaben: zwei Verläufe mit je 8 + 8 Token und sechs kurze
+Texte (Russisch, Englisch, Chinesisch, Arithmetik, Code, Rezept), Tiefe 4 und 32 Blöcke; Batch 1.
+
+- **Import des Modells.** Die gewöhnliche Gleitkommaberechnung, geschrieben nach dem Quelltext, stimmte
+  mit dem offiziellen forward von Transformers 5.24.0 überein: dasselbe gewählte Token an 130 von 130 Positionen,
+  Abweichung der Logits nicht größer als 3,6·10⁻⁵ (geprüft von ChatGPT und unabhängig von DeepSeek).
+- **Profil v1 abgelehnt.** Es war bitgenau reproduzierbar, aber die Skala 1/1024 war zu grob:
+  der Ausgang der DeltaNet-Rekurrenz wurde fast vollständig auf null gerundet, Übereinstimmung des gewählten Tokens
+  mit dem Modell — 5 von 8, Korrelation der Logits etwa 0,8.
+- **Profil v2** (Aktivierungen mit einem binären Exponenten pro Vektor und einer 16-Bit-Mantisse, Rest
+  und Rekurrenzzustand mit Schritt 2⁻²⁰, Schlüssel und Werte der Attention in 32 Bit): dasselbe Token wie
+  beim offiziellen Modell an 90 von 90 Positionen, mittlere Korrelation der Logits 0,9996, minimale
+  0,998. Zustand und Cache belegen 238 MiB bei 3000 Positionen gegenüber 95 bei v1; die Zahl der Multiplikationen
+  pro Token ist dieselbe — 4,2 Mrd.
+- **O2 (ein Gerät).** Die Generierung Token für Token und ein Durchlauf über die fertige Antwort mit Aufteilung
+  in 1, 3 und 8 Positionen ergeben dieselben Bits aller Logits, der gewählten Token und der Zustands-Hashes.
+- **O1 (verschiedene Geräte).** Prozessor (Xeon, Linux), RTX 2060 (Turing, Linux, CuPy) und RTX 4070
+  Laptop (Ada, Windows, CuPy): 88 Vergleiche auf jeder Karte, je 242 360 320 Logits,
+  976 gewählte Token und 37 152 Zustands-Hashes — **kein einziger Unterschied**.
+
+Einschränkungen: kurze Eingaben und Batch 1; einfache ganzzahlige Kerne ohne Tensor-Kerne; die Zeit
+dieser Läufe ist keine Messung von O3 und O4. Weiter — langer Kontext bis zu Tausenden Token,
+schnelle Kerne mit derselben Arithmetik, danach O3–O5.

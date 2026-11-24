@@ -1,4 +1,4 @@
-<!-- translation of docs/CONNECT.md, source sha256: bd3f9740a67100d72b7a87b5073daf071ecf7c9648582be1586e382d46869750 -->
+<!-- translation of docs/CONNECT.md, source sha256: 125af61335dde49176b5b023903489a40b1792ebe8e8eb04a960681206774db9 -->
 
 # Como participar
 
@@ -19,9 +19,13 @@ recompensas**: esta é uma ajuda voluntária para a pesquisa, e não a própria 
 
 O macOS e o iPhone não são suportados.
 
-O instalador pergunta se deve iniciar o agente agora e ao entrar no sistema. Depois disso, não há mais
-nada a fazer: o agente se atualiza sozinho (apenas para versões assinadas pelo projeto), pega tarefas e
-publica resultados por conta própria.
+O instalador inicia o agente imediatamente e o configura para iniciar novamente após uma reinicialização
+(no Windows, você pode desmarcar esta opção; no Android, toque em **Start** uma vez). Depois disso, não há
+mais nada a fazer: o agente se atualiza sozinho (apenas para versões assinadas pelo projeto), pega tarefas e
+publica resultados por conta própria. Ele encontra um nó completo na sua rede local sozinho, se houver um.
+
+Os agentes on-line neste momento estão listados em http://62.213.14.254:8790/agents: sistema, processador,
+memória, placa de vídeo, versão e unidades computadas. Nenhum endereço IP ou nome de computador é exibido.
 
 ## O que ele usa e o que nunca faz
 

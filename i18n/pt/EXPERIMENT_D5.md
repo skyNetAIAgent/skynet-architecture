@@ -1,10 +1,10 @@
-<!-- translation of docs/EXPERIMENT_D5.md, source sha256: 8c74b11b335ebd7a0797e908c40ed9e4c2b98395835bb319e3272b464224875d -->
+<!-- translation of docs/EXPERIMENT_D5.md, source sha256: 8344ba8a8a4752fc05abdf96a28bee33a5bbf79f5b62c3aa773ea9041db4a33a -->
 
 # Experimento D5: Qwen3.5-4B inteiro
 
 [English](../../docs/EXPERIMENT_D5.en.md) · [中文](../zh/EXPERIMENT_D5.md) · [Español](../es/EXPERIMENT_D5.md) · [Français](../fr/EXPERIMENT_D5.md) · [Deutsch](../de/EXPERIMENT_D5.md) · [Italiano](../it/EXPERIMENT_D5.md) · [Русский](../../docs/EXPERIMENT_D5.md) · **Português** · [العربية](../ar/EXPERIMENT_D5.md)
 
-Situação em 24 de novembro de 2026: **plano do experimento, ainda não há medições.** O experimento é autorizado pela decisão D5 ([ROADMAP](ROADMAP.md), seção 3) e faz parte da etapa 5 do mapa. Ele verifica a principal suposição não medida do melhor candidato da etapa 4 — a verificação da resposta pelo próprio pagador (PPS, [VERIFICATION_SEARCH](VERIFICATION_SEARCH.md), seções 3.2 e 5.2).
+Situação em 25 de novembro de 2026: **primeiros resultados em entradas curtas (seção 7); contexto longo, velocidade e qualidade ainda não medidos.** O experimento é autorizado pela decisão D5 ([ROADMAP](ROADMAP.md), seção 3) e faz parte da etapa 5 do mapa. Ele verifica a principal suposição não medida do melhor candidato da etapa 4 — a verificação da resposta pelo próprio pagador (PPS, [VERIFICATION_SEARCH](VERIFICATION_SEARCH.md), seções 3.2 e 5.2).
 
 ## 1. O que se verifica
 
@@ -57,3 +57,18 @@ Para cada execução: manifesto do perfil e das versões, entradas, hashes dos l
 - **Projetos do experimento:** dois projetos independentes — ChatGPT e DeepSeek.
 - **Crítica cruzada:** o ChatGPT analisou os dois projetos, o DeepSeek analisou os dois projetos; recálculos de memória e de limites, verificação da recorrência curta e da correção da atenção em pequenas enumerações.
 - **Consolidação e decisões sobre o plano:** Claude.
+- **Preparação, perfis v1 e v2, referência no processador e versão para placa de vídeo:** ChatGPT.
+- **Verificações independentes:** DeepSeek — importação do modelo pelo forward oficial, unicidade e limites de estouro do perfil v2.
+- **Execuções nas placas de vídeo e verificação dos resultados:** Claude (a partir da sandbox dos modelos, a placa de vídeo não está acessível).
+
+## 7. Resultados
+
+**24 de novembro de 2026, entradas curtas.** Entradas: duas histórias de 8 + 8 tokens e seis textos curtos (russo, inglês, chinês, aritmética, código, receita), profundidade 4 e 32 blocos; lote 1.
+
+- **Importação do modelo.** O cálculo usual em ponto flutuante, escrito a partir do código-fonte, coincidiu com o forward oficial do Transformers 5.24.0: o mesmo token escolhido em 130 de 130 posições, desvio dos logits não maior que 3,6·10⁻⁵ (verificaram o ChatGPT e, de forma independente, o DeepSeek).
+- **Perfil v1 rejeitado.** Ele era reproduzido bit a bit, mas a escala 1/1024 era grosseira demais: a saída da recorrência DeltaNet era quase toda arredondada para zero, a coincidência do token escolhido com o modelo — 5 de 8, a correlação dos logits cerca de 0,8.
+- **Perfil v2** (ativações com expoente binário por vetor e mantissa de 16 bits, resto e estado da recorrência com passo 2⁻²⁰, chaves e valores da atenção em 32 bits): o mesmo token que o do modelo oficial em 90 de 90 posições, correlação média dos logits 0,9996, mínima 0,998. O estado e o cache ocupam 238 MiB em 3000 posições, contra 95 no v1; o número de multiplicações por token é o mesmo — 4,2 bilhões.
+- **O2 (um dispositivo).** A geração token a token e a passagem pela resposta pronta com divisão em 1, 3 e 8 posições dão os mesmos bits de todos os logits, dos tokens escolhidos e dos hashes dos estados.
+- **O1 (dispositivos diferentes).** Processador (Xeon, Linux), RTX 2060 (Turing, Linux, CuPy) e RTX 4070 Laptop (Ada, Windows, CuPy): 88 comparações em cada placa, 242 360 320 logits, 976 tokens escolhidos e 37 152 hashes de estados — **nenhuma diferença**.
+
+Limitações: entradas curtas e lote 1; núcleos inteiros simples sem blocos tensoriais; o tempo dessas execuções não é uma medição de O3 e O4. A seguir — contexto longo de até milhares de tokens, núcleos rápidos com a mesma aritmética e, depois, O3–O5.

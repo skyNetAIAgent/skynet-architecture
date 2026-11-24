@@ -1,4 +1,4 @@
-<!-- translation of docs/CONNECT.md, source sha256: bd3f9740a67100d72b7a87b5073daf071ecf7c9648582be1586e382d46869750 -->
+<!-- translation of docs/CONNECT.md, source sha256: 125af61335dde49176b5b023903489a40b1792ebe8e8eb04a960681206774db9 -->
 
 # Come partecipare
 
@@ -19,9 +19,15 @@ fase non sono previste ricompense**: è un aiuto volontario per la ricerca, non 
 
 macOS e iPhone non sono supportati.
 
-Il programma di installazione chiede se avviare l'agente subito e all'accesso. Dopodiché non c'è
-altro da fare: l'agente si aggiorna da solo (solo a versioni firmate dal progetto), prende i compiti
-e pubblica i risultati autonomamente.
+Il programma di installazione avvia l'agente subito e lo imposta per avviarlo di nuovo dopo un
+riavvio (su Windows potete deselezionare questa opzione; su Android premete **Avvia** una volta).
+Dopodiché non c'è altro da fare: l'agente si aggiorna da solo (solo a versioni firmate dal progetto),
+prende i compiti e pubblica i risultati autonomamente. Trova da solo un nodo completo sulla vostra
+rete locale, se ce n'è uno.
+
+Gli agenti attualmente online sono elencati su http://62.213.14.254:8790/agents: sistema, processore,
+memoria, scheda grafica, versione e unità calcolate. Non viene mostrato alcun indirizzo IP né nome del
+computer.
 
 ## Cosa usa e cosa non fa mai
 

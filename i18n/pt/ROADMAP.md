@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: 12b7bca8ea86e93bfc2e59f9b55ac57a13e76ffa228340f784c320b126825db8 -->
+<!-- translation of docs/ROADMAP.md, source sha256: e306af2e0763d72cf2991ea47e2452f6ee2a0fd29c5a79f12d1d82272dde3e37 -->
 
 # Roteiro: defesa contra fraude
 
@@ -61,7 +61,7 @@ e não pela ausência de ideias.
 | Pagamento diferido em vez de depósito: o participante responde apenas pelo valor pendente | Aceito | CURRENT_DESIGN, seção 2 |
 | Variante A: verificação por amostragem com débito | Especificação atual | CURRENT_DESIGN, seção 3 |
 | Variante B: a rede paga apenas pelas tarefas verificadas, `1/p` vezes mais caras | Candidato principal; escolha após a comparação (D3) | CURRENT_DESIGN, seção 3 |
-| Coincidência do resultado bit a bit por aritmética inteira | Candidato, não medido | OPEN_QUESTIONS, Q2 |
+| Coincidência do resultado bit a bit por aritmética inteira | Medido em entradas curtas: processador, RTX 2060 e RTX 4070 Laptop produzem os mesmos bits para o Qwen3.5-4B com aritmética inteira (24 de novembro de 2026); contexto longo, velocidade e qualidade ainda não foram medidos | [EXPERIMENT_D5](EXPERIMENT_D5.md), seção 7 |
 | Disputa por divisão ao meio com recálculo de uma etapa no registro | Medido para uma linha do modelo; para o modelo completo não foi construído | [PILOT_RESULTS](PILOT_RESULTS.md) |
 | Verificação do produto de matrizes com o auxílio de um vetor aleatório dentro da disputa | Candidato, há apenas estimativa calculada | CURRENT_DESIGN, seção 3 |
 | Núcleo de verificação imutável, que não pode ser revogado por votação | Aceito (D4) | CURRENT_DESIGN, seção 8 |
@@ -107,7 +107,8 @@ e não pela ausência de ideias.
    Uma tarefa executada corretamente, mas auto-atribuída, não deve gerar créditos.
 6. Modelo raro: o círculo de verificadores é pequeno, e o `q` para ele pode ficar próximo de um.
 7. Disponibilidade dos dados e disputa por solicitação privada sem revelar a solicitação.
-8. A coincidência bit a bit e a velocidade do modelo que usa aritmética inteira não foram medidas.
+8. A coincidência bit a bit do modelo com aritmética inteira foi confirmada apenas em entradas curtas de
+   três dispositivos; contexto longo, velocidade e qualidade não foram medidos.
 9. Um sabotador que não precisa de lucro e o envenenamento dos dados de treinamento. A proteção econômica
    não age sobre eles.
 
@@ -214,6 +215,10 @@ Já feito:
       o Android fora da loja).
 - [x] Início após a reinicialização segundo o interruptor do usuário (verificado no emulador).
 - [x] Verificação da atualização sobre o APK 0.1.0 no emulador Android 14: os dados são preservados.
+- [x] APK 0.4.1 (24 de novembro de 2026): corrigido o envio de resultados — o Android proibia o modo de
+      armazenamento da chave do dispositivo; no emulador, 4 de 4 foram calculados e enviados sem token.
+- [x] APK 0.4.2: o início após a reinicialização está ativado por padrão (verificado pela reinicialização
+      do emulador). A antiga versão de teste 0.1.0, que pedia token, foi marcada como obsoleta.
 - [ ] Verificação da oferta de um novo APK pelo próprio aplicativo (funcionará com a próxima versão do
       APK).
 - [ ] **Verificação ao vivo em um telefone real** (é preciso um participante com telefone): instalação,
@@ -226,7 +231,8 @@ Já feito:
       impressão digital dele e a assinatura do projeto. Instalação no perfil do usuário, sem direitos
       de administrador, funciona sem rede.
 - [x] Atalhos no menu «Iniciar»: estado do agente, pausa, continuação, parada, remoção.
-- [x] Caixa de seleção «iniciar ao entrar» no instalador; a escolha é preservada na atualização.
+- [x] As caixas de seleção «iniciar agora» e «iniciar ao entrar» no instalador estão ativadas por padrão
+      (desde 1.3.3); a escolha é preservada na atualização.
 - [x] Remoção por «Aplicativos»; ao remover, é possível preservar a chave do dispositivo.
 - [x] Verificação automática no CI em um Windows limpo sem Python: instalação, autoverificação, remoção.
 - [x] Verificação ao vivo no computador de uma pessoa: o dono instalou o agente a partir do Releases
@@ -237,8 +243,13 @@ Já feito:
 - [x] O instalador usa o Python 3.9+ do sistema e, se não houver, instala um Python portátil e
       confere sua impressão digital. Há também um instalador de um único arquivo sem rede (versão
       v0.2.2).
-- [x] Serviço de usuário do systemd com o consentimento do usuário; trabalhar sem entrar no sistema é
-      uma caixa de seleção à parte.
+- [x] Desde 1.3.3, o instalador inicia o agente imediatamente, registra o serviço de usuário do systemd
+      (início após a reinicialização) e tenta ativar o funcionamento sem entrar no sistema (linger);
+      `--no-autostart` — apenas a instalação.
+- [x] Desde 1.3.4, o agente encontra sozinho o nó completo em sua rede local (consulta por UDP, resposta
+      apenas para endereços privados). Necessário onde o roteador não deixa passar de dentro da rede para
+      o endereço externo do nó; antes isso era contornado com a configuração manual do endereço.
+- [ ] Verificação ao vivo da busca do nó na rede local em um computador recém-instalado.
 - [x] Verificação no CI: Debian 12 sem Python e Ubuntu 24.04 com Python; instalação ao vivo no Linux Mint.
 - [ ] Verificação ao vivo com um participante sem vínculo com os mantenedores.
 
@@ -258,6 +269,9 @@ atualização não são mais necessários, por isso o passo anterior «atualiza�
       passaram sozinhos para o Go 1.0.1.
 - [x] Instaladores em Go: Windows 4,7 MB, Linux em um único arquivo; aplicativo Android 0.3.0 com
       motor Go, cerca de 8 MB em vez de 40 (verificado no emulador Android 14).
+- [x] Versões em Go 1.1.0–1.3.4 (24 de novembro de 2026): respostas do modelo local de IA, cálculos
+      da etapa 4, página dos agentes, início automático, busca do nó na rede local; os agentes
+      instalados se atualizavam sozinhos.
 - [ ] Remover a ponte e as cópias em Python após duas versões verificadas em Go.
 
 **Passo 6. Fluxo de tarefas**
@@ -278,16 +292,19 @@ atualização não são mais necessários, por isso o passo anterior «atualiza�
 
 **Passo 7. Piloto com outras pessoas**
 
-- [ ] Página «Como se conectar» em nove idiomas: um link para cada sistema.
+- [x] Página [«Como se conectar»](CONNECT.md) em nove idiomas: um link para cada sistema.
+- [x] Página dos agentes online no nó completo: `http://62.213.14.254:8790/agents` — sistema operacional,
+      processador, RAM, placas de vídeo, versão, porções; sem IP e nomes de computadores. O agente informa
+      sobre si a cada 2 minutos; 5 minutos de silêncio o removem da lista (agente 1.3.0+).
 - [ ] Um participante sem vínculo com os mantenedores em cada plataforma; os critérios de prontidão da
       etapa estão cumpridos.
 - [ ] Segundo e terceiro nós completos com donos diferentes.
 
 **Passo 8. Agentes de IA**
 
-- [ ] O agente retira sozinho as novas tarefas do quadro e as repassa ao modelo local do participante; a
+- [x] O agente retira sozinho as novas tarefas do quadro e as repassa ao modelo local do participante; a
       resposta é enviada apenas depois da aprovação por uma pessoa. O texto da tarefa é tratado como não
-      confiável.
+      confiável (agente 1.1.0, desativado por padrão).
 - [ ] Instruções para o assistente de IA: como pegar uma tarefa do quadro, entregar o relatório e verificar
       o de outra pessoa.
 - [ ] Relatório para uma tarefa do quadro feito por um participante sem vínculo com os mantenedores.
@@ -429,7 +446,14 @@ limite provado. Considera-se encontrada a construção que cumpre todos os crit�
 - [x] Plano da experiência: perfil com aritmética inteira do Qwen3.5-4B, protocolos O1–O5 e critérios de
       refutação antes da execução — [EXPERIMENT_D5](EXPERIMENT_D5.md), 24 de novembro de 2026. A segunda
       placa de vídeo é uma RTX 4070 Laptop no computador do dono.
+- [x] Preparação (P0) e perfil v2: o modelo foi conferido com o código-fonte oficial; no processador,
+      o perfil com aritmética inteira escolhe o mesmo token que o modelo oficial em 90 de 90 posições
+      (correlação dos logits de 0,9996). O primeiro perfil v1 perdia precisão e foi substituído.
+- [x] Entradas curtas: processador, RTX 2060 (Linux) e RTX 4070 Laptop (Windows) produzem os mesmos
+      bits — 242 milhões de logits, 976 tokens e 37 mil hashes de estados por dispositivo; a geração
+      por token e a passada por uma resposta pronta coincidem (O1 e O2, 24 de novembro de 2026).
 - [ ] Qwen3.5-4B com aritmética inteira em duas placas de vídeo diferentes: se os bits coincidem.
+- [ ] Fração do tempo de verificação da resposta em relação à geração (O3).
 - [ ] Sua velocidade em relação ao perfil comum nas mesmas placas.
 - [ ] Sua qualidade em relação ao perfil comum no mesmo conjunto de tarefas.
 - [ ] Planos de medição separados (fora do D5): energia da verificação, treinamento com aritmética inteira.
