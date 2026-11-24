@@ -1,10 +1,10 @@
 {
   "format": 1,
-  "version_code": 3,
-  "version_name": "0.3.0",
+  "version_code": 4,
+  "version_name": "0.4.0",
   "min_sdk": 24,
-  "notes": "Go engine instead of Python: about 8 MB instead of 40 MB.",
-  "url": "https://github.com/skyNetAIAgent/skynet-architecture/releases/download/v1.0.0/skynet-agent.apk",
-  "size": 8080197,
-  "sha256": "21101664049c974195f92c0d206e279e91d77e4f8b6e0006d1f8dcf6f6c64fd8"
+  "notes": "Go engine 1.3.1: stage 4 computations, status for the online agents page.",
+  "url": "https://github.com/skyNetAIAgent/skynet-architecture/releases/download/v1.3.1/skynet-agent-0.4.0.apk",
+  "size": 8198981,
+  "sha256": "4d3544dfc0c8ec410338923410e108de33f6b82d082250b465d54802ef9b219e"
 }
