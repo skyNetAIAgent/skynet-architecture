@@ -15,6 +15,7 @@ import (
 
 	"github.com/skyNetAIAgent/skynet-architecture/agent-go/config"
 	"github.com/skyNetAIAgent/skynet-architecture/agent-go/outbox"
+	agentstatus "github.com/skyNetAIAgent/skynet-architecture/agent-go/status"
 	"github.com/skyNetAIAgent/skynet-architecture/agent-go/tasks"
 	"github.com/skyNetAIAgent/skynet-architecture/agent-go/transport"
 	"github.com/skyNetAIAgent/skynet-architecture/agent-go/update"
@@ -169,6 +170,7 @@ func androidStatus(home string, cfg, state Object, note, code, current string) e
 
 func (h *androidHost) loop(ctx context.Context, n transport.Network, out io.Writer) (err error) {
 	home := h.home
+	defer agentstatus.Start(ctx, home, n)()
 	var state, cfg Object
 	defer func() {
 		note, code := "stopped", "stopped"

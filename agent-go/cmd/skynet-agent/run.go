@@ -14,6 +14,7 @@ import (
 	"github.com/skyNetAIAgent/skynet-architecture/agent-go/ai"
 	"github.com/skyNetAIAgent/skynet-architecture/agent-go/config"
 	"github.com/skyNetAIAgent/skynet-architecture/agent-go/outbox"
+	agentstatus "github.com/skyNetAIAgent/skynet-architecture/agent-go/status"
 	"github.com/skyNetAIAgent/skynet-architecture/agent-go/tasks"
 	"github.com/skyNetAIAgent/skynet-architecture/agent-go/transport"
 	"github.com/skyNetAIAgent/skynet-architecture/agent-go/update"
@@ -212,6 +213,7 @@ func run(ctx context.Context, home string, n transport.Network, args []string) (
 		return 1, err
 	}
 	ctx, cancel := context.WithCancel(ctx)
+	defer agentstatus.Start(ctx, home, n)()
 	var wg sync.WaitGroup
 	defer func() { cancel(); wg.Wait() }()
 	wg.Add(1)

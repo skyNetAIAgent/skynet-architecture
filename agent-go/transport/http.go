@@ -12,6 +12,7 @@ import (
 	"net/url"
 	"os"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/skyNetAIAgent/skynet-architecture/agent-go/config"
@@ -65,12 +66,25 @@ func checkReceiverURL(u *url.URL) error {
 	if u.Scheme == "http" && u.User == nil {
 		endpoint := u.Scheme + "://" + u.Host + u.EscapedPath()
 		for _, base := range builtinReceivers {
-			if endpoint == base+"/v1/records" {
+			if endpoint == base+"/v1/records" || endpoint == base+"/v1/status" {
 				return nil
 			}
 		}
 	}
 	return checkURL(u)
+}
+
+// SendStatus posts the same snapshot to each full node. Later snapshots supersede failed posts.
+func (n Network) SendStatus(ctx context.Context, envelope []byte) {
+	var pending sync.WaitGroup
+	for _, base := range n.Receivers {
+		pending.Add(1)
+		go func() {
+			defer pending.Done()
+			n.request(ctx, http.MethodPost, base+"/v1/status", envelope, 4096, checkReceiverURL)
+		}()
+	}
+	pending.Wait()
 }
 
 func (n Network) Request(ctx context.Context, method, address string, data []byte, limit int64) ([]byte, error) {

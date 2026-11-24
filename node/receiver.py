@@ -15,13 +15,16 @@ What it does:
   * GET  /v1/records?after=N  gives stored records in the order they arrived
   * GET  /v1/records/<id>     gives one record
   * GET  /v1/info             says what this node is and how much it holds
+  * POST /v1/status           stores the latest signed status for an agent
+  * GET  /v1/agents           lists agents seen in status updates or result records
+  * GET  /agents              displays agent hardware, activity and totals
   * every few minutes pulls new records from the public relays (--no-relays turns
     this off). Passing records received over HTTP on to the relays is OFF unless
     --push-to-relays is given: a free key costs nothing, and a node must not become
     a free amplifier of other people's floods.
 
 Limits protect the computer, not the truth: at most --connections open connections,
-10 seconds to send a request, 40 kB per record, --rate posts and --reads page reads
+10 seconds to send a request, 40 kB per record, 4 KiB per status, --rate posts and --reads page reads
 per minute from one address, --global-rate posts per minute from everybody, pages of
 at most 200 records / 8 MB, and the store stops growing at --max-mb. The records
 stay on disk; memory holds only an index (about 150 bytes per record). Standard
@@ -36,6 +39,7 @@ import json
 import os
 import socket
 import sys
+import tempfile
 import threading
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -43,12 +47,60 @@ from urllib.parse import parse_qs, urlsplit
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "..", "agent"))
+sys.path.insert(0, HERE)                    # also find the page when run with python -I
 
-from skynet_agent import __version__, nostr, records, trust  # noqa: E402
+from agents_page import render_agents
+from skynet_agent import __version__, ed25519, nostr, records, signed, trust  # noqa: E402
 
 PAGE_MAX = 200
 PAGE_BYTES = 8 << 20
 REQUEST_SECONDS = 10
+STATUS_BYTES = 4096
+STATUS_TEXT = ("version", "os", "arch", "cpu_model")
+STATUS_NUMBERS = ("release_seq", "cpu_threads", "ram_mb", "units_done", "started", "sent")
+STATUS_FIELDS = {"v", "agent", "gpus", *STATUS_TEXT, *STATUS_NUMBERS}
+
+
+def parse_status(data):
+    """Return the signed status after checking its schema and canonical bytes."""
+    if len(data) > STATUS_BYTES:
+        raise ValueError("status too large")
+    try:
+        envelope = signed.strict_json_loads(data)
+    except (ValueError, RecursionError) as exc:
+        raise ValueError("invalid status JSON") from exc
+    if not isinstance(envelope, dict) or set(envelope) != {"status", "sig"}:
+        raise ValueError("invalid status envelope")
+    status = envelope["status"]
+    if not isinstance(status, dict) or set(status) != STATUS_FIELDS:
+        raise ValueError("invalid status fields")
+
+    def number(value):
+        return type(value) is int and 0 <= value < 2 ** 63
+
+    def label(value):
+        if not isinstance(value, str):
+            return False
+        value.encode("utf-8")   # reject escaped lone surrogates before storing/displaying
+        return True
+
+    if type(status["v"]) is not int or status["v"] != 1 or not records.is_hex64(status["agent"]):
+        raise ValueError("invalid status version or agent key")
+    if not all(label(status[k]) for k in STATUS_TEXT) or not all(number(status[k]) for k in STATUS_NUMBERS):
+        raise ValueError("invalid status field type or value")
+    if not isinstance(status["gpus"], list) or not all(
+        isinstance(gpu, dict) and set(gpu) == {"name", "vram_mb"}
+        and label(gpu["name"]) and number(gpu["vram_mb"]) for gpu in status["gpus"]
+    ):
+        raise ValueError("invalid GPU list")
+    sig = envelope["sig"]
+    if not isinstance(sig, str) or len(sig) != 128:
+        raise ValueError("invalid signature")
+    key = bytes.fromhex(status["agent"])
+    message = records.canonical(status).encode("ascii")
+    if not ed25519.is_strong_public(key) or not ed25519.verify(key, message, bytes.fromhex(sig)):
+        raise ValueError("invalid signature")
+    return status
 
 
 class NodeStore:
@@ -62,7 +114,14 @@ class NodeStore:
         self.order = []          # ids in arrival order; position + 1 is the cursor
         self.where = {}          # id -> (offset, length) in the file
         self.from_relay = set()
+        self.results = {}        # author -> count and time range of unique result records
         os.makedirs(folder, exist_ok=True)
+        self.status_file = os.path.join(folder, "agents.json")
+        try:
+            with open(self.status_file, encoding="utf-8") as f:
+                self.statuses = json.load(f)
+        except FileNotFoundError:
+            self.statuses = {}
         if not os.path.exists(self.file):
             open(self.file, "ab").close()
         self.size = os.path.getsize(self.file)
@@ -81,6 +140,7 @@ class NodeStore:
                 if env is not None and env["id"] not in self.where:
                     self.where[env["id"]] = (offset, len(body))
                     self.order.append(env["id"])
+                    self._index_result(env["body"])
                 offset = data_end
         if data_end != self.size:
             with open(self.file, "r+b") as f:
@@ -103,9 +163,49 @@ class NodeStore:
             self.where[envelope["id"]] = (self.size, len(data))
             self.order.append(envelope["id"])
             self.size += len(data) + 1
+            self._index_result(envelope["body"])
             if from_relay:
                 self.from_relay.add(envelope["id"])
             return "new"
+
+    def _index_result(self, body):
+        if body["type"] == "result":
+            created = body["created"]
+            stats = self.results.setdefault(body["author"], {"first_seen": created, "last_seen": created,
+                                                              "result_count": 0})
+            stats["result_count"] += 1
+            stats["first_seen"] = min(stats["first_seen"], created)
+            stats["last_seen"] = max(stats["last_seen"], created)
+
+    def save_status(self, status):
+        key = status["agent"]
+        with self.lock:
+            previous = self.statuses.get(key)
+            if previous and status["sent"] <= previous["sent"]:
+                return
+            now = int(time.time())
+            row = dict(status, first_seen=previous["first_seen"] if previous else now, last_seen=now)
+            updated = {**self.statuses, key: row}
+            tmp = tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", dir=self.folder, delete=False)
+            try:
+                with tmp:
+                    json.dump(updated, tmp, separators=(",", ":"))
+                    tmp.flush()
+                    os.fsync(tmp.fileno())
+                os.replace(tmp.name, self.status_file)
+            finally:
+                if os.path.exists(tmp.name):
+                    os.unlink(tmp.name)
+            self.statuses = updated
+
+    def agents(self):
+        with self.lock:
+            rows = {key: dict(stats, agent=key, legacy=True) for key, stats in self.results.items()}
+            for key, status in self.statuses.items():
+                results = self.results.get(key, {})
+                first = min(status["first_seen"], results.get("first_seen", status["first_seen"]))
+                rows[key] = dict(status, legacy=False, first_seen=first, result_count=results.get("result_count", 0))
+        return sorted(rows.values(), key=lambda row: (-row["last_seen"], row["agent"]))
 
     def _read(self, rid):
         offset, length = self.where[rid]
@@ -166,6 +266,10 @@ class Server(ThreadingHTTPServer):
     def __init__(self, address, handler, max_connections):
         super().__init__(address, handler)
         self.slots = threading.BoundedSemaphore(max_connections)
+
+    def handle_error(self, request, client_address):
+        # The default socketserver error message includes the peer's address.
+        sys.stderr.write("request failed: %s\n" % type(sys.exc_info()[1]).__name__)
 
     def process_request(self, request, client_address):
         # refuse at once, before a thread is created, when all slots are taken
@@ -232,6 +336,10 @@ def make_handler(store, posts, reads, proxy):
                                         "records": count, "bytes": size, "max_record_bytes": records.MAX_WIRE_BYTES})
             if not reads.allow(self._address()):
                 return self._send(429, {"error": "too many requests from this address, try later"})
+            if parts.path == "/v1/agents":
+                return self._send(200, store.agents())
+            if parts.path == "/agents":
+                return self._send(200, render_agents(store.agents(), int(time.time())), "text/html; charset=utf-8")
             if parts.path == "/v1/records":
                 try:
                     q = parse_qs(parts.query)
@@ -252,18 +360,21 @@ def make_handler(store, posts, reads, proxy):
             return self._send(404, {"error": "not found"})
 
         def do_POST(self):
-            if urlsplit(self.path).path != "/v1/records":
+            path = urlsplit(self.path).path
+            if path not in ("/v1/records", "/v1/status"):
                 return self._send(404, {"error": "not found"})
             if self.headers.get("Transfer-Encoding") is not None:
                 return self._send(400, {"error": "Transfer-Encoding is not supported"})
             lengths = self.headers.get_all("Content-Length") or []
-            if len(lengths) != 1 or not lengths[0].strip().isdigit():
+            if len(lengths) != 1 or not lengths[0].isascii() or not lengths[0].strip().isdigit():
                 return self._send(411, {"error": "exactly one Content-Length is required"})
-            length = int(lengths[0])
-            if length <= 0 or length > records.MAX_WIRE_BYTES + 1024:
-                return self._send(413, {"error": "record too large"})
+            size_limit = STATUS_BYTES if path == "/v1/status" else records.MAX_WIRE_BYTES + 1024
+            digits = lengths[0].strip().lstrip("0") or "0"
+            if len(digits) > len(str(size_limit)) or not 0 < int(digits) <= size_limit:
+                return self._send(413, {"error": "body size outside limit"})
+            length = int(digits)
             if not posts.allow(self._address()):
-                return self._send(429, {"error": "too many records, try later"})
+                return self._send(429, {"error": "too many posts, try later"})
             deadline = time.monotonic() + REQUEST_SECONDS
             data = bytearray()
             try:
@@ -279,6 +390,16 @@ def make_handler(store, posts, reads, proxy):
             except (OSError, socket.timeout):
                 self.close_connection = True
                 return
+            if path == "/v1/status":
+                try:
+                    status = parse_status(data)
+                except ValueError:
+                    return self._send(400, {"error": "invalid signed status"})
+                try:
+                    store.save_status(status)
+                except OSError:
+                    return self._send(507, {"error": "cannot store status"})
+                return self._send(200, {"ok": True})
             try:
                 envelope = records.parse(bytes(data))
             except records.RecordError as e:
@@ -352,8 +473,8 @@ def main(argv=None):
     ap.add_argument("--host", default="0.0.0.0")
     ap.add_argument("--port", type=int, default=8790)
     ap.add_argument("--connections", type=int, default=64, help="open connections at most")
-    ap.add_argument("--rate", type=int, default=60, help="records per minute accepted from one address")
-    ap.add_argument("--global-rate", type=int, default=600, help="records per minute accepted from everybody")
+    ap.add_argument("--rate", type=int, default=60, help="posts per minute accepted from one address")
+    ap.add_argument("--global-rate", type=int, default=600, help="posts per minute accepted from everybody")
     ap.add_argument("--reads", type=int, default=120, help="page reads per minute from one address")
     ap.add_argument("--max-mb", type=int, default=2048, help="the store stops growing at this size")
     ap.add_argument("--bridge-minutes", type=float, default=5.0)

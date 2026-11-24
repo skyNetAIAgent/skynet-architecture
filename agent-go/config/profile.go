@@ -52,7 +52,8 @@ func Defaults() Object {
 		"workers": 1, "poll_minutes": 30, "update": "auto", "submit": "auto", "submit_via": "net",
 		"run_on_battery": false, "paused": false, "max_task_minutes": 120, "batch_minutes": 60,
 		"max_submissions_per_day": 48, "report_platform": true,
-		"ai": Object{"enabled": false, "endpoint": "", "model": "", "allow_remote": false, "timeout_minutes": 30, "max_answer_chars": ai.MaxAnswerChars},
+		"status": Object{"enabled": true},
+		"ai":     Object{"enabled": false, "endpoint": "", "model": "", "allow_remote": false, "timeout_minutes": 30, "max_answer_chars": ai.MaxAnswerChars},
 	}
 }
 func defaultState() Object {
