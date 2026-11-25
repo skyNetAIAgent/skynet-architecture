@@ -1,4 +1,4 @@
-<!-- translation of docs/EXPERIMENT_D5.md, source sha256: 8344ba8a8a4752fc05abdf96a28bee33a5bbf79f5b62c3aa773ea9041db4a33a -->
+<!-- translation of docs/EXPERIMENT_D5.md, source sha256: 2000e76d85f93fdcb720f912a818562014d3b350689a707c5a27638dc9f5290b -->
 
 # 实验 D5：整数 Qwen3.5-4B
 
@@ -128,6 +128,13 @@ ChatGPT 方案中的数值图，并带有两位评审者的修正：
 - **O1（不同设备）。** 处理器（Xeon，Linux）、RTX 2060（Turing，Linux，CuPy）和 RTX 4070
   Laptop（Ada，Windows，CuPy）：每块显卡上 88 次比较，各含 242 360 320 个 logits、
   976 个所选 token 和 37 152 个状态哈希——**没有任何差异**。
+
+**2026 年 11 月 25 日，另一种架构和另一种内核语言。** 第三种 OpenCL 实现
+（ChatGPT），相同的输入和 88 次比较：处理器通过 pocl，RTX 2060 通过 NVIDIA OpenCL
+和 **AMD Radeon RX 580**（Polaris，Mesa rusticl，Linux）——同样在
+242 360 320 个 logits、976 个 token 和 37 152 个哈希中的任何一个上都没有差异。合计
+在六个执行者上得到相同的位：处理器（NumPy）、处理器（pocl）、RTX 2060（CUDA 和 OpenCL）、
+RTX 4070 Laptop（CUDA）、RX 580（OpenCL）。
 
 限制：短输入和批量 1；不使用张量块的简单整数内核；这些运行的时间不构成对 O3 和 O4
 的测量。接下来是长达数千个 token 的长上下文、具有相同算术的快速内核，然后是 O3–O5。

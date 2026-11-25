@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: e306af2e0763d72cf2991ea47e2452f6ee2a0fd29c5a79f12d1d82272dde3e37 -->
+<!-- translation of docs/ROADMAP.md, source sha256: 0ff2832d2f926594340f6b6259d13adc0558067b36cedf1390d041e4ec44e6c8 -->
 
 # Tabella di marcia: difesa dall'inganno
 
@@ -256,7 +256,8 @@ Già fatto:
       risposta solo a indirizzi privati). Serve dove il router non lascia passare dall'interno della
       rete verso l'indirizzo esterno del nodo; prima lo si aggirava con la configurazione manuale
       dell'indirizzo.
-- [ ] Verifica dal vivo della ricerca del nodo nella rete locale su un computer appena installato.
+- [x] Verifica dal vivo della ricerca del nodo nella rete locale: l'agente 1.3.4, senza configurazione
+      manuale, ha trovato il nodo ed è apparso nella pagina degli agenti (25 novembre 2026).
 - [x] Verifica in CI: Debian 12 senza Python e Ubuntu 24.04 con Python; installazione dal vivo su Linux Mint.
 - [ ] Verifica dal vivo presso un partecipante non legato ai manutentori.
 
@@ -464,6 +465,8 @@ un limite dimostrato. È considerata trovata la costruzione che soddisfa tutti i
 - [x] Ingressi brevi: processore, RTX 2060 (Linux) e RTX 4070 Laptop (Windows) danno gli stessi
       bit — 242 milioni di logit, 976 token e 37 mila hash di stato per dispositivo; la generazione
       token per token e il passaggio su una risposta pronta coincidono (O1 e O2, 24 novembre 2026).
+- [x] Un'altra architettura: AMD Radeon RX 580 (OpenCL, Mesa) e NVIDIA tramite OpenCL danno gli stessi
+      bit della versione CUDA e del processore, sugli stessi ingressi brevi (25 novembre 2026).
 - [ ] Qwen3.5-4B ad aritmetica intera su due schede video diverse su un contesto lungo: se i bit coincidono.
 - [ ] Quota del tempo di verifica della risposta rispetto alla generazione (O3).
 - [ ] La sua velocità rispetto al profilo normale sulle stesse schede.

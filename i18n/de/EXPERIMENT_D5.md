@@ -1,4 +1,4 @@
-<!-- translation of docs/EXPERIMENT_D5.md, source sha256: 8344ba8a8a4752fc05abdf96a28bee33a5bbf79f5b62c3aa773ea9041db4a33a -->
+<!-- translation of docs/EXPERIMENT_D5.md, source sha256: 2000e76d85f93fdcb720f912a818562014d3b350689a707c5a27638dc9f5290b -->
 
 # Experiment D5: ganzzahliges Qwen3.5-4B
 
@@ -132,6 +132,13 @@ Texte (Russisch, Englisch, Chinesisch, Arithmetik, Code, Rezept), Tiefe 4 und 32
 - **O1 (verschiedene Geräte).** Prozessor (Xeon, Linux), RTX 2060 (Turing, Linux, CuPy) und RTX 4070
   Laptop (Ada, Windows, CuPy): 88 Vergleiche auf jeder Karte, je 242 360 320 Logits,
   976 gewählte Token und 37 152 Zustands-Hashes — **kein einziger Unterschied**.
+
+**25. November 2026, eine andere Architektur und eine andere Sprache der Kerne.** Eine dritte
+Implementierung auf OpenCL (ChatGPT), dieselben Eingaben und 88 Vergleiche: der Prozessor über pocl,
+die RTX 2060 über NVIDIA OpenCL und **AMD Radeon RX 580** (Polaris, Mesa rusticl, Linux) — wieder
+kein einziger Unterschied in einem der 242 360 320 Logits, 976 Token und 37 152 Hashes. Insgesamt
+dieselben Bits auf sechs Ausführenden: Prozessor (NumPy), Prozessor (pocl), RTX 2060 (CUDA und
+OpenCL), RTX 4070 Laptop (CUDA), RX 580 (OpenCL).
 
 Einschränkungen: kurze Eingaben und Batch 1; einfache ganzzahlige Kerne ohne Tensor-Kerne; die Zeit
 dieser Läufe ist keine Messung von O3 und O4. Weiter — langer Kontext bis zu Tausenden Token,

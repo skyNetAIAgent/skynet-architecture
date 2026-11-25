@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: e306af2e0763d72cf2991ea47e2452f6ee2a0fd29c5a79f12d1d82272dde3e37 -->
+<!-- translation of docs/ROADMAP.md, source sha256: 0ff2832d2f926594340f6b6259d13adc0558067b36cedf1390d041e4ec44e6c8 -->
 
 # Feuille de route : protection contre la fraude
 
@@ -256,8 +256,8 @@ Déjà fait :
       réponse uniquement vers des adresses privées). Nécessaire là où le routeur ne laisse pas passer,
       depuis l'intérieur du réseau, vers l'adresse externe du nœud ; auparavant, on contournait cela
       par un réglage manuel de l'adresse.
-- [ ] Vérification en conditions réelles de la recherche du nœud dans le réseau local sur un ordinateur
-      fraîchement installé.
+- [x] Vérification en conditions réelles de la recherche du nœud dans le réseau local : l'agent 1.3.4,
+      sans réglage manuel, a trouvé le nœud et est apparu sur la page des agents (25 novembre 2026).
 - [x] Vérification dans la CI : Debian 12 sans Python et Ubuntu 24.04 avec Python ; installation en
       conditions réelles sur Linux Mint.
 - [ ] Vérification en conditions réelles chez un participant sans lien avec les mainteneurs.
@@ -461,6 +461,8 @@ borne prouvée. Est considérée comme trouvée la construction qui remplit tous
       mêmes bits — 242 millions de logits, 976 jetons et 37 000 empreintes d'état par appareil ; la
       génération jeton par jeton et le passage sur une réponse complète coïncident (O1 et O2, 24 novembre
       2026).
+- [x] Autre architecture : l'AMD Radeon RX 580 (OpenCL, Mesa) et NVIDIA via OpenCL donnent les mêmes
+      bits que la version CUDA et le processeur, sur les mêmes entrées courtes (25 novembre 2026).
 - [ ] Qwen3.5-4B en arithmétique entière sur deux cartes graphiques différentes et un contexte long :
       les bits coïncident-ils.
 - [ ] Part du temps de vérification de la réponse par rapport à la génération (O3).

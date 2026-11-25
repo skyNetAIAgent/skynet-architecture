@@ -1,4 +1,4 @@
-<!-- translation of docs/EXPERIMENT_D5.md, source sha256: 8344ba8a8a4752fc05abdf96a28bee33a5bbf79f5b62c3aa773ea9041db4a33a -->
+<!-- translation of docs/EXPERIMENT_D5.md, source sha256: 2000e76d85f93fdcb720f912a818562014d3b350689a707c5a27638dc9f5290b -->
 
 # Experimento D5: Qwen3.5-4B inteiro
 
@@ -70,5 +70,7 @@ Para cada execução: manifesto do perfil e das versões, entradas, hashes dos l
 - **Perfil v2** (ativações com expoente binário por vetor e mantissa de 16 bits, resto e estado da recorrência com passo 2⁻²⁰, chaves e valores da atenção em 32 bits): o mesmo token que o do modelo oficial em 90 de 90 posições, correlação média dos logits 0,9996, mínima 0,998. O estado e o cache ocupam 238 MiB em 3000 posições, contra 95 no v1; o número de multiplicações por token é o mesmo — 4,2 bilhões.
 - **O2 (um dispositivo).** A geração token a token e a passagem pela resposta pronta com divisão em 1, 3 e 8 posições dão os mesmos bits de todos os logits, dos tokens escolhidos e dos hashes dos estados.
 - **O1 (dispositivos diferentes).** Processador (Xeon, Linux), RTX 2060 (Turing, Linux, CuPy) e RTX 4070 Laptop (Ada, Windows, CuPy): 88 comparações em cada placa, 242 360 320 logits, 976 tokens escolhidos e 37 152 hashes de estados — **nenhuma diferença**.
+
+**25 de novembro de 2026, outra arquitetura e outra linguagem de núcleos.** A terceira implementação em OpenCL (ChatGPT), as mesmas entradas e 88 comparações: o processador via pocl, a RTX 2060 via NVIDIA OpenCL e a **AMD Radeon RX 580** (Polaris, Mesa rusticl, Linux) — novamente nenhuma diferença em nenhum dos 242 360 320 logits, 976 tokens e 37 152 hashes. No total, os mesmos bits em seis executores: processador (NumPy), processador (pocl), RTX 2060 (CUDA e OpenCL), RTX 4070 Laptop (CUDA), RX 580 (OpenCL).
 
 Limitações: entradas curtas e lote 1; núcleos inteiros simples sem blocos tensoriais; o tempo dessas execuções não é uma medição de O3 e O4. A seguir — contexto longo de até milhares de tokens, núcleos rápidos com a mesma aritmética e, depois, O3–O5.

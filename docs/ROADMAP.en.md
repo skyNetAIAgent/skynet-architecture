@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: e306af2e0763d72cf2991ea47e2452f6ee2a0fd29c5a79f12d1d82272dde3e37 -->
+<!-- translation of docs/ROADMAP.md, source sha256: 0ff2832d2f926594340f6b6259d13adc0558067b36cedf1390d041e4ec44e6c8 -->
 
 # Roadmap: protection against cheating
 
@@ -241,7 +241,8 @@ Already done:
       answer only to private addresses). This is needed where the router does not let traffic
       from inside the network to the node's external address; previously this was worked around
       by manually setting the address.
-- [ ] A live check of finding a node in the local network on a freshly installed computer.
+- [x] Live check of finding a node in the local network: agent 1.3.4, without manual
+      setup, found the node and appeared on the agents-online page (25 November 2026).
 - [x] A check in CI: Debian 12 without Python and Ubuntu 24.04 with Python; a live installation
       on Linux Mint.
 - [ ] A live check with a participant not connected with the maintainers.
@@ -449,6 +450,8 @@ or a proven bound. A construction is considered found if it satisfies all the cr
 - [x] Short inputs: the CPU, RTX 2060 (Linux), and RTX 4070 Laptop (Windows) give the same bits —
       242 million logits, 976 tokens, and 37 thousand state hashes per device; generation one
       token at a time and a pass over a ready answer agree (O1 and O2, 24 November 2026).
+- [x] Another architecture: AMD Radeon RX 580 (OpenCL, Mesa) and NVIDIA via OpenCL give the same
+      bits as the CUDA version and the CPU, on the same short inputs (25 November 2026).
 - [ ] Integer Qwen3.5-4B on two different GPUs on a long context: whether the bits match.
 - [ ] The share of answer-verification time relative to generation (O3).
 - [ ] Its speed relative to the usual profile on the same cards.

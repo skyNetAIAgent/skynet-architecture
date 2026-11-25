@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: e306af2e0763d72cf2991ea47e2452f6ee2a0fd29c5a79f12d1d82272dde3e37 -->
+<!-- translation of docs/ROADMAP.md, source sha256: 0ff2832d2f926594340f6b6259d13adc0558067b36cedf1390d041e4ec44e6c8 -->
 
 # Roteiro: defesa contra fraude
 
@@ -249,7 +249,7 @@ Já feito:
 - [x] Desde 1.3.4, o agente encontra sozinho o nó completo em sua rede local (consulta por UDP, resposta
       apenas para endereços privados). Necessário onde o roteador não deixa passar de dentro da rede para
       o endereço externo do nó; antes isso era contornado com a configuração manual do endereço.
-- [ ] Verificação ao vivo da busca do nó na rede local em um computador recém-instalado.
+- [x] Verificação ao vivo da busca do nó na rede local: o agente 1.3.4, sem configuração manual, encontrou o nó e apareceu na página dos agentes (25 de novembro de 2026).
 - [x] Verificação no CI: Debian 12 sem Python e Ubuntu 24.04 com Python; instalação ao vivo no Linux Mint.
 - [ ] Verificação ao vivo com um participante sem vínculo com os mantenedores.
 
@@ -452,6 +452,7 @@ limite provado. Considera-se encontrada a construção que cumpre todos os crit�
 - [x] Entradas curtas: processador, RTX 2060 (Linux) e RTX 4070 Laptop (Windows) produzem os mesmos
       bits — 242 milhões de logits, 976 tokens e 37 mil hashes de estados por dispositivo; a geração
       por token e a passada por uma resposta pronta coincidem (O1 e O2, 24 de novembro de 2026).
+- [x] Outra arquitetura: a AMD Radeon RX 580 (OpenCL, Mesa) e a NVIDIA via OpenCL produzem os mesmos bits que a versão CUDA e o processador, nas mesmas entradas curtas (25 de novembro de 2026).
 - [ ] Qwen3.5-4B com aritmética inteira em duas placas de vídeo diferentes: se os bits coincidem.
 - [ ] Fração do tempo de verificação da resposta em relação à geração (O3).
 - [ ] Sua velocidade em relação ao perfil comum nas mesmas placas.

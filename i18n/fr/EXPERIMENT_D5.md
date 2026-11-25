@@ -1,4 +1,4 @@
-<!-- translation of docs/EXPERIMENT_D5.md, source sha256: 8344ba8a8a4752fc05abdf96a28bee33a5bbf79f5b62c3aa773ea9041db4a33a -->
+<!-- translation of docs/EXPERIMENT_D5.md, source sha256: 2000e76d85f93fdcb720f912a818562014d3b350689a707c5a27638dc9f5290b -->
 
 # Expérience D5 : Qwen3.5-4B en arithmétique entière
 
@@ -132,6 +132,12 @@ ne concerne que les appareils et les versions testés. Le résultat de chaque ex
 - **O1 (appareils différents).** Processeur (Xeon, Linux), RTX 2060 (Turing, Linux, CuPy) et RTX 4070
   Laptop (Ada, Windows, CuPy) : 88 comparaisons sur chaque carte, 242 360 320 logits par carte,
   976 jetons choisis et 37 152 hachages d'états — **aucune différence**.
+- **25 novembre 2026, une autre architecture et un autre langage de noyaux.** Troisième implémentation en OpenCL
+  (ChatGPT), mêmes entrées et 88 comparaisons : processeur via pocl, RTX 2060 via NVIDIA OpenCL
+  et **AMD Radeon RX 580** (Polaris, Mesa rusticl, Linux) — de nouveau aucune différence dans aucun des
+  242 360 320 logits, 976 jetons et 37 152 hachages. Au total, les mêmes bits sur six exécutants :
+  processeur (NumPy), processeur (pocl), RTX 2060 (CUDA et OpenCL), RTX 4070 Laptop (CUDA),
+  RX 580 (OpenCL).
 
 Limites : entrées courtes et lot de 1 ; noyaux entiers simples sans blocs tensoriels ; le temps
 de ces exécutions ne constitue pas une mesure de O3 et O4. Ensuite — le contexte long jusqu'à des milliers de jetons,

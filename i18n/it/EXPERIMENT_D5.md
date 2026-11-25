@@ -1,4 +1,4 @@
-<!-- translation of docs/EXPERIMENT_D5.md, source sha256: 8344ba8a8a4752fc05abdf96a28bee33a5bbf79f5b62c3aa773ea9041db4a33a -->
+<!-- translation of docs/EXPERIMENT_D5.md, source sha256: 2000e76d85f93fdcb720f912a818562014d3b350689a707c5a27638dc9f5290b -->
 
 # Esperimento D5: Qwen3.5-4B intero
 
@@ -134,6 +134,13 @@ cinese, aritmetica, codice, ricetta), profondità 4 e 32 blocchi; pacchetto 1.
 - **O1 (dispositivi diversi).** Processore (Xeon, Linux), RTX 2060 (Turing, Linux, CuPy) e RTX 4070
   Laptop (Ada, Windows, CuPy): 88 confronti su ciascuna scheda, 242 360 320 logit, 976 token scelti
   e 37 152 hash di stato per scheda — **nessuna differenza**.
+
+**25 novembre 2026, un'altra architettura e un altro linguaggio di kernel.** La terza implementazione
+in OpenCL (ChatGPT), gli stessi input e 88 confronti: il processore tramite pocl, la RTX 2060 tramite
+NVIDIA OpenCL e la **AMD Radeon RX 580** (Polaris, Mesa rusticl, Linux) — di nuovo nessuna differenza
+in nessuno dei 242 360 320 logit, dei 976 token e dei 37 152 hash. In totale, gli stessi bit su sei
+esecutori: processore (NumPy), processore (pocl), RTX 2060 (CUDA e OpenCL), RTX 4070 Laptop (CUDA),
+RX 580 (OpenCL).
 
 Limiti: input corti e pacchetto 1; kernel interi semplici senza unità tensoriali; il tempo di queste
 esecuzioni non è una misurazione di O3 e O4. In seguito — contesto lungo fino a migliaia di token,

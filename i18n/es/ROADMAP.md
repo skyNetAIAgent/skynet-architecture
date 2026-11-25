@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: e306af2e0763d72cf2991ea47e2452f6ee2a0fd29c5a79f12d1d82272dde3e37 -->
+<!-- translation of docs/ROADMAP.md, source sha256: 0ff2832d2f926594340f6b6259d13adc0558067b36cedf1390d041e4ec44e6c8 -->
 
 # Hoja de ruta: defensa contra el engaño
 
@@ -251,7 +251,8 @@ Ya hecho:
 - [x] Desde la 1.3.4, el agente encuentra por sí mismo el nodo completo en su red local (consulta por UDP,
       respuesta solo a direcciones privadas). Hace falta donde el router no deja pasar desde dentro de la red
       a la dirección externa del nodo; antes esto se evitaba configurando la dirección a mano.
-- [ ] Comprobación en vivo de la búsqueda del nodo en la red local en un ordenador recién instalado.
+- [x] Comprobación en vivo de la búsqueda del nodo en la red local: el agente 1.3.4, sin configuración
+      manual, encontró el nodo y apareció en la página de agentes (25 de noviembre de 2026).
 - [x] Comprobación en CI: Debian 12 sin Python y Ubuntu 24.04 con Python; instalación en vivo en Linux Mint.
 - [ ] Comprobación en vivo en un participante no vinculado a los mantenedores.
 
@@ -445,6 +446,8 @@ un límite demostrado. Se considera encontrada la construcción que cumple todos
 - [x] Entradas cortas: el procesador, la RTX 2060 (Linux) y la RTX 4070 Laptop (Windows) dan los mismos
       bits — 242 millones de logits, 976 tokens y 37 mil hashes de estado por dispositivo; la generación
       token a token y el paso por una respuesta ya lista coinciden (O1 y O2, 24 de noviembre de 2026).
+- [x] Otra arquitectura: la AMD Radeon RX 580 (OpenCL, Mesa) y NVIDIA mediante OpenCL dan los mismos
+      bits que la versión CUDA y el procesador, con las mismas entradas cortas (25 de noviembre de 2026).
 - [ ] Qwen3.5-4B con aritmética entera en dos tarjetas gráficas distintas con contexto largo: si coinciden los bits.
 - [ ] Proporción del tiempo de verificación de la respuesta respecto a la generación (O3).
 - [ ] Su velocidad respecto al perfil normal en las mismas tarjetas.

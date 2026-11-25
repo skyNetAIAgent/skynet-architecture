@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: e306af2e0763d72cf2991ea47e2452f6ee2a0fd29c5a79f12d1d82272dde3e37 -->
+<!-- translation of docs/ROADMAP.md, source sha256: 0ff2832d2f926594340f6b6259d13adc0558067b36cedf1390d041e4ec44e6c8 -->
 
 # Roadmap: Schutz vor Betrug
 
@@ -269,8 +269,8 @@ Bereits erledigt:
       per UDP, Antwort nur an private Adressen). Nötig dort, wo der Router von innerhalb des Netzes
       nicht zur externen Adresse des Knotens durchlässt; früher wurde dies durch manuelle
       Einstellung der Adresse umgangen.
-- [ ] Live-Prüfung der Suche nach einem Knoten im lokalen Netz auf einem gerade erst installierten
-      Computer.
+- [x] Live-Prüfung der Suche nach einem Knoten im lokalen Netz: Agent 1.3.4 fand den Knoten
+      ohne manuelle Einstellung und erschien auf der Agentenseite (25. November 2026).
 - [x] Prüfung in CI: Debian 12 ohne Python und Ubuntu 24.04 mit Python; Live-Installation auf Linux Mint.
 - [ ] Live-Prüfung bei einem Teilnehmer, der nicht mit den Betreuern verbunden ist.
 
@@ -488,6 +488,9 @@ aus Abschnitt 1 erfüllt.
       Bits — je 242 Mio. Logits, 976 Tokens und 37 Tsd. Zustands-Hashes pro Gerät; die Erzeugung
       Token für Token und der Durchlauf über eine fertige Antwort stimmen überein (O1 und O2,
       24. November 2026).
+- [x] Andere Architektur: AMD Radeon RX 580 (OpenCL, Mesa) und NVIDIA über OpenCL liefern
+      dieselben Bits wie die CUDA-Version und der Prozessor, auf denselben kurzen Eingaben
+      (25. November 2026).
 - [ ] Ganzzahliges Qwen3.5-4B auf zwei verschiedenen Grafikkarten bei langem Kontext: ob die Bits
       übereinstimmen.
 - [ ] Anteil der Zeit für die Prüfung einer Antwort an der Erzeugung (O3).

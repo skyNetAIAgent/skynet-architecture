@@ -1,4 +1,4 @@
-<!-- translation of docs/EXPERIMENT_D5.md, source sha256: 8344ba8a8a4752fc05abdf96a28bee33a5bbf79f5b62c3aa773ea9041db4a33a -->
+<!-- translation of docs/EXPERIMENT_D5.md, source sha256: 2000e76d85f93fdcb720f912a818562014d3b350689a707c5a27638dc9f5290b -->
 
 # Experiment D5: integer Qwen3.5-4B
 
@@ -133,6 +133,13 @@ texts (Russian, English, Chinese, arithmetic, code, a recipe), depth 4 and 32 bl
 - **O1 (different devices).** The processor (Xeon, Linux), RTX 2060 (Turing, Linux, CuPy) and RTX 4070
   Laptop (Ada, Windows, CuPy): 88 comparisons on each card, 242 360 320 logits each,
   976 selected tokens and 37 152 state hashes — **not a single difference**.
+
+**25 November 2026, a different architecture and a different kernel language.** A third
+implementation on OpenCL (ChatGPT), the same inputs and 88 comparisons: the processor via pocl,
+the RTX 2060 via NVIDIA OpenCL and **AMD Radeon RX 580** (Polaris, Mesa rusticl, Linux) — again
+not a single difference in any one of the 242 360 320 logits, 976 tokens and 37 152 hashes. In total,
+the same bits on six performers: the processor (NumPy), the processor (pocl), the RTX 2060 (CUDA
+and OpenCL), the RTX 4070 Laptop (CUDA), the RX 580 (OpenCL).
 
 Limitations: short inputs and batch 1; simple integer kernels without tensor cores; the time
 of these runs is not a measurement of O3 and O4. Next — a long context of up to thousands of tokens,
