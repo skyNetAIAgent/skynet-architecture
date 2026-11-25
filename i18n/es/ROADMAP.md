@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: e04c1849e93c4065aafdb97330a2a708285d48546175f4847bdfd81e8506b881 -->
+<!-- translation of docs/ROADMAP.md, source sha256: af2d3af05e4ca027e7f3936208f6bf3c80e5d4fc4940e50adc7f57e98cedd934 -->
 
 # Hoja de ruta: defensa contra el engaño
 
@@ -458,6 +458,10 @@ un límite demostrado. Se considera encontrada la construcción que cumple todos
       llama.cpp Q8_0 con lote 1, y 2,5–2,8 veces con lote 8 (25 de noviembre de 2026).
 - [x] Consejo de modelos sobre la verificación «no por fuerza bruta» (predicción del engaño, anomalías, verificación
       por muestreo, juegos de inspección): [STRATEGY_SEARCH](STRATEGY_SEARCH.md), 25 de noviembre de 2026.
+- [x] Consejo de modelos sobre el detector oculto y cambiante (reglas secretas, cifrado, cadena de bloques,
+      criptografía de umbral, FHE, MPC, TEE): el secreto de las reglas no aporta más que una verificación
+      aleatoria secreta del mismo precio; solo son útiles el secreto de la elección antes de fijar la
+      respuesta y el secreto del rol — [HIDDEN_DETECTOR](HIDDEN_DETECTOR.md), 25 de noviembre de 2026.
 - [ ] Su calidad respecto al perfil normal en el mismo conjunto de tareas.
 - [ ] Planes de medición aparte (fuera de D5): energía de la verificación, entrenamiento con aritmética entera.
 - [ ] Coste de la disputa en el registro para el modelo completo. Antes hacen falta la elección de la cadena de bloques, una máquina de referencia

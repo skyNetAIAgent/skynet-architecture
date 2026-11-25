@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: e04c1849e93c4065aafdb97330a2a708285d48546175f4847bdfd81e8506b881 -->
+<!-- translation of docs/ROADMAP.md, source sha256: af2d3af05e4ca027e7f3936208f6bf3c80e5d4fc4940e50adc7f57e98cedd934 -->
 
 # Roteiro: defesa contra fraude
 
@@ -463,6 +463,10 @@ limite provado. Considera-se encontrada a construção que cumpre todos os crit�
       Q8_0 com lote 1, e 2,5–2,8 vezes mais lenta com lote 8 (25 de novembro de 2026).
 - [x] Conselho de modelos sobre a verificação «não pelo método direto» (previsão de fraude, anomalias,
       verificação por amostragem, jogos de inspeção): [STRATEGY_SEARCH](STRATEGY_SEARCH.md), 25 de novembro de 2026.
+- [x] Conselho de modelos sobre o detector oculto e mutável (regras secretas, cifragem, blockchain,
+      criptografia de limiar, FHE, MPC, TEE): o sigilo das regras não dá mais que uma verificação
+      aleatória secreta do mesmo preço; só são úteis o sigilo da escolha antes da fixação da resposta
+      e o sigilo do papel — [HIDDEN_DETECTOR](HIDDEN_DETECTOR.md), 25 de novembro de 2026.
 - [ ] Sua qualidade em relação ao perfil comum no mesmo conjunto de tarefas.
 - [ ] Planos de medição separados (fora do D5): energia da verificação, treinamento com aritmética inteira.
 - [ ] Preço da disputa no registro para o modelo completo. Antes dela são necessários a escolha do

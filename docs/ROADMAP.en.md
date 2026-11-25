@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: e04c1849e93c4065aafdb97330a2a708285d48546175f4847bdfd81e8506b881 -->
+<!-- translation of docs/ROADMAP.md, source sha256: af2d3af05e4ca027e7f3936208f6bf3c80e5d4fc4940e50adc7f57e98cedd934 -->
 
 # Roadmap: protection against cheating
 
@@ -462,6 +462,10 @@ or a proven bound. A construction is considered found if it satisfies all the cr
       llama.cpp Q8_0 at batch size 1, and 2.5–2.8 times slower at batch size 8 (25 November 2026).
 - [x] The council of models on verification "not head-on" (cheat prediction, anomalies, sampling
       verification, inspection games): [STRATEGY_SEARCH](STRATEGY_SEARCH.en.md), 25 November 2026.
+- [x] The council of models on a hidden and changing detector (secret rules, encryption, blockchain,
+      threshold cryptography, FHE, MPC, TEE): the secrecy of the rules gives no more than a secret
+      random check at the same price; only the secrecy of the choice before the answer is fixed and
+      the secrecy of the role are useful — [HIDDEN_DETECTOR](HIDDEN_DETECTOR.en.md), 25 November 2026.
 - [ ] Its quality relative to the usual profile on the same set of tasks.
 - [ ] Separate measurement plans (outside D5): verification energy, integer training.
 - [ ] The price of a dispute in the ledger for the full model. Before it, the following are needed:

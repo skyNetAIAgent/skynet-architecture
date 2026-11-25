@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: e04c1849e93c4065aafdb97330a2a708285d48546175f4847bdfd81e8506b881 -->
+<!-- translation of docs/ROADMAP.md, source sha256: af2d3af05e4ca027e7f3936208f6bf3c80e5d4fc4940e50adc7f57e98cedd934 -->
 
 # Roadmap: Schutz vor Betrug
 
@@ -504,6 +504,11 @@ aus Abschnitt 1 erfüllt.
 - [x] Der Modellrat zur Prüfung „nicht direkt“ (Vorhersage von Betrug, Anomalien,
       Stichprobenprüfung, Inspektionsspiele): [STRATEGY_SEARCH](STRATEGY_SEARCH.md),
       25. November 2026.
+- [x] Der Modellrat zu einem verborgenen und sich ändernden Detektor (geheime Regeln,
+      Verschlüsselung, Blockchain, Schwellenkryptografie, FHE, MPC, TEE): Die Geheimhaltung der
+      Regeln bringt nicht mehr als eine geheime Zufallsprüfung zum selben Preis; nützlich sind
+      nur die Geheimhaltung der Auswahl vor der Fixierung der Antwort und die Geheimhaltung der
+      Rolle — [HIDDEN_DETECTOR](HIDDEN_DETECTOR.md), 25. November 2026.
 - [ ] Seine Qualität gegenüber dem gewöhnlichen Profil auf derselben Aufgabensammlung.
 - [ ] Gesonderte Messpläne (außerhalb von D5): Energie der Prüfung, ganzzahliges Training.
 - [ ] Preis des Streitfalls im Journal für das vollständige Modell. Davor sind nötig: die Wahl der

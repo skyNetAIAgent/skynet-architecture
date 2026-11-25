@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: e04c1849e93c4065aafdb97330a2a708285d48546175f4847bdfd81e8506b881 -->
+<!-- translation of docs/ROADMAP.md, source sha256: af2d3af05e4ca027e7f3936208f6bf3c80e5d4fc4940e50adc7f57e98cedd934 -->
 
 # Tabella di marcia: difesa dall'inganno
 
@@ -477,6 +477,11 @@ un limite dimostrato. È considerata trovata la costruzione che soddisfa tutti i
       llama.cpp Q8_0 con batch 1, 2,5–2,8 volte con batch 8 (25 novembre 2026).
 - [x] Il consiglio dei modelli sulla verifica «non a forza bruta» (previsione dell'inganno, anomalie,
       verifica a campione, giochi di ispezione): [STRATEGY_SEARCH](STRATEGY_SEARCH.md), 25 novembre 2026.
+- [x] Il consiglio dei modelli sul detector nascosto e mutevole (regole segrete, cifratura,
+      blockchain, crittografia a soglia, FHE, MPC, TEE): il segreto delle regole non offre più di
+      una verifica casuale segreta dello stesso costo; sono utili solo il segreto della scelta
+      prima della fissazione della risposta e il segreto del ruolo —
+      [HIDDEN_DETECTOR](HIDDEN_DETECTOR.md), 25 novembre 2026.
 - [ ] La sua qualità rispetto al profilo normale sullo stesso insieme di compiti.
 - [ ] Piani di misurazione separati (fuori da D5): energia della verifica, addestramento con aritmetica intera.
 - [ ] Costo della controversia nel registro per il modello completo. Prima servono la scelta della

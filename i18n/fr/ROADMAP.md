@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: e04c1849e93c4065aafdb97330a2a708285d48546175f4847bdfd81e8506b881 -->
+<!-- translation of docs/ROADMAP.md, source sha256: af2d3af05e4ca027e7f3936208f6bf3c80e5d4fc4940e50adc7f57e98cedd934 -->
 
 # Feuille de route : protection contre la fraude
 
@@ -474,6 +474,10 @@ borne prouvée. Est considérée comme trouvée la construction qui remplit tous
       llama.cpp Q8_0 avec un lot de 1, et 2,5–2,8 fois plus lent avec un lot de 8 (25 novembre 2026).
 - [x] Conseil de modèles sur une vérification « non frontale » (prédiction de la fraude, anomalies, vérification
       par échantillonnage, jeux d'inspection) : [STRATEGY_SEARCH](STRATEGY_SEARCH.md), 25 novembre 2026.
+- [x] Conseil de modèles sur un détecteur caché et changeant (règles secrètes, chiffrement, blockchain,
+      cryptographie à seuil, FHE, MPC, TEE) : le secret des règles n'apporte pas plus qu'une vérification
+      aléatoire secrète de même coût ; seuls sont utiles le secret du choix avant la fixation de la réponse
+      et le secret du rôle — [HIDDEN_DETECTOR](HIDDEN_DETECTOR.md), 25 novembre 2026.
 - [ ] Sa qualité par rapport au profil ordinaire sur le même ensemble de tâches.
 - [ ] Des plans de mesure séparés (hors D5) : l'énergie de la vérification, l'apprentissage en arithmétique
       entière.
