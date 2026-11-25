@@ -1,4 +1,4 @@
-<!-- translation of docs/EXPERIMENT_D5.md, source sha256: 2000e76d85f93fdcb720f912a818562014d3b350689a707c5a27638dc9f5290b -->
+<!-- translation of docs/EXPERIMENT_D5.md, source sha256: 3aaab08790ed9745e86dcaed1c7bbebd15df48ba863df50aac4f965c117afbe1 -->
 
 # Experiment D5: ganzzahliges Qwen3.5-4B
 
@@ -139,6 +139,17 @@ die RTX 2060 über NVIDIA OpenCL und **AMD Radeon RX 580** (Polaris, Mesa rustic
 kein einziger Unterschied in einem der 242 360 320 Logits, 976 Token und 37 152 Hashes. Insgesamt
 dieselben Bits auf sechs Ausführenden: Prozessor (NumPy), Prozessor (pocl), RTX 2060 (CUDA und
 OpenCL), RTX 4070 Laptop (CUDA), RX 580 (OpenCL).
+
+**25. November 2026, langer Kontext.** Anfrage + Antwort: 512 + 64, 2048 + 256 und 4096 + 64 Token
+(echte Texte), alle 32 Blöcke; verglichen wurden die Hashes der Logits jeder Position, die gewählten Token
+und die Zustands-Hashes alle 64 Positionen. RTX 2060 (CUDA), RTX 2060 (OpenCL) und RTX 4070 Laptop
+(CUDA) stimmten in allen drei Fällen untereinander überein, und auf jeder Karte stimmte die Generierung
+Token für Token mit dem Durchlauf über die fertige Antwort in Stücken von 64 und 512 Positionen überein.
+Für 512 + 64 lieferten die unabhängige Referenz auf dem Prozessor und die RX 580 dasselbe. Auf der RX 580
+stimmte die Generierung Token für Token auch für 2048 + 256 und 4096 + 64 mit den übrigen Karten überein,
+doch der Durchlauf über die fertige Antwort wird bei langen Eingaben vom Treiber abgebrochen (Zurücksetzen
+einer zu langen Aufgabe der Grafikkarte); der Attention-Kernel muss in Teile zerlegt werden.
+Das ist eine Einschränkung der Ausführung, kein Unterschied in den Bits.
 
 Einschränkungen: kurze Eingaben und Batch 1; einfache ganzzahlige Kerne ohne Tensor-Kerne; die Zeit
 dieser Läufe ist keine Messung von O3 und O4. Weiter — langer Kontext bis zu Tausenden Token,

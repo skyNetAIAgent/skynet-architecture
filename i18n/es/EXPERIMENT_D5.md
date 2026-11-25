@@ -1,4 +1,4 @@
-<!-- translation of docs/EXPERIMENT_D5.md, source sha256: 2000e76d85f93fdcb720f912a818562014d3b350689a707c5a27638dc9f5290b -->
+<!-- translation of docs/EXPERIMENT_D5.md, source sha256: 3aaab08790ed9745e86dcaed1c7bbebd15df48ba863df50aac4f965c117afbe1 -->
 
 # Experimento D5: Qwen3.5-4B entero
 
@@ -140,6 +140,17 @@ y la **AMD Radeon RX 580** (Polaris, Mesa rusticl, Linux) — de nuevo ni una so
 242 360 320 logits, 976 tokens y 37 152 hashes. En total, los mismos bits en seis ejecutores:
 procesador (NumPy), procesador (pocl), RTX 2060 (CUDA y OpenCL), RTX 4070 Laptop (CUDA),
 RX 580 (OpenCL).
+
+**25 de noviembre de 2026, contexto largo.** Petición + respuesta: 512 + 64, 2048 + 256 y 4096 + 64 tokens
+(textos reales), los 32 bloques; se compararon los hashes de los logits de cada posición, los tokens elegidos
+y los hashes de estados cada 64 posiciones. La RTX 2060 (CUDA), la RTX 2060 (OpenCL) y la RTX 4070 Laptop
+(CUDA) coincidieron entre sí en los tres casos, y en cada tarjeta la generación token a token coincidió
+con la pasada sobre la respuesta ya generada en fragmentos de 64 y 512 posiciones. Para 512 + 64, lo mismo
+dieron la referencia independiente en el procesador y la RX 580. En la RX 580 la generación token a token
+coincidió con las demás tarjetas también para 2048 + 256 y 4096 + 64, pero la pasada sobre la respuesta ya
+generada con entradas largas se interrumpe por el controlador (reinicio de una tarea de la tarjeta
+gráfica demasiado larga); hay que dividir el núcleo de atención en partes. Es una limitación de ejecución,
+no una discrepancia de bits.
 
 Limitaciones: entradas cortas y lote 1; núcleos enteros simples sin bloques tensoriales; el tiempo
 de estas ejecuciones no es una medición de O3 y O4. A continuación, contexto largo de hasta miles de tokens,

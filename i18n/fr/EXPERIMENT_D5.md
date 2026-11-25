@@ -1,4 +1,4 @@
-<!-- translation of docs/EXPERIMENT_D5.md, source sha256: 2000e76d85f93fdcb720f912a818562014d3b350689a707c5a27638dc9f5290b -->
+<!-- translation of docs/EXPERIMENT_D5.md, source sha256: 3aaab08790ed9745e86dcaed1c7bbebd15df48ba863df50aac4f965c117afbe1 -->
 
 # Expérience D5 : Qwen3.5-4B en arithmétique entière
 
@@ -138,6 +138,16 @@ ne concerne que les appareils et les versions testés. Le résultat de chaque ex
   242 360 320 logits, 976 jetons et 37 152 hachages. Au total, les mêmes bits sur six exécutants :
   processeur (NumPy), processeur (pocl), RTX 2060 (CUDA et OpenCL), RTX 4070 Laptop (CUDA),
   RX 580 (OpenCL).
+
+**25 novembre 2026, contexte long.** Requête + réponse : 512 + 64, 2048 + 256 et 4096 + 64 jetons
+(textes réels), les 32 blocs ; ont été comparés les hachages des logits de chaque position, les jetons
+choisis et les hachages des états toutes les 64 positions. La RTX 2060 (CUDA), la RTX 2060 (OpenCL) et la RTX 4070 Laptop
+(CUDA) ont concordé entre elles dans les trois cas, et sur chaque carte la génération jeton par jeton a concordé
+avec une passe sur la réponse prête par tranches de 64 et 512 positions. Pour 512 + 64, la référence indépendante
+sur processeur et la RX 580 ont donné le même résultat. Sur la RX 580, la génération jeton par jeton a concordé avec les autres cartes
+pour 2048 + 256 et 4096 + 64 également, mais la passe sur la réponse prête sur des entrées longues est interrompue
+par le pilote (réinitialisation d'une tâche de carte graphique trop longue) ; il faut découper le noyau d'attention en parties.
+C'est une limite d'exécution, et non une divergence de bits.
 
 Limites : entrées courtes et lot de 1 ; noyaux entiers simples sans blocs tensoriels ; le temps
 de ces exécutions ne constitue pas une mesure de O3 et O4. Ensuite — le contexte long jusqu'à des milliers de jetons,

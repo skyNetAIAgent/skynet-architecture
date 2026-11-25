@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: 0ff2832d2f926594340f6b6259d13adc0558067b36cedf1390d041e4ec44e6c8 -->
+<!-- translation of docs/ROADMAP.md, source sha256: ad345dc397f2cdc54e07879bb5286338d67fb1d45f5094c5f5e4bc4340588f70 -->
 
 # Roadmap: Schutz vor Betrug
 
@@ -491,8 +491,11 @@ aus Abschnitt 1 erfüllt.
 - [x] Andere Architektur: AMD Radeon RX 580 (OpenCL, Mesa) und NVIDIA über OpenCL liefern
       dieselben Bits wie die CUDA-Version und der Prozessor, auf denselben kurzen Eingaben
       (25. November 2026).
-- [ ] Ganzzahliges Qwen3.5-4B auf zwei verschiedenen Grafikkarten bei langem Kontext: ob die Bits
-      übereinstimmen.
+- [x] Langer Kontext (512 + 64, 2048 + 256, 4096 + 64 Tokens): RTX 2060 (CUDA und OpenCL) und
+      RTX 4070 Laptop liefern dieselben Bits; die Erzeugung stimmt mit dem Durchlauf über eine
+      fertige Antwort überein (25. November 2026). RX 580: Die Erzeugung stimmt überein, aber der
+      Durchlauf über eine lange Antwort wird vom Treiber abgebrochen — der Attention-Kernel muss
+      aufgeteilt werden.
 - [ ] Anteil der Zeit für die Prüfung einer Antwort an der Erzeugung (O3).
 - [ ] Seine Geschwindigkeit gegenüber dem gewöhnlichen Profil auf denselben Karten.
 - [ ] Seine Qualität gegenüber dem gewöhnlichen Profil auf derselben Aufgabensammlung.

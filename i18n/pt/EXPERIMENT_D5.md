@@ -1,4 +1,4 @@
-<!-- translation of docs/EXPERIMENT_D5.md, source sha256: 2000e76d85f93fdcb720f912a818562014d3b350689a707c5a27638dc9f5290b -->
+<!-- translation of docs/EXPERIMENT_D5.md, source sha256: 3aaab08790ed9745e86dcaed1c7bbebd15df48ba863df50aac4f965c117afbe1 -->
 
 # Experimento D5: Qwen3.5-4B inteiro
 
@@ -72,5 +72,7 @@ Para cada execução: manifesto do perfil e das versões, entradas, hashes dos l
 - **O1 (dispositivos diferentes).** Processador (Xeon, Linux), RTX 2060 (Turing, Linux, CuPy) e RTX 4070 Laptop (Ada, Windows, CuPy): 88 comparações em cada placa, 242 360 320 logits, 976 tokens escolhidos e 37 152 hashes de estados — **nenhuma diferença**.
 
 **25 de novembro de 2026, outra arquitetura e outra linguagem de núcleos.** A terceira implementação em OpenCL (ChatGPT), as mesmas entradas e 88 comparações: o processador via pocl, a RTX 2060 via NVIDIA OpenCL e a **AMD Radeon RX 580** (Polaris, Mesa rusticl, Linux) — novamente nenhuma diferença em nenhum dos 242 360 320 logits, 976 tokens e 37 152 hashes. No total, os mesmos bits em seis executores: processador (NumPy), processador (pocl), RTX 2060 (CUDA e OpenCL), RTX 4070 Laptop (CUDA), RX 580 (OpenCL).
+
+**25 de novembro de 2026, contexto longo.** Solicitação + resposta: 512 + 64, 2048 + 256 e 4096 + 64 tokens (textos reais), todos os 32 blocos; foram comparados os hashes dos logits de cada posição, os tokens escolhidos e os hashes dos estados a cada 64 posições. A RTX 2060 (CUDA), a RTX 2060 (OpenCL) e a RTX 4070 Laptop (CUDA) coincidiram entre si nos três casos, e em cada placa a geração token a token coincidiu com a passagem pela resposta pronta em blocos de 64 e 512 posições. Para 512 + 64, o mesmo deram a referência independente no processador e a RX 580. Na RX 580, a geração token a token coincidiu com as demais placas também para 2048 + 256 e 4096 + 64, mas a passagem pela resposta pronta em entradas longas é interrompida pelo driver (reset de uma tarefa da placa de vídeo demasiado longa); é preciso dividir o núcleo de atenção em partes. Esta é uma limitação de execução, não uma divergência de bits.
 
 Limitações: entradas curtas e lote 1; núcleos inteiros simples sem blocos tensoriais; o tempo dessas execuções não é uma medição de O3 e O4. A seguir — contexto longo de até milhares de tokens, núcleos rápidos com a mesma aritmética e, depois, O3–O5.

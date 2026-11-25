@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: 0ff2832d2f926594340f6b6259d13adc0558067b36cedf1390d041e4ec44e6c8 -->
+<!-- translation of docs/ROADMAP.md, source sha256: ad345dc397f2cdc54e07879bb5286338d67fb1d45f5094c5f5e4bc4340588f70 -->
 
 # Feuille de route : protection contre la fraude
 
@@ -463,8 +463,10 @@ borne prouvée. Est considérée comme trouvée la construction qui remplit tous
       2026).
 - [x] Autre architecture : l'AMD Radeon RX 580 (OpenCL, Mesa) et NVIDIA via OpenCL donnent les mêmes
       bits que la version CUDA et le processeur, sur les mêmes entrées courtes (25 novembre 2026).
-- [ ] Qwen3.5-4B en arithmétique entière sur deux cartes graphiques différentes et un contexte long :
-      les bits coïncident-ils.
+- [x] Contexte long (512 + 64, 2048 + 256, 4096 + 64 jetons) : la RTX 2060 (CUDA et OpenCL) et la RTX 4070 Laptop donnent
+      les mêmes bits ; la génération coïncide avec le passage sur une réponse complète (25 novembre 2026).
+      RX 580 : la génération coïncide, le passage sur une longue réponse est interrompu par le pilote — il faut
+      fractionner le noyau d'attention.
 - [ ] Part du temps de vérification de la réponse par rapport à la génération (O3).
 - [ ] Sa vitesse par rapport au profil ordinaire sur les mêmes cartes.
 - [ ] Sa qualité par rapport au profil ordinaire sur le même ensemble de tâches.

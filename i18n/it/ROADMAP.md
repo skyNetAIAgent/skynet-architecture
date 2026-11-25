@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: 0ff2832d2f926594340f6b6259d13adc0558067b36cedf1390d041e4ec44e6c8 -->
+<!-- translation of docs/ROADMAP.md, source sha256: ad345dc397f2cdc54e07879bb5286338d67fb1d45f5094c5f5e4bc4340588f70 -->
 
 # Tabella di marcia: difesa dall'inganno
 
@@ -467,7 +467,10 @@ un limite dimostrato. È considerata trovata la costruzione che soddisfa tutti i
       token per token e il passaggio su una risposta pronta coincidono (O1 e O2, 24 novembre 2026).
 - [x] Un'altra architettura: AMD Radeon RX 580 (OpenCL, Mesa) e NVIDIA tramite OpenCL danno gli stessi
       bit della versione CUDA e del processore, sugli stessi ingressi brevi (25 novembre 2026).
-- [ ] Qwen3.5-4B ad aritmetica intera su due schede video diverse su un contesto lungo: se i bit coincidono.
+- [x] Contesto lungo (512 + 64, 2048 + 256, 4096 + 64 token): RTX 2060 (CUDA e OpenCL) e RTX 4070 Laptop danno
+      gli stessi bit; la generazione coincide con il passaggio su una risposta pronta (25 novembre 2026).
+      RX 580: la generazione coincide, il passaggio su una risposta lunga viene interrotto dal driver — bisogna
+      frazionare il kernel di attenzione.
 - [ ] Quota del tempo di verifica della risposta rispetto alla generazione (O3).
 - [ ] La sua velocità rispetto al profilo normale sulle stesse schede.
 - [ ] La sua qualità rispetto al profilo normale sullo stesso insieme di compiti.

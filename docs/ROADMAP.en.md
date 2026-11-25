@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: 0ff2832d2f926594340f6b6259d13adc0558067b36cedf1390d041e4ec44e6c8 -->
+<!-- translation of docs/ROADMAP.md, source sha256: ad345dc397f2cdc54e07879bb5286338d67fb1d45f5094c5f5e4bc4340588f70 -->
 
 # Roadmap: protection against cheating
 
@@ -452,7 +452,10 @@ or a proven bound. A construction is considered found if it satisfies all the cr
       token at a time and a pass over a ready answer agree (O1 and O2, 24 November 2026).
 - [x] Another architecture: AMD Radeon RX 580 (OpenCL, Mesa) and NVIDIA via OpenCL give the same
       bits as the CUDA version and the CPU, on the same short inputs (25 November 2026).
-- [ ] Integer Qwen3.5-4B on two different GPUs on a long context: whether the bits match.
+- [x] Long context (512 + 64, 2048 + 256, 4096 + 64 tokens): RTX 2060 (CUDA and OpenCL) and
+      RTX 4070 Laptop give the same bits; generation agrees with a pass over a ready answer
+      (25 November 2026). RX 580: generation agrees, but a pass over a long answer is interrupted by
+      the driver — the attention kernel needs to be split.
 - [ ] The share of answer-verification time relative to generation (O3).
 - [ ] Its speed relative to the usual profile on the same cards.
 - [ ] Its quality relative to the usual profile on the same set of tasks.

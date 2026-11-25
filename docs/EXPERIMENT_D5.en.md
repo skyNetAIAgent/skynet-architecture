@@ -1,4 +1,4 @@
-<!-- translation of docs/EXPERIMENT_D5.md, source sha256: 2000e76d85f93fdcb720f912a818562014d3b350689a707c5a27638dc9f5290b -->
+<!-- translation of docs/EXPERIMENT_D5.md, source sha256: 3aaab08790ed9745e86dcaed1c7bbebd15df48ba863df50aac4f965c117afbe1 -->
 
 # Experiment D5: integer Qwen3.5-4B
 
@@ -140,6 +140,16 @@ the RTX 2060 via NVIDIA OpenCL and **AMD Radeon RX 580** (Polaris, Mesa rusticl,
 not a single difference in any one of the 242 360 320 logits, 976 tokens and 37 152 hashes. In total,
 the same bits on six performers: the processor (NumPy), the processor (pocl), the RTX 2060 (CUDA
 and OpenCL), the RTX 4070 Laptop (CUDA), the RX 580 (OpenCL).
+
+**25 November 2026, long context.** Request + response: 512 + 64, 2048 + 256 and 4096 + 64 tokens
+(real texts), all 32 blocks; the logit hashes of each position, the selected tokens
+and the state hashes every 64 positions were compared. The RTX 2060 (CUDA), the RTX 2060 (OpenCL) and the RTX 4070 Laptop
+(CUDA) matched each other in all three cases, and on each card generation one token at a time matched
+the pass over the finished response in chunks of 64 and 512 positions. For 512 + 64 the same was given by the independent
+processor reference and the RX 580. On the RX 580, generation one token at a time matched the other cards
+also for 2048 + 256 and 4096 + 64, but the pass over the finished response on long inputs is interrupted
+by the driver (a reset of a GPU task that takes too long); the attention kernel needs to be split into parts.
+This is a limitation of execution, not a divergence of bits.
 
 Limitations: short inputs and batch 1; simple integer kernels without tensor cores; the time
 of these runs is not a measurement of O3 and O4. Next — a long context of up to thousands of tokens,

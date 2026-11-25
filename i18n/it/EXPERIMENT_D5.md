@@ -1,4 +1,4 @@
-<!-- translation of docs/EXPERIMENT_D5.md, source sha256: 2000e76d85f93fdcb720f912a818562014d3b350689a707c5a27638dc9f5290b -->
+<!-- translation of docs/EXPERIMENT_D5.md, source sha256: 3aaab08790ed9745e86dcaed1c7bbebd15df48ba863df50aac4f965c117afbe1 -->
 
 # Esperimento D5: Qwen3.5-4B intero
 
@@ -141,6 +141,17 @@ NVIDIA OpenCL e la **AMD Radeon RX 580** (Polaris, Mesa rusticl, Linux) — di n
 in nessuno dei 242 360 320 logit, dei 976 token e dei 37 152 hash. In totale, gli stessi bit su sei
 esecutori: processore (NumPy), processore (pocl), RTX 2060 (CUDA e OpenCL), RTX 4070 Laptop (CUDA),
 RX 580 (OpenCL).
+
+**25 novembre 2026, contesto lungo.** Richiesta + risposta: 512 + 64, 2048 + 256 e 4096 + 64 token
+(testi reali), tutti i 32 blocchi; si sono confrontati gli hash dei logit di ogni posizione, i token
+scelti e gli hash degli stati ogni 64 posizioni. RTX 2060 (CUDA), RTX 2060 (OpenCL) e RTX 4070 Laptop
+(CUDA) sono coincise tra loro in tutti e tre i casi, e su ogni scheda la generazione token per token
+ha coinciso con il passaggio sulla risposta pronta a blocchi di 64 e 512 posizioni. Per 512 + 64 lo
+stesso risultato lo hanno dato il riferimento indipendente sul processore e la RX 580. Sulla RX 580
+la generazione token per token ha coinciso con le altre schede anche per 2048 + 256 e 4096 + 64, ma il
+passaggio sulla risposta pronta sugli input lunghi viene interrotto dal driver (reset di un'attività
+della scheda video troppo lunga); occorre suddividere il kernel dell'attenzione in parti. Questo è un
+limite di esecuzione, non una divergenza dei bit.
 
 Limiti: input corti e pacchetto 1; kernel interi semplici senza unità tensoriali; il tempo di queste
 esecuzioni non è una misurazione di O3 e O4. In seguito — contesto lungo fino a migliaia di token,

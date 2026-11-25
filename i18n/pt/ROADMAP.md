@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: 0ff2832d2f926594340f6b6259d13adc0558067b36cedf1390d041e4ec44e6c8 -->
+<!-- translation of docs/ROADMAP.md, source sha256: ad345dc397f2cdc54e07879bb5286338d67fb1d45f5094c5f5e4bc4340588f70 -->
 
 # Roteiro: defesa contra fraude
 
@@ -453,7 +453,10 @@ limite provado. Considera-se encontrada a construção que cumpre todos os crit�
       bits — 242 milhões de logits, 976 tokens e 37 mil hashes de estados por dispositivo; a geração
       por token e a passada por uma resposta pronta coincidem (O1 e O2, 24 de novembro de 2026).
 - [x] Outra arquitetura: a AMD Radeon RX 580 (OpenCL, Mesa) e a NVIDIA via OpenCL produzem os mesmos bits que a versão CUDA e o processador, nas mesmas entradas curtas (25 de novembro de 2026).
-- [ ] Qwen3.5-4B com aritmética inteira em duas placas de vídeo diferentes: se os bits coincidem.
+- [x] Contexto longo (512 + 64, 2048 + 256, 4096 + 64 tokens): RTX 2060 (CUDA e OpenCL) e RTX 4070 Laptop
+      produzem os mesmos bits; a geração coincide com a passada por uma resposta pronta (25 de novembro de 2026).
+      RX 580: a geração coincide, a passada por uma resposta longa é interrompida pelo driver — é preciso
+      fragmentar o núcleo de atenção.
 - [ ] Fração do tempo de verificação da resposta em relação à geração (O3).
 - [ ] Sua velocidade em relação ao perfil comum nas mesmas placas.
 - [ ] Sua qualidade em relação ao perfil comum no mesmo conjunto de tarefas.
