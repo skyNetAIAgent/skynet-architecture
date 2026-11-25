@@ -1,11 +1,12 @@
-<!-- translation of docs/EXPERIMENT_D5.md, source sha256: 3aaab08790ed9745e86dcaed1c7bbebd15df48ba863df50aac4f965c117afbe1 -->
+<!-- translation of docs/EXPERIMENT_D5.md, source sha256: a043f1ab15bdb60165b5430029b58928dbd99d6807c243175827dd51c9421af4 -->
 
 # Esperimento D5: Qwen3.5-4B intero
 
 [English](../../docs/EXPERIMENT_D5.en.md) · [中文](../zh/EXPERIMENT_D5.md) · [Español](../es/EXPERIMENT_D5.md) · [Français](../fr/EXPERIMENT_D5.md) · [Deutsch](../de/EXPERIMENT_D5.md) · **Italiano** · [Русский](../../docs/EXPERIMENT_D5.md) · [Português](../pt/EXPERIMENT_D5.md) · [العربية](../ar/EXPERIMENT_D5.md)
 
-Stato al 25 novembre 2026: **primi risultati sugli input corti (sezione 7); contesto lungo,
-velocità e qualità non sono ancora misurati.** L'esperimento è autorizzato dalla decisione D5
+Stato al 25 novembre 2026: **i bit coincidono su sei esecutori, incluso il contesto lungo;
+O3 e O4 sono stati misurati e non hanno rispettato le soglie; la qualità (O5) non è ancora
+stata misurata** (sezione 7). L'esperimento è autorizzato dalla decisione D5
 ([ROADMAP](ROADMAP.md), sezione 3) e fa parte della fase 5 della tabella di marcia. Esso verifica la principale ipotesi non misurata
 del miglior candidato della fase 4 — la verifica della risposta da parte del pagatore stesso (PPS,
 [VERIFICATION_SEARCH](VERIFICATION_SEARCH.md), sezioni 3.2 e 5.2).
@@ -105,7 +106,6 @@ riguarda solo i dispositivi e le versioni provati. Il risultato di ogni esperime
 - **Critica incrociata:** ChatGPT ha analizzato entrambi i progetti, DeepSeek ha analizzato entrambi i progetti;
   ricalcoli della memoria e dei limiti, verifica della ricorsione corta e della correzione dell'attenzione su piccole enumerazioni.
 - **Sintesi e decisioni sul piano:** Claude.
-
 - **Preparazione, profili v1 e v2, riferimento sul processore e versione per la scheda video:** ChatGPT.
 - **Verifiche indipendenti:** DeepSeek — importazione del modello con il forward ufficiale, univocità
   e limiti di overflow del profilo v2.
@@ -152,6 +152,31 @@ la generazione token per token ha coinciso con le altre schede anche per 2048 + 
 passaggio sulla risposta pronta sugli input lunghi viene interrotto dal driver (reset di un'attività
 della scheda video troppo lunga); occorre suddividere il kernel dell'attenzione in parti. Questo è un
 limite di esecuzione, non una divergenza dei bit.
+
+**25 novembre 2026, kernel veloci, O3 e O4.** ChatGPT ha scritto kernel veloci per NVIDIA
+(DP4A per le moltiplicazioni dei pesi a 8 bit per le attivazioni a 16 bit, moltiplicazioni a tasselli per il passaggio
+sulla risposta, ricorsione DeltaNet fusa). Su RTX 2060 e RTX 4070 Laptop ciascuno dei quattro stadi di accelerazione
+ha dato gli stessi bit: 88 confronti corti su 88 e il caso lungo 512 + 64 rispetto al riferimento sul processore.
+
+O3 — il tempo di verifica della risposta in un solo passaggio, in frazioni del tempo di generazione, mediana
+di nove coppie dopo due riscaldamenti:
+
+| Richiesta / risposta | RTX 2060, pacchetto 1 | RTX 4070 Laptop, pacchetto 1 | RTX 2060, pacchetto 8 | RTX 4070 Laptop, pacchetto 8 |
+|---|---:|---:|---:|---:|
+| 128 / 32 | 0,40 | 0,24 | 0,64 | 0,46 |
+| 128 / 128 | 0,21 | 0,11 | 0,42 | 0,26 |
+| 500 / 500 | 0,21 | 0,10 | 0,43 | 0,28 |
+| 2000 / 1000 | 0,31 | 0,15 | non è entrato | 0,48 |
+
+Con pacchetto 32 sulla RTX 4070 Laptop — 0,59–0,84, sulla RTX 2060 non è entrato in memoria.
+**La soglia del 5% è confutata** per questa implementazione su entrambe le schede (il criterio era stato scritto
+prima dell'esperimento). La stima precedente dell'1,2–3,8% presupponeva attivazioni a 8 bit e unità tensoriali;
+il profilo v2 richiede attivazioni a 16 bit, perciò le moltiplicazioni sono circa il doppio.
+
+O4 — sulla RTX 2060 il profilo intero è più lento di llama.cpp Q8_0 (b11960, stesso modello)
+di 1,52–1,78 volte con pacchetto 1 e di 2,47–2,79 volte con pacchetto 8. La soglia di 1,25 non è rispettata.
+Che cosa ne consegue per la scelta della verifica lo ha analizzato il consiglio dei modelli:
+[STRATEGY_SEARCH](STRATEGY_SEARCH.md).
 
 Limiti: input corti e pacchetto 1; kernel interi semplici senza unità tensoriali; il tempo di queste
 esecuzioni non è una misurazione di O3 e O4. In seguito — contesto lungo fino a migliaia di token,

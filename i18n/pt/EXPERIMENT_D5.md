@@ -1,10 +1,10 @@
-<!-- translation of docs/EXPERIMENT_D5.md, source sha256: 3aaab08790ed9745e86dcaed1c7bbebd15df48ba863df50aac4f965c117afbe1 -->
+<!-- translation of docs/EXPERIMENT_D5.md, source sha256: a043f1ab15bdb60165b5430029b58928dbd99d6807c243175827dd51c9421af4 -->
 
 # Experimento D5: Qwen3.5-4B inteiro
 
 [English](../../docs/EXPERIMENT_D5.en.md) · [中文](../zh/EXPERIMENT_D5.md) · [Español](../es/EXPERIMENT_D5.md) · [Français](../fr/EXPERIMENT_D5.md) · [Deutsch](../de/EXPERIMENT_D5.md) · [Italiano](../it/EXPERIMENT_D5.md) · [Русский](../../docs/EXPERIMENT_D5.md) · **Português** · [العربية](../ar/EXPERIMENT_D5.md)
 
-Situação em 25 de novembro de 2026: **primeiros resultados em entradas curtas (seção 7); contexto longo, velocidade e qualidade ainda não medidos.** O experimento é autorizado pela decisão D5 ([ROADMAP](ROADMAP.md), seção 3) e faz parte da etapa 5 do mapa. Ele verifica a principal suposição não medida do melhor candidato da etapa 4 — a verificação da resposta pelo próprio pagador (PPS, [VERIFICATION_SEARCH](VERIFICATION_SEARCH.md), seções 3.2 e 5.2).
+Situação em 25 de novembro de 2026: **os bits coincidem em seis executores, incluindo o contexto longo; O3 e O4 foram medidos e não cumpriram os limiares; a qualidade (O5) ainda não foi medida** (seção 7). O experimento é autorizado pela decisão D5 ([ROADMAP](ROADMAP.md), seção 3) e faz parte da etapa 5 do mapa. Ele verifica a principal suposição não medida do melhor candidato da etapa 4 — a verificação da resposta pelo próprio pagador (PPS, [VERIFICATION_SEARCH](VERIFICATION_SEARCH.md), seções 3.2 e 5.2).
 
 ## 1. O que se verifica
 
@@ -74,5 +74,20 @@ Para cada execução: manifesto do perfil e das versões, entradas, hashes dos l
 **25 de novembro de 2026, outra arquitetura e outra linguagem de núcleos.** A terceira implementação em OpenCL (ChatGPT), as mesmas entradas e 88 comparações: o processador via pocl, a RTX 2060 via NVIDIA OpenCL e a **AMD Radeon RX 580** (Polaris, Mesa rusticl, Linux) — novamente nenhuma diferença em nenhum dos 242 360 320 logits, 976 tokens e 37 152 hashes. No total, os mesmos bits em seis executores: processador (NumPy), processador (pocl), RTX 2060 (CUDA e OpenCL), RTX 4070 Laptop (CUDA), RX 580 (OpenCL).
 
 **25 de novembro de 2026, contexto longo.** Solicitação + resposta: 512 + 64, 2048 + 256 e 4096 + 64 tokens (textos reais), todos os 32 blocos; foram comparados os hashes dos logits de cada posição, os tokens escolhidos e os hashes dos estados a cada 64 posições. A RTX 2060 (CUDA), a RTX 2060 (OpenCL) e a RTX 4070 Laptop (CUDA) coincidiram entre si nos três casos, e em cada placa a geração token a token coincidiu com a passagem pela resposta pronta em blocos de 64 e 512 posições. Para 512 + 64, o mesmo deram a referência independente no processador e a RX 580. Na RX 580, a geração token a token coincidiu com as demais placas também para 2048 + 256 e 4096 + 64, mas a passagem pela resposta pronta em entradas longas é interrompida pelo driver (reset de uma tarefa da placa de vídeo demasiado longa); é preciso dividir o núcleo de atenção em partes. Esta é uma limitação de execução, não uma divergência de bits.
+
+**25 de novembro de 2026, núcleos rápidos, O3 e O4.** O ChatGPT escreveu núcleos rápidos para a NVIDIA (DP4A para as multiplicações de pesos de 8 bits por ativações de 16 bits, multiplicações em blocos para a passagem pela resposta, recorrência DeltaNet fundida). Na RTX 2060 e na RTX 4070 Laptop, cada um dos quatro estágios de aceleração deu os mesmos bits: 88 de 88 comparações curtas e o caso longo 512 + 64 contra a referência no processador.
+
+O3 — o tempo de verificação da resposta em uma única passagem, em frações do tempo de geração, mediana de nove pares após dois aquecimentos:
+
+| Solicitação / resposta | RTX 2060, lote 1 | RTX 4070 Laptop, lote 1 | RTX 2060, lote 8 | RTX 4070 Laptop, lote 8 |
+|---|---:|---:|---:|---:|
+| 128 / 32 | 0,40 | 0,24 | 0,64 | 0,46 |
+| 128 / 128 | 0,21 | 0,11 | 0,42 | 0,26 |
+| 500 / 500 | 0,21 | 0,10 | 0,43 | 0,28 |
+| 2000 / 1000 | 0,31 | 0,15 | não coube | 0,48 |
+
+Com lote 32 na RTX 4070 Laptop — 0,59–0,84; na RTX 2060 não coube na memória. **O limiar de 5% foi refutado** para esta implementação em ambas as placas (o critério foi registrado antes do experimento). A estimativa anterior de 1,2–3,8% pressupunha ativações de 8 bits e núcleos tensoriais; o perfil v2 precisa de ativações de 16 bits, portanto há aproximadamente o dobro de multiplicações.
+
+O4 — na RTX 2060, o perfil inteiro é 1,52–1,78 vez mais lento que o llama.cpp Q8_0 (b11960, o mesmo modelo) com lote 1 e 2,47–2,79 vezes com lote 8. O limiar de 1,25 não foi cumprido. O que disso decorre para a escolha da verificação foi analisado pelo conselho de modelos: [STRATEGY_SEARCH](STRATEGY_SEARCH.md).
 
 Limitações: entradas curtas e lote 1; núcleos inteiros simples sem blocos tensoriais; o tempo dessas execuções não é uma medição de O3 e O4. A seguir — contexto longo de até milhares de tokens, núcleos rápidos com a mesma aritmética e, depois, O3–O5.

@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: ad345dc397f2cdc54e07879bb5286338d67fb1d45f5094c5f5e4bc4340588f70 -->
+<!-- translation of docs/ROADMAP.md, source sha256: e04c1849e93c4065aafdb97330a2a708285d48546175f4847bdfd81e8506b881 -->
 
 # Roteiro: defesa contra fraude
 
@@ -457,8 +457,12 @@ limite provado. Considera-se encontrada a construção que cumpre todos os crit�
       produzem os mesmos bits; a geração coincide com a passada por uma resposta pronta (25 de novembro de 2026).
       RX 580: a geração coincide, a passada por uma resposta longa é interrompida pelo driver — é preciso
       fragmentar o núcleo de atenção.
-- [ ] Fração do tempo de verificação da resposta em relação à geração (O3).
-- [ ] Sua velocidade em relação ao perfil comum nas mesmas placas.
+- [x] Fração do tempo de verificação da resposta em relação à geração (O3): 0,10–0,40 com lote 1 na RTX 2060
+      e na RTX 4070 Laptop — o limiar de 5% é refutado para a implementação atual (25 de novembro de 2026).
+- [x] Sua velocidade em relação ao perfil comum (O4): na RTX 2060, 1,5–1,8 vezes mais lenta que o llama.cpp
+      Q8_0 com lote 1, e 2,5–2,8 vezes mais lenta com lote 8 (25 de novembro de 2026).
+- [x] Conselho de modelos sobre a verificação «não pelo método direto» (previsão de fraude, anomalias,
+      verificação por amostragem, jogos de inspeção): [STRATEGY_SEARCH](STRATEGY_SEARCH.md), 25 de novembro de 2026.
 - [ ] Sua qualidade em relação ao perfil comum no mesmo conjunto de tarefas.
 - [ ] Planos de medição separados (fora do D5): energia da verificação, treinamento com aritmética inteira.
 - [ ] Preço da disputa no registro para o modelo completo. Antes dela são necessários a escolha do

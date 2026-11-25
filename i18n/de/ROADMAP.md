@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: ad345dc397f2cdc54e07879bb5286338d67fb1d45f5094c5f5e4bc4340588f70 -->
+<!-- translation of docs/ROADMAP.md, source sha256: e04c1849e93c4065aafdb97330a2a708285d48546175f4847bdfd81e8506b881 -->
 
 # Roadmap: Schutz vor Betrug
 
@@ -496,8 +496,14 @@ aus Abschnitt 1 erfüllt.
       fertige Antwort überein (25. November 2026). RX 580: Die Erzeugung stimmt überein, aber der
       Durchlauf über eine lange Antwort wird vom Treiber abgebrochen — der Attention-Kernel muss
       aufgeteilt werden.
-- [ ] Anteil der Zeit für die Prüfung einer Antwort an der Erzeugung (O3).
-- [ ] Seine Geschwindigkeit gegenüber dem gewöhnlichen Profil auf denselben Karten.
+- [x] Anteil der Zeit für die Prüfung einer Antwort an der Erzeugung (O3): 0,10–0,40 bei Batch 1
+      auf RTX 2060 und RTX 4070 Laptop — die Schwelle von 5% ist für die derzeitige Implementierung
+      widerlegt (25. November 2026).
+- [x] Seine Geschwindigkeit gegenüber dem gewöhnlichen Profil (O4): auf der RTX 2060 1,5–1,8-mal
+      langsamer als llama.cpp Q8_0 bei Batch 1, 2,5–2,8-mal bei Batch 8 (25. November 2026).
+- [x] Der Modellrat zur Prüfung „nicht direkt“ (Vorhersage von Betrug, Anomalien,
+      Stichprobenprüfung, Inspektionsspiele): [STRATEGY_SEARCH](STRATEGY_SEARCH.md),
+      25. November 2026.
 - [ ] Seine Qualität gegenüber dem gewöhnlichen Profil auf derselben Aufgabensammlung.
 - [ ] Gesonderte Messpläne (außerhalb von D5): Energie der Prüfung, ganzzahliges Training.
 - [ ] Preis des Streitfalls im Journal für das vollständige Modell. Davor sind nötig: die Wahl der

@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: ad345dc397f2cdc54e07879bb5286338d67fb1d45f5094c5f5e4bc4340588f70 -->
+<!-- translation of docs/ROADMAP.md, source sha256: e04c1849e93c4065aafdb97330a2a708285d48546175f4847bdfd81e8506b881 -->
 
 # Roadmap: protection against cheating
 
@@ -62,7 +62,7 @@ of ideas.
 | Deferred payment instead of a deposit: a participant can lose only the pending amount | Accepted | CURRENT_DESIGN, section 2 |
 | Variant A: verification by sampling, with cancellation of pending rewards when fraud is detected | Current specification | CURRENT_DESIGN, section 3 |
 | Variant B: the network pays only for verified tasks, paying `1/p` times the base price for each | Main candidate; the choice after comparison (D3) | CURRENT_DESIGN, section 3 |
-| Bit-for-bit match of the result through integer arithmetic | Measured on short inputs: the CPU, RTX 2060, and RTX 4070 Laptop give the same bits for integer Qwen3.5-4B (24 November 2026); long context, speed, and quality have not yet been measured | [EXPERIMENT_D5](EXPERIMENT_D5.md), section 7 |
+| Bit-for-bit match of the result through integer arithmetic | Measured on short inputs: the CPU, RTX 2060, and RTX 4070 Laptop give the same bits for integer Qwen3.5-4B (24 November 2026); long context, speed, and quality have not yet been measured | [EXPERIMENT_D5](EXPERIMENT_D5.en.md), section 7 |
 | Dispute by halving with recomputation of one step in the ledger | Measured for one row of the model; not built for the full model | [PILOT_RESULTS](PILOT_RESULTS.en.md) |
 | Verification of matrix multiplication with a random vector inside a dispute | Candidate, only a calculated estimate exists | CURRENT_DESIGN, section 3 |
 | An unchangeable verification core that cannot be revoked by a vote | Accepted (D4) | CURRENT_DESIGN, section 8 |
@@ -456,8 +456,12 @@ or a proven bound. A construction is considered found if it satisfies all the cr
       RTX 4070 Laptop give the same bits; generation agrees with a pass over a ready answer
       (25 November 2026). RX 580: generation agrees, but a pass over a long answer is interrupted by
       the driver — the attention kernel needs to be split.
-- [ ] The share of answer-verification time relative to generation (O3).
-- [ ] Its speed relative to the usual profile on the same cards.
+- [x] The share of answer-verification time relative to generation (O3): 0.10–0.40 at batch size 1 on the RTX 2060
+      and RTX 4070 Laptop — the 5% threshold is refuted for the current implementation (25 November 2026).
+- [x] Its speed relative to the usual profile (O4): on the RTX 2060 it is 1.5–1.8 times slower than
+      llama.cpp Q8_0 at batch size 1, and 2.5–2.8 times slower at batch size 8 (25 November 2026).
+- [x] The council of models on verification "not head-on" (cheat prediction, anomalies, sampling
+      verification, inspection games): [STRATEGY_SEARCH](STRATEGY_SEARCH.en.md), 25 November 2026.
 - [ ] Its quality relative to the usual profile on the same set of tasks.
 - [ ] Separate measurement plans (outside D5): verification energy, integer training.
 - [ ] The price of a dispute in the ledger for the full model. Before it, the following are needed:

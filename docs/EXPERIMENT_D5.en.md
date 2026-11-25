@@ -1,11 +1,11 @@
-<!-- translation of docs/EXPERIMENT_D5.md, source sha256: 3aaab08790ed9745e86dcaed1c7bbebd15df48ba863df50aac4f965c117afbe1 -->
+<!-- translation of docs/EXPERIMENT_D5.md, source sha256: a043f1ab15bdb60165b5430029b58928dbd99d6807c243175827dd51c9421af4 -->
 
 # Experiment D5: integer Qwen3.5-4B
 
 **English** · [中文](../i18n/zh/EXPERIMENT_D5.md) · [Español](../i18n/es/EXPERIMENT_D5.md) · [Français](../i18n/fr/EXPERIMENT_D5.md) · [Deutsch](../i18n/de/EXPERIMENT_D5.md) · [Italiano](../i18n/it/EXPERIMENT_D5.md) · [Русский](EXPERIMENT_D5.md) · [Português](../i18n/pt/EXPERIMENT_D5.md) · [العربية](../i18n/ar/EXPERIMENT_D5.md)
 
-Status as of 25 November 2026: **first results on short inputs (section 7); long
-context, speed and quality have not yet been measured.** The experiment is authorized by decision D5
+Status as of 25 November 2026: **the bits match on six performers, including long context;
+O3 and O4 have been measured and did not meet the thresholds; quality (O5) has not yet been measured** (section 7). The experiment is authorized by decision D5
 ([ROADMAP](ROADMAP.en.md), section 3) and is part of stage 5 of the roadmap. It tests the main unmeasured
 assumption of the best candidate of stage 4 — verification of the response by the payer themselves (PPS,
 [VERIFICATION_SEARCH](VERIFICATION_SEARCH.en.md), sections 3.2 and 5.2).
@@ -150,6 +150,32 @@ processor reference and the RX 580. On the RX 580, generation one token at a tim
 also for 2048 + 256 and 4096 + 64, but the pass over the finished response on long inputs is interrupted
 by the driver (a reset of a GPU task that takes too long); the attention kernel needs to be split into parts.
 This is a limitation of execution, not a divergence of bits.
+
+**25 November 2026, fast kernels, O3 and O4.** ChatGPT wrote fast kernels for NVIDIA
+(DP4A for multiplying 8-bit weights by 16-bit activations, tiled multiplications for the pass
+over the response, a fused DeltaNet recursion). On the RTX 2060 and the RTX 4070 Laptop each of the four
+acceleration stages gave the same bits: 88 of 88 short comparisons and the long case 512 + 64 against the
+processor reference.
+
+O3 — the time of verifying the response in one pass as a share of the generation time, the median
+of nine pairs after two warm-ups:
+
+| Request / response | RTX 2060, batch 1 | RTX 4070 Laptop, batch 1 | RTX 2060, batch 8 | RTX 4070 Laptop, batch 8 |
+|---|---:|---:|---:|---:|
+| 128 / 32 | 0,40 | 0,24 | 0,64 | 0,46 |
+| 128 / 128 | 0,21 | 0,11 | 0,42 | 0,26 |
+| 500 / 500 | 0,21 | 0,10 | 0,43 | 0,28 |
+| 2000 / 1000 | 0,31 | 0,15 | did not fit | 0,48 |
+
+At batch 32 on the RTX 4070 Laptop — 0,59–0,84, on the RTX 2060 it did not fit in memory.
+**The 5% threshold is refuted** for this implementation on both cards (the criterion was written down
+before the experiment). The earlier estimate of 1,2–3,8% assumed 8-bit activations and tensor cores;
+profile v2 needs 16-bit activations, therefore there are about twice as many multiplications.
+
+O4 — on the RTX 2060 the integer profile is 1,52–1,78 times slower than llama.cpp Q8_0 (b11960, the same
+model) at batch 1 and 2,47–2,79 times slower at batch 8. The threshold 1,25 is not met.
+What follows from this for the choice of verification was analyzed by the council of models:
+[STRATEGY_SEARCH](STRATEGY_SEARCH.en.md).
 
 Limitations: short inputs and batch 1; simple integer kernels without tensor cores; the time
 of these runs is not a measurement of O3 and O4. Next — a long context of up to thousands of tokens,

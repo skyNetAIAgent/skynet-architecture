@@ -1,11 +1,12 @@
-<!-- translation of docs/EXPERIMENT_D5.md, source sha256: 3aaab08790ed9745e86dcaed1c7bbebd15df48ba863df50aac4f965c117afbe1 -->
+<!-- translation of docs/EXPERIMENT_D5.md, source sha256: a043f1ab15bdb60165b5430029b58928dbd99d6807c243175827dd51c9421af4 -->
 
 # Experiment D5: ganzzahliges Qwen3.5-4B
 
 [English](../../docs/EXPERIMENT_D5.en.md) · [中文](../zh/EXPERIMENT_D5.md) · [Español](../es/EXPERIMENT_D5.md) · [Français](../fr/EXPERIMENT_D5.md) · **Deutsch** · [Italiano](../it/EXPERIMENT_D5.md) · [Русский](../../docs/EXPERIMENT_D5.md) · [Português](../pt/EXPERIMENT_D5.md) · [العربية](../ar/EXPERIMENT_D5.md)
 
-Stand vom 25. November 2026: **erste Ergebnisse bei kurzen Eingaben (Abschnitt 7); langer Kontext,
-Geschwindigkeit und Qualität sind noch nicht gemessen.** Das Experiment ist durch die Entscheidung D5
+Stand vom 25. November 2026: **die Bits stimmen auf sechs Ausführenden überein, einschließlich langem
+Kontext; O3 und O4 sind gemessen und haben die Schwellenwerte nicht erfüllt; die Qualität (O5) ist noch
+nicht gemessen** (Abschnitt 7). Das Experiment ist durch die Entscheidung D5
 ([ROADMAP](ROADMAP.md), Abschnitt 3) erlaubt und gehört zu Phase 5 der Roadmap. Es prüft die wichtigste ungemessene
 Annahme des besten Kandidaten aus Phase 4 — der Prüfung der Antwort durch den Zahler selbst (PPS,
 [VERIFICATION_SEARCH](VERIFICATION_SEARCH.md), Abschnitte 3.2 und 5.2).
@@ -150,6 +151,32 @@ stimmte die Generierung Token für Token auch für 2048 + 256 und 4096 + 64 mit 
 doch der Durchlauf über die fertige Antwort wird bei langen Eingaben vom Treiber abgebrochen (Zurücksetzen
 einer zu langen Aufgabe der Grafikkarte); der Attention-Kernel muss in Teile zerlegt werden.
 Das ist eine Einschränkung der Ausführung, kein Unterschied in den Bits.
+
+**25. November 2026, schnelle Kerne, O3 und O4.** ChatGPT schrieb schnelle Kerne für NVIDIA
+(DP4A für Multiplikationen von 8-Bit-Gewichten mit 16-Bit-Aktivierungen, gekachelte Multiplikationen für den Durchlauf
+über die Antwort, fusionierte DeltaNet-Rekurrenz). Auf der RTX 2060 und der RTX 4070 Laptop ergab jede der vier
+Beschleunigungsstufen dieselben Bits: 88 von 88 kurzen Vergleichen und der lange Fall 512 + 64 gegen die Referenz
+auf dem Prozessor.
+
+O3 — die Zeit der Prüfung der Antwort in einem Durchlauf als Anteil an der Generierungszeit, Median aus neun Paaren
+nach zwei Aufwärmläufen:
+
+| Anfrage / Antwort | RTX 2060, Batch 1 | RTX 4070 Laptop, Batch 1 | RTX 2060, Batch 8 | RTX 4070 Laptop, Batch 8 |
+|---|---:|---:|---:|---:|
+| 128 / 32 | 0,40 | 0,24 | 0,64 | 0,46 |
+| 128 / 128 | 0,21 | 0,11 | 0,42 | 0,26 |
+| 500 / 500 | 0,21 | 0,10 | 0,43 | 0,28 |
+| 2000 / 1000 | 0,31 | 0,15 | passte nicht | 0,48 |
+
+Bei Batch 32 auf der RTX 4070 Laptop — 0,59–0,84, auf der RTX 2060 passte es nicht in den Speicher.
+**Der Schwellenwert von 5% ist widerlegt** für diese Implementierung auf beiden Karten (das Kriterium war vor dem
+Experiment festgeschrieben). Die frühere Schätzung von 1,2–3,8% setzte 8-Bit-Aktivierungen und Tensor-Kerne voraus;
+Profil v2 benötigt 16-Bit-Aktivierungen, daher ist die Zahl der Multiplikationen etwa doppelt so groß.
+
+O4 — auf der RTX 2060 ist das Ganzzahlprofil 1,52–1,78-mal langsamer als llama.cpp Q8_0 (b11960, dasselbe Modell)
+bei Batch 1 und 2,47–2,79-mal bei Batch 8. Der Schwellenwert von 1,25 ist nicht erfüllt.
+Was daraus für die Wahl der Prüfung folgt, hat der Rat der Modelle erörtert:
+[STRATEGY_SEARCH](STRATEGY_SEARCH.md).
 
 Einschränkungen: kurze Eingaben und Batch 1; einfache ganzzahlige Kerne ohne Tensor-Kerne; die Zeit
 dieser Läufe ist keine Messung von O3 und O4. Weiter — langer Kontext bis zu Tausenden Token,

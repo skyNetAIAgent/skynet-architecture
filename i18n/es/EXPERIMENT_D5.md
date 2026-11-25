@@ -1,11 +1,11 @@
-<!-- translation of docs/EXPERIMENT_D5.md, source sha256: 3aaab08790ed9745e86dcaed1c7bbebd15df48ba863df50aac4f965c117afbe1 -->
+<!-- translation of docs/EXPERIMENT_D5.md, source sha256: a043f1ab15bdb60165b5430029b58928dbd99d6807c243175827dd51c9421af4 -->
 
 # Experimento D5: Qwen3.5-4B entero
 
 [English](../../docs/EXPERIMENT_D5.en.md) · [中文](../zh/EXPERIMENT_D5.md) · **Español** · [Français](../fr/EXPERIMENT_D5.md) · [Deutsch](../de/EXPERIMENT_D5.md) · [Italiano](../it/EXPERIMENT_D5.md) · [Русский](../../docs/EXPERIMENT_D5.md) · [Português](../pt/EXPERIMENT_D5.md) · [العربية](../ar/EXPERIMENT_D5.md)
 
-Estado a 25 de noviembre de 2026: **primeros resultados en entradas cortas (sección 7); el contexto largo, la
-velocidad y la calidad aún no se han medido.** El experimento está autorizado por la decisión D5
+Estado a 25 de noviembre de 2026: **los bits coinciden en seis ejecutores, incluido el contexto largo;
+O3 y O4 están medidos y no cumplieron los umbrales; la calidad (O5) aún no se ha medido** (sección 7). El experimento está autorizado por la decisión D5
 ([ROADMAP](ROADMAP.md), sección 3) y forma parte de la etapa 5 de la hoja de ruta. Comprueba el principal supuesto no medido
 del mejor candidato de la etapa 4 — la verificación de la respuesta por el propio pagador (PPS,
 [VERIFICATION_SEARCH](VERIFICATION_SEARCH.md), secciones 3.2 y 5.2).
@@ -151,6 +151,32 @@ coincidió con las demás tarjetas también para 2048 + 256 y 4096 + 64, pero la
 generada con entradas largas se interrumpe por el controlador (reinicio de una tarea de la tarjeta
 gráfica demasiado larga); hay que dividir el núcleo de atención en partes. Es una limitación de ejecución,
 no una discrepancia de bits.
+
+**25 de noviembre de 2026, núcleos rápidos, O3 y O4.** ChatGPT escribió núcleos rápidos para NVIDIA
+(DP4A para las multiplicaciones de pesos de 8 bits por activaciones de 16 bits, multiplicaciones por bloques para la pasada
+sobre la respuesta, recursión DeltaNet fusionada). En la RTX 2060 y la RTX 4070 Laptop, cada una de las cuatro etapas
+de aceleración dio los mismos bits: 88 de 88 comparaciones cortas y el caso largo 512 + 64 frente a la referencia
+en el procesador.
+
+O3 — tiempo de verificación de la respuesta en una sola pasada como proporción del tiempo de generación, mediana de nueve pares
+tras dos calentamientos:
+
+| Petición / respuesta | RTX 2060, lote 1 | RTX 4070 Laptop, lote 1 | RTX 2060, lote 8 | RTX 4070 Laptop, lote 8 |
+|---|---:|---:|---:|---:|
+| 128 / 32 | 0,40 | 0,24 | 0,64 | 0,46 |
+| 128 / 128 | 0,21 | 0,11 | 0,42 | 0,26 |
+| 500 / 500 | 0,21 | 0,10 | 0,43 | 0,28 |
+| 2000 / 1000 | 0,31 | 0,15 | no cupo | 0,48 |
+
+Con lote 32 en la RTX 4070 Laptop — 0,59–0,84; en la RTX 2060 no cupo en la memoria.
+**El umbral del 5% queda refutado** para esta implementación en ambas tarjetas (el criterio se había registrado antes del experimento).
+La estimación anterior del 1,2–3,8% suponía activaciones de 8 bits y núcleos tensoriales; el perfil v2 necesita
+activaciones de 16 bits, por lo que hay aproximadamente el doble de multiplicaciones.
+
+O4 — en la RTX 2060 el perfil entero es 1,52–1,78 veces más lento que llama.cpp Q8_0 (b11960, el mismo modelo)
+con lote 1 y 2,47–2,79 veces con lote 8. El umbral de 1,25 no se cumple.
+Lo que de ello se deduce para la elección de la verificación lo analizó el consejo de modelos:
+[STRATEGY_SEARCH](STRATEGY_SEARCH.md).
 
 Limitaciones: entradas cortas y lote 1; núcleos enteros simples sin bloques tensoriales; el tiempo
 de estas ejecuciones no es una medición de O3 y O4. A continuación, contexto largo de hasta miles de tokens,

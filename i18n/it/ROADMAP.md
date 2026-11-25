@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: ad345dc397f2cdc54e07879bb5286338d67fb1d45f5094c5f5e4bc4340588f70 -->
+<!-- translation of docs/ROADMAP.md, source sha256: e04c1849e93c4065aafdb97330a2a708285d48546175f4847bdfd81e8506b881 -->
 
 # Tabella di marcia: difesa dall'inganno
 
@@ -471,8 +471,12 @@ un limite dimostrato. È considerata trovata la costruzione che soddisfa tutti i
       gli stessi bit; la generazione coincide con il passaggio su una risposta pronta (25 novembre 2026).
       RX 580: la generazione coincide, il passaggio su una risposta lunga viene interrotto dal driver — bisogna
       frazionare il kernel di attenzione.
-- [ ] Quota del tempo di verifica della risposta rispetto alla generazione (O3).
-- [ ] La sua velocità rispetto al profilo normale sulle stesse schede.
+- [x] Quota del tempo di verifica della risposta rispetto alla generazione (O3): 0,10–0,40 con batch 1 su RTX 2060
+      e RTX 4070 Laptop — la soglia del 5% è confutata per l'implementazione attuale (25 novembre 2026).
+- [x] La sua velocità rispetto al profilo normale (O4): sulla RTX 2060 è 1,5–1,8 volte più lenta di
+      llama.cpp Q8_0 con batch 1, 2,5–2,8 volte con batch 8 (25 novembre 2026).
+- [x] Il consiglio dei modelli sulla verifica «non a forza bruta» (previsione dell'inganno, anomalie,
+      verifica a campione, giochi di ispezione): [STRATEGY_SEARCH](STRATEGY_SEARCH.md), 25 novembre 2026.
 - [ ] La sua qualità rispetto al profilo normale sullo stesso insieme di compiti.
 - [ ] Piani di misurazione separati (fuori da D5): energia della verifica, addestramento con aritmetica intera.
 - [ ] Costo della controversia nel registro per il modello completo. Prima servono la scelta della

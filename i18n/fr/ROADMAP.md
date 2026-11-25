@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: ad345dc397f2cdc54e07879bb5286338d67fb1d45f5094c5f5e4bc4340588f70 -->
+<!-- translation of docs/ROADMAP.md, source sha256: e04c1849e93c4065aafdb97330a2a708285d48546175f4847bdfd81e8506b881 -->
 
 # Feuille de route : protection contre la fraude
 
@@ -467,8 +467,13 @@ borne prouvée. Est considérée comme trouvée la construction qui remplit tous
       les mêmes bits ; la génération coïncide avec le passage sur une réponse complète (25 novembre 2026).
       RX 580 : la génération coïncide, le passage sur une longue réponse est interrompu par le pilote — il faut
       fractionner le noyau d'attention.
-- [ ] Part du temps de vérification de la réponse par rapport à la génération (O3).
-- [ ] Sa vitesse par rapport au profil ordinaire sur les mêmes cartes.
+- [x] Part du temps de vérification de la réponse par rapport à la génération (O3) : 0,10–0,40 avec un lot de 1
+      sur la RTX 2060 et la RTX 4070 Laptop — le seuil de 5% est réfuté pour l'implémentation actuelle
+      (25 novembre 2026).
+- [x] Sa vitesse par rapport au profil ordinaire (O4) : sur la RTX 2060, le modèle est 1,5–1,8 fois plus lent que
+      llama.cpp Q8_0 avec un lot de 1, et 2,5–2,8 fois plus lent avec un lot de 8 (25 novembre 2026).
+- [x] Conseil de modèles sur une vérification « non frontale » (prédiction de la fraude, anomalies, vérification
+      par échantillonnage, jeux d'inspection) : [STRATEGY_SEARCH](STRATEGY_SEARCH.md), 25 novembre 2026.
 - [ ] Sa qualité par rapport au profil ordinaire sur le même ensemble de tâches.
 - [ ] Des plans de mesure séparés (hors D5) : l'énergie de la vérification, l'apprentissage en arithmétique
       entière.
