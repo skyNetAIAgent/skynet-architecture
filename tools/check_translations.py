@@ -28,7 +28,7 @@ HEADER = re.compile(r"^<!-- translation of (\S+), source sha256: ([0-9a-f]{64}) 
 
 # source file -> {language: translation file}; the source's own language is not listed
 DOCS = {}
-for name in ("CURRENT_DESIGN", "RESEARCH_AGENT", "PILOT_RESULTS", "OPEN_QUESTIONS", "BOARD", "ROADMAP", "THREAT_MODEL", "VERIFICATION_SEARCH", "STAGE4_KERNELS", "EXPERIMENT_D5", "STRATEGY_SEARCH", "HIDDEN_DETECTOR"):
+for name in ("CURRENT_DESIGN", "RESEARCH_AGENT", "PILOT_RESULTS", "OPEN_QUESTIONS", "BOARD", "ROADMAP", "THREAT_MODEL", "VERIFICATION_SEARCH", "STAGE4_KERNELS", "EXPERIMENT_D5", "STRATEGY_SEARCH", "HIDDEN_DETECTOR", "ANTIFRAUD_OPTIONS"):
     DOCS["docs/%s.md" % name] = dict(
         [("en", "docs/%s.en.md" % name)]
         + [(lang, "i18n/%s/%s.md" % (lang, name)) for lang in LANGS if lang not in ("en", "ru")])

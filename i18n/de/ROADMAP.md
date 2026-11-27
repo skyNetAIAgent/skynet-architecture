@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: af2d3af05e4ca027e7f3936208f6bf3c80e5d4fc4940e50adc7f57e98cedd934 -->
+<!-- translation of docs/ROADMAP.md, source sha256: d87250a9f8cbdcefb8b84eeb7782bb83df46b90660c868ad259f1cfea11cf858 -->
 
 # Roadmap: Schutz vor Betrug
 
@@ -509,6 +509,11 @@ aus Abschnitt 1 erfüllt.
       Regeln bringt nicht mehr als eine geheime Zufallsprüfung zum selben Preis; nützlich sind
       nur die Geheimhaltung der Auswahl vor der Fixierung der Antwort und die Geheimhaltung der
       Rolle — [HIDDEN_DETECTOR](HIDDEN_DETECTOR.md), 25. November 2026.
+- [x] Audit der Vollständigkeit der Forschung (sechs unabhängige Audits und zwei vom
+      Eigentümer zusammengestellte Mechanismuskarten) und der Modellrat zu den Varianten der
+      Betrugsbekämpfung, einschließlich der Ideen „Überprüfbarkeit innerhalb des Modells“ und
+      „Tricks aus Spielen“: [ANTIFRAUD_OPTIONS](ANTIFRAUD_OPTIONS.md), 27. November 2026.
+      Die Entscheidungen zu den Varianten stehen noch beim Eigentümer aus.
 - [ ] Seine Qualität gegenüber dem gewöhnlichen Profil auf derselben Aufgabensammlung.
 - [ ] Gesonderte Messpläne (außerhalb von D5): Energie der Prüfung, ganzzahliges Training.
 - [ ] Preis des Streitfalls im Journal für das vollständige Modell. Davor sind nötig: die Wahl der

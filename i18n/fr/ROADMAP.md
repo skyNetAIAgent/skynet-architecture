@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: af2d3af05e4ca027e7f3936208f6bf3c80e5d4fc4940e50adc7f57e98cedd934 -->
+<!-- translation of docs/ROADMAP.md, source sha256: d87250a9f8cbdcefb8b84eeb7782bb83df46b90660c868ad259f1cfea11cf858 -->
 
 # Feuille de route : protection contre la fraude
 
@@ -478,6 +478,11 @@ borne prouvée. Est considérée comme trouvée la construction qui remplit tous
       cryptographie à seuil, FHE, MPC, TEE) : le secret des règles n'apporte pas plus qu'une vérification
       aléatoire secrète de même coût ; seuls sont utiles le secret du choix avant la fixation de la réponse
       et le secret du rôle — [HIDDEN_DETECTOR](HIDDEN_DETECTOR.md), 25 novembre 2026.
+- [x] Audit de complétude de l'étude (six audits indépendants et deux cartes de mécanismes, rassemblés
+      par le propriétaire) et conseil de modèles sur les options de lutte contre la fraude, y compris
+      les idées « vérifiabilité au sein du modèle » et « procédés issus des jeux » :
+      [ANTIFRAUD_OPTIONS](ANTIFRAUD_OPTIONS.md), 27 novembre 2026. Les décisions sur ces options
+      attendent le propriétaire.
 - [ ] Sa qualité par rapport au profil ordinaire sur le même ensemble de tâches.
 - [ ] Des plans de mesure séparés (hors D5) : l'énergie de la vérification, l'apprentissage en arithmétique
       entière.

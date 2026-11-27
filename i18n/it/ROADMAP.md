@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: af2d3af05e4ca027e7f3936208f6bf3c80e5d4fc4940e50adc7f57e98cedd934 -->
+<!-- translation of docs/ROADMAP.md, source sha256: d87250a9f8cbdcefb8b84eeb7782bb83df46b90660c868ad259f1cfea11cf858 -->
 
 # Tabella di marcia: difesa dall'inganno
 
@@ -482,6 +482,11 @@ un limite dimostrato. È considerata trovata la costruzione che soddisfa tutti i
       una verifica casuale segreta dello stesso costo; sono utili solo il segreto della scelta
       prima della fissazione della risposta e il segreto del ruolo —
       [HIDDEN_DETECTOR](HIDDEN_DETECTOR.md), 25 novembre 2026.
+- [x] Audit di completezza della ricerca (sei audit indipendenti e due mappe dei meccanismi,
+      raccolte dal proprietario) e il consiglio dei modelli sulle opzioni di contrasto all'inganno,
+      comprese le idee «verificabilità dentro il modello» e «tecniche tratte dai giochi»:
+      [ANTIFRAUD_OPTIONS](ANTIFRAUD_OPTIONS.md), 27 novembre 2026. Le decisioni sulle opzioni
+      attendono il proprietario.
 - [ ] La sua qualità rispetto al profilo normale sullo stesso insieme di compiti.
 - [ ] Piani di misurazione separati (fuori da D5): energia della verifica, addestramento con aritmetica intera.
 - [ ] Costo della controversia nel registro per il modello completo. Prima servono la scelta della

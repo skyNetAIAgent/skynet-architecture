@@ -30,7 +30,7 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 
-SKIP_DIRS = {".git", "__pycache__", ".pytest_cache", ".ruff_cache", ".venv", "node_modules",
+SKIP_DIRS = {"analysis", ".git", "__pycache__", ".pytest_cache", ".ruff_cache", ".venv", "node_modules",
              "build", ".gradle"}                        # build output of the Android app
 SKIP_FILES = ["*.pyc", "*.pyo", "Thumbs.db", ".DS_Store", "local.properties", "*.apk", "*.idsig"]
 SECRET_PATTERNS = ["*.pem", "*.key", "*.dpapi", "*.pfx", "*.p12", "*.jks", "*.keystore", ".env", ".env.*", "id_rsa*", "id_ed25519*",

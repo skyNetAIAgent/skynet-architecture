@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: af2d3af05e4ca027e7f3936208f6bf3c80e5d4fc4940e50adc7f57e98cedd934 -->
+<!-- translation of docs/ROADMAP.md, source sha256: d87250a9f8cbdcefb8b84eeb7782bb83df46b90660c868ad259f1cfea11cf858 -->
 
 # Roteiro: defesa contra fraude
 
@@ -467,6 +467,10 @@ limite provado. Considera-se encontrada a construção que cumpre todos os crit�
       criptografia de limiar, FHE, MPC, TEE): o sigilo das regras não dá mais que uma verificação
       aleatória secreta do mesmo preço; só são úteis o sigilo da escolha antes da fixação da resposta
       e o sigilo do papel — [HIDDEN_DETECTOR](HIDDEN_DETECTOR.md), 25 de novembro de 2026.
+- [x] Auditoria de completude da pesquisa (seis auditorias independentes e dois mapas de mecanismos,
+      reunidos pelo dono) e conselho de modelos sobre as opções de combate à fraude, incluindo as
+      ideias «verificabilidade dentro do modelo» e «técnicas de jogos»: [ANTIFRAUD_OPTIONS](ANTIFRAUD_OPTIONS.md),
+      27 de novembro de 2026. As decisões sobre as opções aguardam o dono.
 - [ ] Sua qualidade em relação ao perfil comum no mesmo conjunto de tarefas.
 - [ ] Planos de medição separados (fora do D5): energia da verificação, treinamento com aritmética inteira.
 - [ ] Preço da disputa no registro para o modelo completo. Antes dela são necessários a escolha do

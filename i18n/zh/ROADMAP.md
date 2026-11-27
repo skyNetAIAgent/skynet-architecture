@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: af2d3af05e4ca027e7f3936208f6bf3c80e5d4fc4940e50adc7f57e98cedd934 -->
+<!-- translation of docs/ROADMAP.md, source sha256: d87250a9f8cbdcefb8b84eeb7782bb83df46b90660c868ad259f1cfea11cf858 -->
 
 # 路线图：防范作弊
 
@@ -386,6 +386,9 @@
 - [x] 模型委员会关于隐藏且不断变化的检测器（秘密规则、加密、区块链、阈值密码学、FHE、MPC、TEE）：
       规则的保密并不比同等成本的秘密随机验证带来更多；只有回答固定之前的秘密选择以及角色保密
       才有用——[HIDDEN_DETECTOR](HIDDEN_DETECTOR.md)，2026 年 11 月 25 日。
+- [x] 研究完整性审计（六项独立审计和两张机制图，由所有者汇总）以及模型委员会关于防范作弊
+      方案的意见，包括“模型内可验证性”和“游戏技巧”两种思路：
+      [ANTIFRAUD_OPTIONS](ANTIFRAUD_OPTIONS.md)，2026 年 11 月 27 日。各方案的决定尚待所有者作出。
 - [ ] 其在相同任务集上相对于常规配置的质量。
 - [ ] 单独的测量计划（D5 之外）：验证能耗、整数训练。
 - [ ] 完整模型在日志中的争议成本。在此之前需要选定区块链、完整模型的基准机器、输入绑定、

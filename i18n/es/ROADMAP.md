@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: af2d3af05e4ca027e7f3936208f6bf3c80e5d4fc4940e50adc7f57e98cedd934 -->
+<!-- translation of docs/ROADMAP.md, source sha256: d87250a9f8cbdcefb8b84eeb7782bb83df46b90660c868ad259f1cfea11cf858 -->
 
 # Hoja de ruta: defensa contra el engaño
 
@@ -462,6 +462,10 @@ un límite demostrado. Se considera encontrada la construcción que cumple todos
       criptografía de umbral, FHE, MPC, TEE): el secreto de las reglas no aporta más que una verificación
       aleatoria secreta del mismo precio; solo son útiles el secreto de la elección antes de fijar la
       respuesta y el secreto del rol — [HIDDEN_DETECTOR](HIDDEN_DETECTOR.md), 25 de noviembre de 2026.
+- [x] Auditoría de completitud del estudio (seis auditorías independientes y dos mapas de mecanismos preparados
+      por el propietario) y consejo de modelos sobre las variantes de lucha contra el engaño, incluidas las ideas
+      «verificabilidad dentro del modelo» y «técnicas de juego»: [ANTIFRAUD_OPTIONS](ANTIFRAUD_OPTIONS.md),
+      27 de noviembre de 2026. Las decisiones sobre las variantes esperan al propietario.
 - [ ] Su calidad respecto al perfil normal en el mismo conjunto de tareas.
 - [ ] Planes de medición aparte (fuera de D5): energía de la verificación, entrenamiento con aritmética entera.
 - [ ] Coste de la disputa en el registro para el modelo completo. Antes hacen falta la elección de la cadena de bloques, una máquina de referencia

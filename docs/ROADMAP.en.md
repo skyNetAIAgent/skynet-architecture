@@ -1,4 +1,4 @@
-<!-- translation of docs/ROADMAP.md, source sha256: af2d3af05e4ca027e7f3936208f6bf3c80e5d4fc4940e50adc7f57e98cedd934 -->
+<!-- translation of docs/ROADMAP.md, source sha256: d87250a9f8cbdcefb8b84eeb7782bb83df46b90660c868ad259f1cfea11cf858 -->
 
 # Roadmap: protection against cheating
 
@@ -466,6 +466,10 @@ or a proven bound. A construction is considered found if it satisfies all the cr
       threshold cryptography, FHE, MPC, TEE): the secrecy of the rules gives no more than a secret
       random check at the same price; only the secrecy of the choice before the answer is fixed and
       the secrecy of the role are useful — [HIDDEN_DETECTOR](HIDDEN_DETECTOR.en.md), 25 November 2026.
+- [x] A completeness audit of the research (six independent audits and two mechanism maps assembled
+      by the owner) and a council of models on anti-fraud options, including the ideas "verifiability
+      inside the model" and "techniques from games": [ANTIFRAUD_OPTIONS](ANTIFRAUD_OPTIONS.en.md),
+      27 November 2026. Decisions on the options await the owner.
 - [ ] Its quality relative to the usual profile on the same set of tasks.
 - [ ] Separate measurement plans (outside D5): verification energy, integer training.
 - [ ] The price of a dispute in the ledger for the full model. Before it, the following are needed:
